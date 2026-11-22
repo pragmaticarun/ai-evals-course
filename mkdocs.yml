@@ -87,7 +87,11 @@ nav:
           - Lab: modules/06-trustworthy-metrics/lab.md
           - Exercises: modules/06-trustworthy-metrics/exercises.md
           - Quiz: modules/06-trustworthy-metrics/quiz.md
-      - "7. Architectures": modules/07-architectures/index.md
+      - "7. Architectures":
+          - modules/07-architectures/index.md
+          - Lab: modules/07-architectures/lab.md
+          - Exercises: modules/07-architectures/exercises.md
+          - Quiz: modules/07-architectures/quiz.md
       - "8. CI/CD for agents": modules/08-ci-cd/index.md
       - "9. Monitoring and annotation": modules/09-monitoring-and-annotation/index.md
       - "10. Red-teaming and safety": modules/10-red-teaming/index.md
@@ -100,6 +104,7 @@ nav:
       - Synthetic data: cheatsheets/synthetic-data.md
       - Judges and validation: cheatsheets/judges.md
       - Statistics for metrics: cheatsheets/stats.md
+      - Evaluating architectures: cheatsheets/architectures.md
   - Templates:
       - Failure taxonomy sheet: eval-templates/failure-taxonomy.md
       - Dimensions sheet: eval-templates/dimensions-sheet.md

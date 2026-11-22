@@ -1,0 +1,12 @@
+# Module 7 (multimodal): a vision judge for one artifact in one decoded frame.
+name = "frame-banding"
+version = "v1"
+mode = "banding"
+context = []
+criterion = "Smooth gradients in the frame show no banding (contouring)."
+pass = """
+Gradients change smoothly, or the frame has no gradients. Hard edges between objects or test
+pattern bars are not banding."""
+fail = """
+A gradient is broken into visible stripes or steps of flat colour with distinct edges between
+them, following the direction of the gradient."""

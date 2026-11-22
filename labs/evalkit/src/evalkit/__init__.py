@@ -19,6 +19,12 @@ Module 6 adds:
   - evalkit.stats     Wilson and bootstrap intervals, judge-error correction, paired comparisons
                       (McNemar, paired bootstrap), Holm adjustment, pass@k and pass^k, sample sizes
   - LLM(..., trial=n) repeated runs of the same request, replayed separately
+
+Module 7 adds:
+  - evalkit.retrieval   recall@k, precision@k, hit@k, reciprocal rank (MRR), nDCG@k
+  - evalkit.trajectory  tool recall/precision, order, step efficiency, first failure,
+                        transition-failure matrices
+  - images in requests  fixture keys hash base64 payloads instead of storing them
 """
 
 from evalkit.checks import Check, CheckResult, run_checks, summarize

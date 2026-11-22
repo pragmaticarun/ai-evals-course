@@ -1,0 +1,15 @@
+# Module 7 (RAG): is every claim in the answer supported by the retrieved passages? Version 1.
+# The passages are shown as one search_kb tool call. No few-shot examples: the criterion is short
+# and the module 7 lab validates it against labels before trusting it.
+name = "faithfulness"
+version = "v1"
+mode = "unfaithful-to-context"
+context = ["question", "tools", "answer"]
+criterion = "Every factual claim in the answer is supported by the retrieved passages."
+pass = """
+Each claim in the answer can be found in, or follows directly from, the passages in the search_kb
+result. Saying the passages do not cover the question passes. Whether the answer is correct or
+useful does not matter here."""
+fail = """
+The answer states at least one specific fact (an API, a version, a number, a cause, a behaviour)
+that the passages do not contain, even if it is true in general."""

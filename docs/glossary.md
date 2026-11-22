@@ -8,6 +8,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Analyze, measure, improve** [1]
 : The eval loop: find and name failures, build evaluators you trust for them, change the system and verify the change. Then repeat.
 
+**Answer relevance** [7]
+: Whether an answer addresses the question that was asked, judged from the question and the answer only. A refusal or an answer about another problem fails.
+
 **Attributes (span attributes)** [2]
 : Key-value pairs on a span, such as model name, token counts, or tool arguments. Standard names make them portable across tools.
 
@@ -16,6 +19,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Benevolent dictator** [3]
 : The single domain expert who owns pass/fail verdicts and failure-mode definitions, taking input from others but deciding (term used by Hamel Husain).
+
+**BM25 (Okapi BM25)** [7]
+: A ranking function for keyword search that weights rare query words more and saturates repeated ones, with a document-length correction. A strong baseline for retrieval.
 
 **Bootstrap (percentile interval)** [5, 6]
 : Resampling the data with replacement many times and recomputing a statistic each time; the middle 95% of the results gives an approximate 95% confidence interval.
@@ -26,17 +32,26 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Case set / dataset** [1]
 : A fixed, versioned collection of cases. Comparisons are only meaningful on the same case set.
 
+**Chunking** [7]
+: Splitting documents into the passages a retriever indexes, for example fixed-size word windows or one chunk per section. Where boundaries fall decides what can be retrieved together.
+
+**Citation correctness** [7]
+: A code check on RAG answers: every cited id was in the retrieved context (valid), and at least one cited passage is relevant to the question (supports).
+
 **Cluster (resampling unit)** [6]
 : Outcomes that share a source, such as several runs of one query; resample whole clusters, not their members.
-
-**Code check (validated)** [5]
-: A deterministic evaluator measured against human labels like a judge; precise, but its definition can still be narrower than the expert's.
 
 **Code check** [1]
 : A deterministic evaluator written as code: an assertion, regex, schema validation, or lookup.
 
+**Code check (validated)** [5]
+: A deterministic evaluator measured against human labels like a judge; precise, but its definition can still be narrower than the expert's.
+
 **Compounding failure** [3]
 : An early mistake in a multi-step run that causes later symptoms, such as a bad tool argument followed by an answer citing the failed tool. Label the first one.
+
+**Context retention** [7]
+: In a conversation, using what the user already said. A turn that asks again for a fact the user gave earlier fails it.
 
 **Corrected pass rate (Rogan-Gladen)** [5, 6]
 : A judge-measured pass rate adjusted for the judge's TPR and TNR: (observed + TNR − 1) / (TPR + TNR − 1). Defined only when TPR + TNR > 1.
@@ -80,6 +95,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Failure taxonomy** [3]
 : The list of failure modes for a system with definitions, counts, severity, and priority; kept as a sheet and updated after each round of error analysis.
 
+**Faithfulness (groundedness)** [7]
+: Whether every factual claim in an answer is supported by the retrieved context. A true fact from outside the context still fails.
+
 **False premise** [4]
 : A wrong belief stated as fact in a question ("the lumen-l3 has a hardware AV1 decoder"). Tests whether the system checks claims or repeats them.
 
@@ -100,6 +118,12 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Ground truth / label** [1]
 : A human judgment of whether an output is acceptable, made by someone who knows the domain.
+
+**Handoff error** [7]
+: Information lost or distorted when one agent passes work to another, such as a planner's brief that drops the file name the user gave.
+
+**Hard negative** [7]
+: A passage or example that looks relevant (shared words or topic) but is not. Retrieval and judge test sets need them to avoid overstating quality.
 
 **Held-out split (test split)** [4]
 : The part of a dataset kept for occasional reporting and never used for tuning or read while improving the system.
@@ -125,8 +149,14 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Minimum detectable difference** [6]
 : The smallest change an eval set of a given size can detect at the chosen significance level and power.
 
+**MRR (mean reciprocal rank)** [7]
+: The mean over queries of 1 / rank of the first relevant result (0 if none is retrieved).
+
 **Multiple comparisons** [6]
 : Running many tests (slices, failure modes, metrics) inflates the chance that at least one looks significant by luck.
+
+**nDCG@k** [7]
+: Normalised discounted cumulative gain: graded relevance summed with a log2 rank discount over the top k, divided by the same sum for the ideal ranking. 1.0 is a perfect order.
 
 **Near-duplicate** [4]
 : Two items whose texts are highly similar without being identical; here measured as Jaccard similarity of word 3-grams.
@@ -173,14 +203,26 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Power (statistical)** [6]
 : The chance that a comparison detects a difference of a given size if it is real; 80% is the usual target.
 
+**Precision@k** [7]
+: The share of the top k results that are relevant. Divides by k, so returning fewer results is not rewarded.
+
 **Priority (failure mode)** [3]
 : A ranking score for failure modes; in this course, traces affected times severity, with fixability breaking ties.
+
+**Recall@k** [7]
+: The share of a query's relevant items that appear in the top k results.
 
 **Record / replay / live mode** [1]
 : The three `evalkit.llm` modes: call the API and save the response, return saved responses offline, or call without saving.
 
 **Regression** [1]
 : A case that passed before a change and fails after it.
+
+**Relevance set** [7]
+: Queries paired with labels saying which passages answer each one (optionally graded). The test set for retrieval.
+
+**Retrieval failure vs generation failure** [7]
+: Attribution of a failed RAG answer: the answering passage never reached the model (retrieval), or it did and the model still answered wrongly or unfaithfully (generation).
 
 **Retrieval miss** [1, 3, 7]
 : The retriever did not return the document needed to answer, so downstream steps fail through no fault of their own.
@@ -203,14 +245,23 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Semantic conventions** [2]
 : OpenTelemetry's agreed names and meanings for span names and attributes. The GenAI ones (`gen_ai.*`) cover model and tool calls.
 
+**Session-level vs turn-level eval** [7]
+: Scoring a whole conversation (did it reach the user's goal, did it give up early) versus scoring each assistant turn (retention, needless questions, format). Session level comes first.
+
 **Severity** [3]
 : How much a failure hurts when it happens: 1 annoying, 2 misleading or costly, 3 harmful or trust-breaking. Set by the domain expert.
 
 **Signal (triage flag)** [3]
 : A cheap automatic check used to decide which traces to read first. Not a label: flagged traces can pass and unflagged ones can fail.
 
+**Simulated user** [7]
+: A model that plays the user in multi-turn evals, with a persona, a goal, and facts it reveals only when asked. It must itself be checked for leaked or invented facts.
+
 **Span** [2]
 : One timed unit of work inside a trace (a model call, a tool call, a retrieval), with a name, start and end time, status, and attributes.
+
+**Step efficiency** [7]
+: Minimal number of steps for a task divided by the steps a run took (at most 1.0). Shows wasted calls, including in runs that passed.
 
 **Stratified sampling** [4]
 : Sampling so that each value of a chosen dimension gets a similar count, instead of leaving small slices to chance.
@@ -236,6 +287,12 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Trace** [1, 2]
 : A structured record of everything one run did: model calls, tool calls, retrieved context, timings, tokens.
 
+**Trajectory** [7]
+: The ordered steps of an agent run: model calls, tool calls with arguments, handoffs, and the final answer. Evaluated after the outcome.
+
+**Transition-failure matrix** [7]
+: A count of failed runs by (last state that succeeded, first state that failed). Its hot cells show where a multi-step or multi-agent system breaks first.
+
 **Tuple** [4]
 : One combination of values, one per dimension, describing a single test situation before it is written as a query.
 
@@ -247,6 +304,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Virtual clock** [2]
 : A clock that advances only by recorded or simulated durations, so replayed traces have stable timestamps.
+
+**Vision judge** [7]
+: An LLM judge that receives an image (for example a decoded video frame) and returns PASS or FAIL on one visual criterion. Validated like any judge, per artifact and severity.
 
 **Wilson score interval** [6]
 : A confidence interval for a pass rate (k of n) that stays inside [0, 1] and behaves at small n and near 0 or 1, unlike p ± 1.96·√(p(1−p)/n).

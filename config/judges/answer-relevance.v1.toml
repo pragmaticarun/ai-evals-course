@@ -1,0 +1,13 @@
+# Module 7 (RAG): does the answer address the question that was asked? Version 1.
+# Judged without the passages: relevance is about the question, faithfulness about the context.
+name = "answer-relevance"
+version = "v1"
+mode = "irrelevant-answer"
+context = ["question", "answer"]
+criterion = "The answer addresses the specific question the user asked."
+pass = """
+The answer responds to what was asked (the specific API, symptom, or decision), even if it is
+brief or turns out to be wrong."""
+fail = """
+The answer talks about a different problem or topic, or only says it cannot answer, so the user's
+question is left unaddressed."""

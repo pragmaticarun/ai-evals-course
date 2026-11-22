@@ -1,0 +1,14 @@
+# Module 7 (multi-turn): a session-level judge. It reads the whole conversation, not one turn.
+name = "gave-up-early"
+version = "v1"
+mode = "gave-up-early"
+context = ["answer"]
+criterion = "MediaDoctor keeps working on the problem while the user can still supply what it needs."
+pass = """
+MediaDoctor diagnoses the problem, or asks the user for the detail it needs. A wrong diagnosis
+still passes this criterion: it did not give up."""
+fail = """
+MediaDoctor ends the conversation without a diagnosis and without asking for the missing detail,
+for example by saying it cannot tell and sending the user to a vendor, support, or a bug report,
+when a question to the user (a log line, a setting, a device capability) could have moved it on."""
+notes = "The conversation is passed as the answer: every turn, labelled User or MediaDoctor."

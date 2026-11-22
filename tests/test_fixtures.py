@@ -48,3 +48,27 @@ def test_trial_zero_keeps_the_original_key():
     req = {"model": "m", "messages": []}
     assert request_key(req, 0) == request_key(req)
     assert request_key(req, 1) != request_key(req) != request_key(req, 2)
+
+
+def test_images_are_keyed_by_hash_not_stored(tmp_path):
+    from evalkit.fixtures import compact_request
+
+    def req(data: str) -> dict:
+        src = {"type": "base64", "media_type": "image/png", "data": data}
+        return {
+            "model": "m",
+            "messages": [{"role": "user", "content": [{"type": "image", "source": src}]}],
+        }
+
+    a, b = req("QUJD" * 1000), req("QUJE" * 1000)
+    assert request_key(a) != request_key(b)
+    small = compact_request(a)
+    src = small["messages"][0]["content"][0]["source"]
+    assert "data" not in src and src["data_len"] == 4000 and len(src["data_sha256"]) == 64
+    assert a["messages"][0]["content"][0]["source"]["data"].startswith("QUJD")  # input untouched
+    store = FixtureStore(tmp_path, "img")
+    store.put(a, {"content": []})
+    assert "QUJD" not in store.path.read_text()
+    assert store.get(a) == {"content": []}
+    plain = {"model": "m", "messages": [{"role": "user", "content": "hi"}]}
+    assert compact_request(plain) == plain

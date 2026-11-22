@@ -1,0 +1,49 @@
+query_id,topic,query,relevant
+r01,codec,Why does creating a fourth video decoder fail on the lumen-l3 when the gallery opens?,codec-instance-limits#1:2;codec-instance-limits#2:2;mediacodec-errors#2:1
+r02,codec,Our thumbnail grid crashes with an insufficient resource error after scrolling,codec-instance-limits#2:2;codec-instance-limits#1:1
+r03,codec,How do I know if a CodecException is worth retrying?,mediacodec-errors#1:2
+r04,codec,What does the diagnosticInfo string in a codec exception tell me?,mediacodec-errors#3:2
+r05,codec,How can I check whether a device supports HEVC Main10 at level 5.1?,codec-capabilities#2:2;codec-capabilities#1:1
+r06,codec,Can this phone decode 4K at 60 fps? How do I check in code?,codec-capabilities#3:2;av1-decoding#3:1
+r07,codec,How many decoders of one type can I create at the same time?,codec-instance-limits#2:2;codec-instance-limits#1:1
+r08,codec,My async decoder stalls after a few frames,mediacodec-async#2:2;mediacodec-async#1:1
+r09,codec,When must setCallback be called on a codec?,mediacodec-async#1:2
+r10,codec,App crashes when the user leaves the player screen while video is decoding,surface-lifecycle#1:2;mediacodec-errors#2:1
+r11,codec,How do I get frames out immediately for cloud gaming on Android 11?,low-latency-decoding#1:2;low-latency-decoding#2:1
+r12,codec,Is there a way to let the hardware handle audio-video sync on a TV box?,tunneled-playback#1:2;tunneled-playback#2:1
+r13,codec,Which API tells me whether a decoder is hardware backed?,av1-decoding#3:2;codec-capabilities#1:1
+r14,codec,Screen recordings of our DRM movies are just black. Is the decoder broken?,secure-decoders#2:2;secure-decoders#1:1
+r15,streaming,Live stream errors out after the app comes back from background,behind-live-window#1:2;behind-live-window#2:2
+r16,streaming,How do I recover from ERROR_CODE_BEHIND_LIVE_WINDOW?,behind-live-window#2:2;behind-live-window#1:1
+r17,streaming,How do I reduce latency of a live stream in Media3?,live-latency#1:2;live-latency#2:1
+r18,streaming,Playback speed changes slightly during live playback. Why?,live-latency#2:2
+r19,streaming,The video takes ten seconds to start when served from our CDN as a plain mp4,mp4-faststart#1:2;mp4-faststart#3:2;mp4-faststart#2:1
+r20,streaming,How do I check whether the index is at the start of an mp4 file?,mp4-faststart#2:2
+r21,streaming,Should we use fragmented mp4 for HLS and DASH?,fragmented-mp4#2:2;fragmented-mp4#1:2
+r22,streaming,Quality never goes above 480p on good wifi,adaptive-bitrate#2:2;adaptive-bitrate#1:1;widevine-levels#1:1
+r23,streaming,Our protected stream only plays in SD on some phones,widevine-levels#1:2;widevine-levels#2:2
+r24,streaming,How do I read the Widevine security level of a device?,widevine-levels#2:2
+r25,streaming,License requests fail with NotProvisionedException,widevine-provisioning#1:2;widevine-provisioning#2:1
+r26,streaming,The device used to get HD and now only gets SD after rooting,widevine-levels#2:2;widevine-levels#1:1
+r27,audio,Music keeps playing when a phone call comes in,audio-focus#1:2;audio-focus#2:2;audio-focus#3:2
+r28,audio,What should the player do on AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK?,audio-focus#3:2
+r29,audio,Video should pause when the user unplugs headphones,audio-routing#1:2
+r30,audio,Lips are out of sync only on Bluetooth earbuds,audio-routing#2:2;av-sync#3:1
+r31,audio,Audio is 300 ms ahead of the picture from the very start,av-sync#2:2;av-sync#1:1
+r32,audio,Sync slowly drifts over a long phone recording,av-sync#3:2;av-sync#1:1
+r33,audio,How does ExoPlayer handle audio focus automatically?,audio-focus#2:2
+r34,audio,Navigation prompts do not interrupt our podcast app,audio-focus#1:2;audio-focus#2:1;audio-focus#3:1
+r35,video,HDR movie looks grey and washed out on a cheap phone,hdr-tone-mapping#2:2;hdr-tone-mapping#3:2;hdr-display-api#1:1
+r36,video,How do I tell if the screen supports HDR10?,hdr-display-api#1:2;hdr-display-api#2:2
+r37,video,Is Display.isHdr available on API 24?,hdr-display-api#2:2;hdr-display-api#1:1
+r38,video,HDR looks fine in SurfaceView but flat in TextureView,hdr-tone-mapping#2:2;surface-lifecycle#2:1
+r39,video,What colour metadata should the decoder output format show for HDR10?,hdr-tone-mapping#1:2
+r40,video,Does Android 12 decode AV1 in hardware?,av1-decoding#2:2;av1-decoding#1:1
+r41,video,AV1 4K playback stutters on a phone that supports AV1,av1-decoding#2:2;av1-decoding#3:2
+r42,video,Which Android version added AV1 playback?,av1-decoding#1:2
+r43,video,Sky gradients show visible steps after transcoding,color-banding#1:2;color-banding#2:2
+r44,video,How do I get rid of contour lines in dark scenes?,color-banding#2:2;color-banding#1:1
+r45,video,Video turns into squares when the network is slow,blocking-artifacts#1:2;blocking-artifacts#2:1;adaptive-bitrate#2:1
+r46,video,How to reduce macroblocking at 500 kbps?,blocking-artifacts#2:2;blocking-artifacts#1:1
+r47,video,Can I record HDR video with Camera2?,hdr-capture#1:2;hdr-capture#2:1
+r48,video,Should I fall back to VP9 when AV1 is decoded in software?,av1-decoding#3:2;av1-decoding#2:1

@@ -1,0 +1,12 @@
+# Module 7 (multimodal): a vision judge for one artifact in one decoded frame.
+name = "frame-blocking"
+version = "v1"
+mode = "blocking"
+context = []
+criterion = "The frame shows no blocking (blockiness, macroblocking) from compression."
+pass = """
+Edges and smooth areas look continuous. Sharp lines and flat bars that are part of the content
+(test patterns, text) are not blocking."""
+fail = """
+Square blocks of roughly uniform colour (typically 8 or 16 pixels) are visible, with hard edges
+between neighbouring blocks that are not in the content, in smooth areas or along edges."""

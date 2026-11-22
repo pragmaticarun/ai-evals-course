@@ -24,8 +24,31 @@ anyone serious about evals should read them directly and consider their course.
 | Every metric gets an interval; paired comparisons; clustered resampling; power analysis for evals | Module 6 | Evan Miller, [Adding Error Bars to Evals](https://arxiv.org/abs/2411.00640) (arXiv 2411.00640) |
 | A pass-all rate with drill-down instead of a weighted composite; generic metrics and similarity scores are not quality measures | Module 6 | [How do I combine my evals into a single metric?](https://hamel.dev/blog/posts/evals-faq/how-do-i-combine-my-evals-into-a-single-metric.html), [Should I use "ready-to-use" evaluation metrics?](https://hamel.dev/blog/posts/evals-faq/should-i-use-ready-to-use-evaluation-metrics.html), [Are similarity metrics useful?](https://hamel.dev/blog/posts/evals-faq/are-similarity-metrics-bertscore-rouge-etc-useful-for-evaluating-llm-outputs.html), Hamel Husain and Shreya Shankar |
 | Judge-error correction, bootstrap intervals, and paired tests as part of an evals curriculum | Modules 5, 6 | Hamel Husain and Shreya Shankar's [Maven course](https://maven.com/parlance-labs/evals) |
+| Evaluate retrieval with search metrics (recall@k, precision@k, MRR) on query-passage pairs, separately from generation; generation judged for context use and answer relevance with validated judges | Module 7 | [AI Evals FAQ: How should I approach evaluating my RAG system?](https://hamel.dev/blog/posts/evals-faq/how-should-i-approach-evaluating-my-rag-system.html), Hamel Husain and Shreya Shankar |
+| Question, context, and answer relationships as the RAG evals (context relevance, faithfulness, answer relevance) | Module 7 | Jason Liu, [There Are Only 6 RAG Evals](https://jxnl.co/writing/2025/05/19/there-are-only-6-rag-evals/) |
+| Chunk size as a task-dependent choice to test | Module 7 | [AI Evals FAQ: How do I choose the right chunk size?](https://hamel.dev/blog/posts/evals-faq/how-do-i-choose-the-right-chunk-size-for-my-document-processing-tasks.html), Hamel Husain and Shreya Shankar |
+| Whole-conversation pass/fail first, then the first upstream failure; reduce to a single-turn test; simulated users and N−1 testing | Module 7 | [AI Evals FAQ: How do I debug multi-turn conversation traces?](https://hamel.dev/blog/posts/evals-faq/how-do-i-debug-multi-turn-conversation-traces.html), Hamel Husain and Shreya Shankar |
+| Outcome first, then the steps of an agent's trajectory | Module 7 | [AI Evals FAQ: How do I evaluate agentic workflows?](https://hamel.dev/blog/posts/evals-faq/how-do-i-evaluate-agentic-workflows.html), Hamel Husain and Shreya Shankar |
+| Transition-failure matrices (last successful state vs first failure); outcome and process metrics by workflow stage | Module 7 | [AI Evals FAQ: How do I evaluate complex multi-step workflows?](https://hamel.dev/blog/posts/evals-faq/how-do-i-evaluate-complex-multi-step-workflows.html), Hamel Husain and Shreya Shankar |
 | Instrument first; build simple custom viewers for traces | Module 2 | [A Field Guide to Rapidly Improving AI Products](https://hamel.dev/blog/posts/field-guide/), Hamel Husain |
 | Validating evaluators against human labels; criteria drift | Modules 5, 6 | Shreya Shankar et al., [Who Validates the Validators? Aligning LLM-Assisted Evaluation of LLM Outputs with Human Preferences](https://arxiv.org/abs/2404.12272) (arXiv 2404.12272) |
+
+## Module 7 references
+
+| Topic | Source |
+|---|---|
+| Precision and recall | [Precision and recall](https://en.wikipedia.org/wiki/Precision_and_recall) |
+| Mean reciprocal rank | [Mean reciprocal rank](https://en.wikipedia.org/wiki/Mean_reciprocal_rank) |
+| nDCG | [Discounted cumulative gain](https://en.wikipedia.org/wiki/Discounted_cumulative_gain) (Järvelin and Kekäläinen, 2002) |
+| BM25 | [Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25) (Robertson and colleagues) |
+| Images in Claude requests | [Anthropic: vision](https://platform.claude.com/docs/en/build-with-claude/vision) |
+| Test frames and spectrograms | [FFmpeg filters](https://ffmpeg.org/ffmpeg-filters.html) (`testsrc2`, `mandelbrot`, `smptehdbars`, `geq`, `lutrgb`, `showspectrumpic`) and libx264 |
+
+The second-edition knowledge base (`data/kb_v2/`), the relevance labels, the chat scenarios, and the image labels
+were written for this course. All module 7 model outputs (RAG answers, chat and simulated-user turns, planner and
+specialist turns, judge verdicts, vision answers) and their labels are synthetic-authored
+(`scripts/author_module07_fixtures.py`); they were not produced by running the models live. The retrieval metrics
+are computed, not authored.
 
 ## Module 6 references
 

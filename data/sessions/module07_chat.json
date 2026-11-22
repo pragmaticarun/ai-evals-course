@@ -1,0 +1,267 @@
+{
+ "_note": "Module 7 chat scenarios (synthetic-authored). facts: what the simulated user knows; given: facts already in the opening message; needed: facts a diagnosis needs.",
+ "sessions": [
+  {
+   "id": "c01",
+   "title": "AV1 stutter",
+   "opening": "Our AV1 trailer stutters on some of our test phones. What's going on?",
+   "facts": {
+    "clip": "It's AV1 Main, 3840x2160 at 60 fps.",
+    "decoders": "MediaCodecList only shows c2.android.av1.decoder for AV1, rated up to 1920x1080 at 30 fps."
+   },
+   "given": [],
+   "needed": [
+    "clip",
+    "decoders"
+   ],
+   "cause": "The phone has no hardware AV1 decoder; the software decoder c2.android.av1.decoder tops out at 1080p30, so 4K60 cannot keep up.",
+   "next": "Serve a 1080p30 AV1 or an HEVC rendition to devices whose AV1 decoder is software only.",
+   "cause_terms": "software"
+  },
+  {
+   "id": "c02",
+   "title": "AV1 stutter (all details)",
+   "opening": "A 3840x2160 60 fps AV1 clip stutters on a phone whose only AV1 decoder is c2.android.av1.decoder (software, max 1080p30). Why?",
+   "facts": {
+    "clip": "AV1 Main, 3840x2160 at 60 fps.",
+    "decoders": "Only c2.android.av1.decoder, max 1080p30."
+   },
+   "given": [
+    "clip",
+    "decoders"
+   ],
+   "needed": [
+    "clip",
+    "decoders"
+   ],
+   "cause": "The only AV1 decoder is a software one rated for 1080p30, far below the clip's 4K60.",
+   "next": "Pick a lower AV1 rendition or HEVC for devices without a hardware AV1 decoder.",
+   "cause_terms": "software"
+  },
+  {
+   "id": "c03",
+   "title": "Slow MP4 start",
+   "opening": "Our progressive MP4s take ages to start playing over the network.",
+   "facts": {
+    "layout": "ffprobe lists the top-level boxes as ftyp, mdat, moov."
+   },
+   "given": [],
+   "needed": [
+    "layout"
+   ],
+   "cause": "The moov box sits after mdat, so the player must download the whole file before it can start.",
+   "next": "Remux with the moov box at the front (ffmpeg -movflags +faststart).",
+   "cause_terms": "moov"
+  },
+  {
+   "id": "c04",
+   "title": "Slow MP4 start (all details)",
+   "opening": "Progressive MP4s start slowly over the network; the top-level boxes are ftyp, mdat, moov. Why?",
+   "facts": {
+    "layout": "ftyp, mdat, moov."
+   },
+   "given": [
+    "layout"
+   ],
+   "needed": [
+    "layout"
+   ],
+   "cause": "moov comes after mdat, so playback waits for the end of the file.",
+   "next": "Remux with -movflags +faststart so moov comes first.",
+   "cause_terms": "moov"
+  },
+  {
+   "id": "c05",
+   "title": "Lip sync",
+   "opening": "Lip sync is off in one of our clips. Can you help?",
+   "facts": {
+    "offset": "ffprobe says the video stream starts at 0.300 s and the audio at 0.000 s."
+   },
+   "given": [],
+   "needed": [
+    "offset"
+   ],
+   "cause": "The video stream starts 300 ms after the audio, and the player does not compensate for the start-time offset.",
+   "next": "Honour the stream start times (or re-mux with aligned timestamps) and retest sync.",
+   "cause_terms": "start time|300"
+  },
+  {
+   "id": "c06",
+   "title": "Washed-out HDR",
+   "opening": "HDR videos look washed out on one of our phones.",
+   "facts": {
+    "clip": "HEVC Main10, HDR10 (PQ transfer).",
+    "display": "Display.getHdrCapabilities() returns no supported HDR types on that phone."
+   },
+   "given": [],
+   "needed": [
+    "display"
+   ],
+   "cause": "The display does not support HDR, and the HDR10 video is shown without tone mapping to SDR.",
+   "next": "Detect missing HDR support and tone-map to SDR (or serve an SDR rendition).",
+   "cause_terms": "tone.map|SDR"
+  },
+  {
+   "id": "c07",
+   "title": "Thumbnail crash",
+   "opening": "Our thumbnail generator crashes after a while. Any idea?",
+   "facts": {
+    "log": "Logcat shows 'Failed to allocate codec: insufficient resources' after the fourth decoder.",
+    "code": "We create a new MediaCodec for each thumbnail and never call release()."
+   },
+   "given": [],
+   "needed": [
+    "log",
+    "code"
+   ],
+   "cause": "Decoders are never released, so the app exhausts the device's codec instances.",
+   "next": "Call release() on each MediaCodec (or reuse one decoder) and cap concurrent decoders.",
+   "cause_terms": "releas"
+  },
+  {
+   "id": "c08",
+   "title": "Thumbnail crash (all details)",
+   "opening": "Thumbnail generation fails with 'insufficient resources' after a few clips; we never call release() on the decoders. Why?",
+   "facts": {
+    "log": "'insufficient resources' after a few clips.",
+    "code": "release() is never called."
+   },
+   "given": [
+    "log",
+    "code"
+   ],
+   "needed": [
+    "log",
+    "code"
+   ],
+   "cause": "Unreleased decoders exhaust the limited codec instances.",
+   "next": "Release each MediaCodec when the thumbnail is done.",
+   "cause_terms": "releas"
+  },
+  {
+   "id": "c09",
+   "title": "Live resume",
+   "opening": "Our live stream errors out when users come back to the app.",
+   "facts": {
+    "log": "The player throws BehindLiveWindowException on resume, after about two minutes in the background."
+   },
+   "given": [],
+   "needed": [
+    "log"
+   ],
+   "cause": "After a long pause the playback position falls behind the live window, so the player throws BehindLiveWindowException.",
+   "next": "Catch BehindLiveWindowException and re-prepare at the live edge.",
+   "cause_terms": "live window|live edge"
+  },
+  {
+   "id": "c10",
+   "title": "Audio over calls",
+   "opening": "Our app's audio keeps playing over phone calls.",
+   "facts": {
+    "code": "We start the player directly; we never request audio focus."
+   },
+   "given": [],
+   "needed": [
+    "code"
+   ],
+   "cause": "The app never requests audio focus, so it is not told to pause when a call takes focus.",
+   "next": "Request audio focus with AudioFocusRequest and pause on focus loss.",
+   "cause_terms": "audio focus"
+  },
+  {
+   "id": "c11",
+   "title": "No HD with DRM",
+   "opening": "Customers never get HD streams on DRM-protected content.",
+   "facts": {
+    "level": "MediaDrm reports securityLevel L3 on those phones."
+   },
+   "given": [],
+   "needed": [
+    "level"
+   ],
+   "cause": "Widevine L3 devices only get SD keys under the license policy; HD keys need L1.",
+   "next": "Check the security level and serve SD to L3 devices, or adjust the license policy.",
+   "cause_terms": "L3|L1"
+  },
+  {
+   "id": "c12",
+   "title": "No HD with DRM (all details)",
+   "opening": "Phones that report Widevine L3 never get HD keys. Why?",
+   "facts": {
+    "level": "L3."
+   },
+   "given": [
+    "level"
+   ],
+   "needed": [
+    "level"
+   ],
+   "cause": "L3 is software-only, and HD keys are usually restricted to L1.",
+   "next": "Serve SD to L3 devices or relax the policy for HD.",
+   "cause_terms": "L3|L1"
+  },
+  {
+   "id": "c13",
+   "title": "Main10 decode failure",
+   "opening": "Some HDR clips fail to decode on one phone.",
+   "facts": {
+    "clip": "They are HEVC Main10.",
+    "decoders": "The phone's HEVC decoder only lists the Main profile."
+   },
+   "given": [],
+   "needed": [
+    "decoders"
+   ],
+   "cause": "The device's HEVC decoder supports Main but not Main10, so 10-bit clips fail.",
+   "next": "Check profile support with CodecCapabilities and fall back to an 8-bit rendition.",
+   "cause_terms": "Main10|10-bit"
+  },
+  {
+   "id": "c14",
+   "title": "Washed-out HDR (all details)",
+   "opening": "HDR10 clips look washed out on a phone whose display reports no HDR support. Why?",
+   "facts": {
+    "display": "No HDR support."
+   },
+   "given": [
+    "display"
+   ],
+   "needed": [
+    "display"
+   ],
+   "cause": "HDR10 is shown on an SDR display without tone mapping.",
+   "next": "Tone-map to SDR or serve an SDR rendition.",
+   "cause_terms": "tone.map|SDR"
+  },
+  {
+   "id": "c15",
+   "title": "Stripes in gradients",
+   "opening": "Our gradient-heavy intro shows visible stripes after encoding.",
+   "facts": {
+    "encode": "We encode 8-bit H.264 at 2 Mbps."
+   },
+   "given": [],
+   "needed": [
+    "encode"
+   ],
+   "cause": "Banding: smooth gradients quantised at 8 bits and a low bitrate turn into visible steps.",
+   "next": "Encode in 10 bit, add grain or dither, or raise the bitrate for the intro.",
+   "cause_terms": "banding|10.bit"
+  },
+  {
+   "id": "c16",
+   "title": "Blocky sports",
+   "opening": "Fast scenes in our sports stream turn into blocks.",
+   "facts": {
+    "encode": "It's 1080p60 at 1.5 Mbps CBR."
+   },
+   "given": [],
+   "needed": [
+    "encode"
+   ],
+   "cause": "The bitrate is far too low for 1080p60 motion, so the encoder quantises heavily and blocks appear.",
+   "next": "Raise the bitrate for the 1080p60 rendition or lower the resolution and frame rate.",
+   "cause_terms": "bitrate"
+  }
+ ]
+}

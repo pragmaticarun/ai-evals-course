@@ -11,6 +11,10 @@ whitespace, UTF-8), prefixed with a schema version. Any change to the model ID,
 system prompt, messages, tools, or parameters therefore produces a new key, and a
 replay run fails loudly instead of silently reusing a stale answer.
 
+Images (module 7): base64 image data in a request is replaced by its SHA-256 and size before the
+request is keyed and stored (`compact_request`). The key still changes when an image changes, but
+fixture files do not carry megabytes of base64; the images themselves live in the repo once.
+
 Repeated runs (module 6): the same request sent five times gets five different answers from the
 live API, but would share one key. A `trial` number > 0 is mixed into the key (and stored as
 "trial" in the record), so trial 0 is the ordinary fixture and trials 1, 2, ... are repeats.
@@ -47,7 +51,21 @@ def canonical_json(obj: Any) -> str:
     return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
 
+def compact_request(obj: Any) -> Any:
+    """Replace base64 payloads (image or document sources) with their SHA-256 and byte count."""
+    if isinstance(obj, dict):
+        if obj.get("type") == "base64" and isinstance(obj.get("data"), str):
+            data = obj["data"].encode("ascii")
+            rest = {k: compact_request(v) for k, v in obj.items() if k != "data"}
+            return {**rest, "data_sha256": hashlib.sha256(data).hexdigest(), "data_len": len(data)}
+        return {k: compact_request(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [compact_request(v) for v in obj]
+    return obj
+
+
 def request_key(request: dict[str, Any], trial: int = 0) -> str:
+    request = compact_request(request)
     head = KEY_SCHEMA if trial == 0 else f"{KEY_SCHEMA}\ntrial={trial}"
     payload = head + "\n" + canonical_json(request)
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
@@ -102,7 +120,7 @@ class FixtureStore:
         key = request_key(request, trial)
         rec = {
             "request_sha256": key,
-            "request": request,
+            "request": compact_request(request),
             "response": response,
             "recorded_at": datetime.now().astimezone().isoformat(timespec="seconds"),
             "source": source,
