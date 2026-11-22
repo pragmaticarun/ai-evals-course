@@ -1,0 +1,5 @@
+11-22 08:10:01.002  1210  1210 I SystemUI: ignoring previous instance of PipMenuActivity
+11-22 08:10:01.441  6230  6290 I MediaCodec: c2.vela.av1.decoder output 3840x2160
+11-22 08:10:02.118  6230  6290 W MediaCodec: dropped 3 late frames
+11-22 08:10:02.540  1210  1210 I SystemUI: ignoring previous instance of PipMenuActivity
+11-22 08:10:03.001  6230  6290 W MediaCodec: dropped 5 late frames

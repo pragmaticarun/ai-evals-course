@@ -1,0 +1,3 @@
+{
+  "https://developer.android.com/media/media3/exoplayer/supported-formats": "Supported formats (summary written for the course). AV1: decoded by the platform decoder when the device has one; otherwise add the libgav1 decoder extension."
+}

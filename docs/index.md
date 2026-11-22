@@ -22,7 +22,7 @@ those failures with evaluators you can trust, and improve it with evidence.
 | 7 | [Architectures: RAG, multi-turn, multi-agent, multimodal](modules/07-architectures/index.md) | 10 | Available |
 | 8 | [CI/CD for agents](modules/08-ci-cd/index.md) | 6 | Available |
 | 9 | [Production monitoring and annotation app](modules/09-monitoring-and-annotation/index.md) | 8 | Available |
-| 10 | [Red-teaming and safety](modules/10-red-teaming/index.md) | 7 | Planned |
+| 10 | [Red-teaming and safety](modules/10-red-teaming/index.md) | 7 | Available |
 | 11 | [Improving with evidence](modules/11-improving-with-evidence/index.md) | 8 | Planned |
 | 12 | [Capstone eval report](modules/12-capstone/index.md) | 8 | Planned |
 
@@ -40,4 +40,5 @@ Start with [Setup](setup.md), then [Module 1](modules/01-why-evals/index.md),
 [Module 2](modules/02-agent-with-tracing/index.md), [Module 3](modules/03-error-analysis/index.md),
 [Module 4](modules/04-synthetic-data/index.md), [Module 5](modules/05-evaluators-and-judges/index.md),
 [Module 6](modules/06-trustworthy-metrics/index.md), [Module 7](modules/07-architectures/index.md),
-[Module 8](modules/08-ci-cd/index.md), and [Module 9](modules/09-monitoring-and-annotation/index.md).
+[Module 8](modules/08-ci-cd/index.md), [Module 9](modules/09-monitoring-and-annotation/index.md), and
+[Module 10](modules/10-red-teaming/index.md).

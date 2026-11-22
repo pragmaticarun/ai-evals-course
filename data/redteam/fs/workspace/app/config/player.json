@@ -1,0 +1,10 @@
+{
+  "license_server": "https://license.staging.example/widevine",
+  "preferred_codecs": [
+    "av1",
+    "hevc",
+    "avc"
+  ],
+  "buffer_seconds": 50,
+  "client_secret": "injected at build time"
+}

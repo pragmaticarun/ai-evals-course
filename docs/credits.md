@@ -41,6 +41,29 @@ anyone serious about evals should read them directly and consider their course.
 | Re-running error analysis after changes and incidents, with small regular reviews of flagged traces in between | Module 9 | [AI Evals FAQ: How often should I re-run error analysis on my production system?](https://hamel.dev/blog/posts/evals-faq/how-often-should-i-re-run-error-analysis-on-my-production-system.html), Hamel Husain and Shreya Shankar |
 | Instrument first; build simple custom viewers for traces | Modules 2, 9 | [A Field Guide to Rapidly Improving AI Products](https://hamel.dev/blog/posts/field-guide/), Hamel Husain |
 | Validating evaluators against human labels; criteria drift | Modules 5, 6, 9 | Shreya Shankar et al., [Who Validates the Validators? Aligning LLM-Assisted Evaluation of LLM Outputs with Human Preferences](https://arxiv.org/abs/2404.12272) (arXiv 2404.12272) |
+| Guardrails sit inline and block clear failures before users see them (so their false positives are production bugs: version the rules, log triggers, monitor rates); evaluators measure afterwards; never use off-the-shelf LLM guardrails without reading their prompts | Module 10 | [AI Evals FAQ: What's the difference between guardrails & evaluators?](https://hamel.dev/blog/posts/evals-faq/whats-the-difference-between-guardrails-evaluators.html), Hamel Husain and Shreya Shankar |
+| Red-teaming as part of the eval loop | Module 10 | Hamel Husain and Shreya Shankar's [Maven course](https://maven.com/parlance-labs/evals) |
+
+## Module 10 references
+
+| Topic | Source |
+|---|---|
+| Risk taxonomy for LLM applications: prompt injection (LLM01), sensitive information disclosure (LLM02), excessive agency (LLM06), system prompt leakage (LLM07) | OWASP GenAI Security Project, [Top 10 for LLM Applications 2025](https://genai.owasp.org/llm-top-10/): [LLM01](https://genai.owasp.org/llmrisk/llm01-prompt-injection/), [LLM02](https://genai.owasp.org/llmrisk/llm022025-sensitive-information-disclosure/), [LLM06](https://genai.owasp.org/llmrisk/llm062025-excessive-agency/), [LLM07](https://genai.owasp.org/llmrisk/llm072025-system-prompt-leakage/) |
+| Prompt injection: the name, why it is hard, and why prompts alone do not fix it | Simon Willison, [Prompt injection attacks against GPT-3](https://simonwillison.net/2022/Sep/12/prompt-injection/) (2022) and his [prompt injection series](https://simonwillison.net/series/prompt-injection/) |
+| The lethal trifecta: private data, untrusted content, external communication | Simon Willison, [The lethal trifecta for AI agents](https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/) (2025) |
+| Separating privileged and quarantined models | Simon Willison, [The Dual LLM pattern for building AI assistants that can resist prompt injection](https://simonwillison.net/2023/Apr/25/dual-llm-pattern/) (2023) |
+| Indirect prompt injection through content an application retrieves | Greshake et al., [Not what you've signed up for: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection](https://arxiv.org/abs/2302.12173) (arXiv 2302.12173) |
+| Spotlighting: marking untrusted input so the model can tell it apart | Hines et al., [Defending Against Indirect Prompt Injection Attacks With Spotlighting](https://arxiv.org/abs/2403.14720) (arXiv 2403.14720) |
+| Constraining what a model that follows an injection can do; capability and control-flow designs | Beurer-Kellner et al., [Design Patterns for Securing LLM Agents against Prompt Injections](https://arxiv.org/abs/2506.08837) (arXiv 2506.08837); Debenedetti et al., [Defeating Prompt Injections by Design](https://arxiv.org/abs/2503.18813) (CaMeL, arXiv 2503.18813) |
+| Measuring attacks and benign utility together on tool-using agents | Debenedetti et al., [AgentDojo](https://arxiv.org/abs/2406.13352) (arXiv 2406.13352) |
+| Adversarial technique taxonomy for AI systems | MITRE [ATLAS](https://atlas.mitre.org/) |
+| Generative AI risk management, including information security and confabulation | NIST, [AI 600-1: Generative Artificial Intelligence Profile](https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf) (2024) |
+| Argument injection and path traversal | MITRE [CWE-88](https://cwe.mitre.org/data/definitions/88.html); OWASP, [Path Traversal](https://owasp.org/www-community/attacks/Path_Traversal) |
+
+The guarded agent, its tools and guardrails, the success checks, the report, and the red-team gate were written for
+this course. The attack and benign cases, the model's turns, and the detector's verdicts are synthetic-authored
+(`scripts/author_module10_fixtures.py`); the clips were generated with FFmpeg. All secrets are fake canaries and all
+attacker hosts use the reserved `.example` domain. No real-world payloads are included.
 
 ## Module 9 references
 

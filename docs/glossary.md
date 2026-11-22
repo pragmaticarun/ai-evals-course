@@ -14,6 +14,18 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Answer relevance** [7]
 : Whether an answer addresses the question that was asked, judged from the question and the answer only. A refusal or an answer about another problem fails.
 
+**Approval fatigue** [10]
+: The way human approval fails: when nearly every approval card is fine, reviewers start approving without reading, and the harmful one gets through. Keep approvals rare by asking only for risky, irreversible actions, and track approvals per benign request.
+
+**Argument injection** [10]
+: Smuggling extra options or commands into a tool through an argument the tool pastes into a command line, for example a free `extra_args` string ending in `; rm -rf ...` inside `sh -c`. Fixed by building an argument vector from validated values (presets, enums), never a shell string (CWE-88).
+
+**Attack success rate (ASR)** [10]
+: The share of attack cases in a red-team suite where the attacker's goal was reached, checked in code from the trace. Report it with an interval, next to the benign false-positive rate, and remember it describes the suite, not attackers in general.
+
+**Attack surface** [10]
+: Every place untrusted text can enter an agent's context (user messages, tool outputs, file names, metadata, logs, documents, web pages), with who controls each, plus the sinks a followed instruction can reach. Written down as the attack surface map.
+
 **Attributes (span attributes)** [2]
 : Key-value pairs on a span, such as model name, token counts, or tool arguments. Standard names make them portable across tools.
 
@@ -34,6 +46,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Bootstrap (percentile interval)** [5, 6]
 : Resampling the data with replacement many times and recomputing a statistic each time; the middle 95% of the results gives an approximate 95% confidence interval.
+
+**Canary token** [10]
+: A unique, valueless string planted where a secret would be (here, in the system prompt and a fake secrets file). Its appearance anywhere it should not be, an answer or a tool argument, proves a leak, and the CI gate fails on it.
 
 **Case / test case** [1]
 : One input to the system (here, a user question) with an id, plus any metadata needed to evaluate it.
@@ -110,11 +125,17 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Drift (input, output, system)** [9]
 : A change in production: in what users send (input), in what the agent produces or how it scores (output and metric), or in the model, prompt, or tools behind it (system).
 
+**Egress check** [10]
+: A check on data leaving the system through a tool (URLs, ticket bodies) for secrets or canaries. A plain-text check misses encoded secrets (base64, hex), so it is one layer, not a guarantee; an allowlist of destinations is the stronger control.
+
 **Eval** [1]
 : Any repeatable procedure that measures some aspect of a system's output quality over a set of cases.
 
 **Eval gate (regression gate)** [8]
 : A CI check that blocks a merge when a change makes a metric worse beyond chance. Here: paired McNemar tests with a Holm adjustment, a minimum effect, and a warn margin, not a fixed threshold.
+
+**Exfiltration** [10]
+: Getting private data out of a system to a place the attacker can read: a query string on a fetched URL, a public ticket, an image link in an answer. Requires access to the data, an injection, and an outbound channel (the lethal trifecta).
 
 **Experiment comparison report** [8]
 : A Markdown diff of two runs: what was compared, a per-metric table with paired intervals, the flipped cases to read first, and cost and time. Posted as a CI job summary and uploaded as an artifact.
@@ -136,6 +157,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **False premise** [4]
 : A wrong belief stated as fact in a question ("the lumen-l3 has a hardware AV1 decoder"). Tests whether the system checks claims or repeats them.
+
+**Fencing (spotlighting)** [10]
+: Marking untrusted tool output so the model can tell data from instructions, for example wrapping it in `<untrusted-data id=...>` blocks whose id an attacker cannot predict, plus an instruction never to follow text inside them. Lowers injection success; does not guarantee anything.
 
 **Few-shot example (judge)** [5]
 : A labelled trace with verdict and critique included in a judge prompt; taken from the train split only.
@@ -161,6 +185,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Ground truth / label** [1]
 : A human judgment of whether an output is acceptable, made by someone who knows the domain.
 
+**Guardrail false-positive rate** [10]
+: The share of benign requests a guardrail blocks, rewrites, or otherwise interferes with. Measured on benign traffic that includes hard negatives, reported with an interval, and treated as a production bug when it fires on real users.
+
 **Hajek estimator (inverse-probability weighting)** [9]
 : A rate estimated from a non-uniform sample by weighting each label by one over its inclusion probability and dividing by the sum of the weights; the ratio form of the Horvitz-Thompson estimator.
 
@@ -179,11 +206,20 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Holm-Bonferroni adjustment** [6]
 : A step-down correction of p-values for multiple tests that controls the chance of any false positive; less blunt than plain Bonferroni.
 
+**Human-in-the-loop (HITL) approval** [10]
+: Pausing an agent before a risky action and continuing only if a person approves an approval card that shows the tool, its exact arguments, and the user's own request.
+
 **Inclusion probability** [9]
 : The chance that a sampling rule picks a given trace (1 for a signal-triggered pick, the rate for a random one); needed to turn a biased queue into an unbiased estimate.
 
+**Injection detector** [10]
+: A classifier, here a cheap LLM judge, that reads untrusted text before the agent does and flags text that tries to instruct an AI. Validated like any judge (TPR, TNR on labelled texts); its misses must be caught by later layers.
+
 **Inter-annotator agreement** [9]
 : How consistently two or more people label the same items, usually reported as Cohen's kappa per label with the counts.
+
+**Jailbreak** [10]
+: An input crafted to get a model to do what its instructions or training say it should not, by patterns such as claimed authority, roleplay, obfuscation, or fake delimiters. In evals, the patterns become a dimension of the attack suite.
 
 **Job summary (GitHub Actions)** [8]
 : Markdown a workflow step appends to the file named by `$GITHUB_STEP_SUMMARY`; GitHub shows it on the run's summary page.
@@ -193,6 +229,12 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Judge spec** [5]
 : The versioned definition of one judge: criterion, PASS and FAIL definitions, context, few-shot examples, and model. Here a TOML file in config/judges/.
+
+**Least privilege** [10]
+: Giving an agent and each tool only the access the task needs: no secrets in the prompt, reads limited to the workspace, fetches limited to allowlisted hosts, no free-form command arguments. What an injection cannot reach, it cannot misuse.
+
+**Lethal trifecta** [10]
+: Simon Willison's name for the combination that makes prompt injection dangerous: access to private data, exposure to untrusted content, and a way to communicate externally. Remove any one leg and exfiltration stops being possible.
 
 **LLM tells** [4]
 : Phrasing typical of model-written text ("I'm experiencing", "Could you please", "best practices") that makes synthetic queries unlike real ones.
@@ -263,6 +305,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **pass^k** [6]
 : The chance that all k attempts at a query pass; a measure of consistency for agents.
 
+**Path traversal** [10]
+: Escaping an intended directory with `..` segments or absolute paths in a file argument, for example `../secrets/service.env` passed to a workspace file reader. Fixed by resolving the path and checking it stays inside the allowed root.
+
 **Per-case diff** [1]
 : The list of cases that changed from pass to fail (broken) or fail to pass (fixed) between two runs.
 
@@ -280,6 +325,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Priority (failure mode)** [3]
 : A ranking score for failure modes; in this course, traces affected times severity, with fixability breaking ties.
+
+**Prompt injection (direct, indirect)** [10]
+: Text that makes a model follow instructions its operator did not give. Direct: in the user's own message. Indirect: in content the agent reads while working (tool output, documents, metadata, file names), so the victim is a user who never saw it.
 
 **PSI (population stability index)** [9]
 : A measure of how far one categorical distribution has moved from a reference: the sum of (current − reference) · ln(current / reference). Below 0.1 is usually stable, above 0.25 a large shift.

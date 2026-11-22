@@ -102,7 +102,11 @@ nav:
           - Lab: modules/09-monitoring-and-annotation/lab.md
           - Exercises: modules/09-monitoring-and-annotation/exercises.md
           - Quiz: modules/09-monitoring-and-annotation/quiz.md
-      - "10. Red-teaming and safety": modules/10-red-teaming/index.md
+      - "10. Red-teaming and safety":
+          - modules/10-red-teaming/index.md
+          - Lab: modules/10-red-teaming/lab.md
+          - Exercises: modules/10-red-teaming/exercises.md
+          - Quiz: modules/10-red-teaming/quiz.md
       - "11. Improving with evidence": modules/11-improving-with-evidence/index.md
       - "12. Capstone eval report": modules/12-capstone/index.md
   - Cheat sheets:
@@ -115,6 +119,7 @@ nav:
       - Evaluating architectures: cheatsheets/architectures.md
       - CI/CD for evals: cheatsheets/ci-cd.md
       - Monitoring and annotation: cheatsheets/monitoring.md
+      - Red-team checklist: cheatsheets/red-team.md
   - Templates:
       - Failure taxonomy sheet: eval-templates/failure-taxonomy.md
       - Dimensions sheet: eval-templates/dimensions-sheet.md

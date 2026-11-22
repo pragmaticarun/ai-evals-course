@@ -32,6 +32,10 @@ uv run mediadoctor-lab09 monitor          # module 9: a simulated production wee
 uv run mediadoctor-lab09 sample           # the review queue: signal-triggered + random + stratified picks
 uv run mediadoctor-lab09 annotate         # the trace review app at http://127.0.0.1:8009 (localhost only)
 uv run annotate serve --help              # the same app on any trace store
+uv run mediadoctor-lab10 surface          # module 10: the attack surface map
+uv run mediadoctor-lab10 report           # attack success rate and benign false positives for guardrails none/v1/v2
+uv run mediadoctor-lab10 hitl --approver ask   # be the human approving (or not) a risky tool call
+uv run mediadoctor-lab10 gate             # the red-team CI gate (also in `pytest evals`)
 uv run zensical serve                     # the course site at http://localhost:8000
 ```
 
@@ -46,9 +50,10 @@ config/synth/             test dimensions and exclusion rules for synthetic data
 config/judges/            versioned LLM judge specs: criterion, PASS/FAIL, context, train-split examples (module 5)
 config/release.toml       the prompt MediaDoctor ships; the eval gate compares changes to it (module 8)
 config/eval_gate.toml     the eval gate's tiers, rule, and budgets (module 8)
+config/redteam/           the attack suite's dimensions and the red-team gate (module 10)
 docs/                     course site (Zensical, Material-compatible mkdocs.yml)
 labs/evalkit/             record/replay LLM wrapper, fixtures, tracer, trace viewer, OTLP export, annotation and taxonomy tools, synthetic data (tuples, batching, dedup, coverage, splits), judges (prompts, TPR/TNR), statistics (Wilson and bootstrap CIs, judge-error correction, McNemar, Holm, pass^k, sample sizes), retrieval metrics, trajectory metrics and transition-failure matrices, regression gates, golden manifests, dataset hygiene, production sampling and drift (PSI, p-charts, CUSUM), Cohen's kappa
-labs/mediadoctor/         the running agent (module 1 seed; module 2 Claude tool-use agent with 4 tools; module 7 RAG, chat with a simulated user, planner + specialists, vision)
+labs/mediadoctor/         the running agent (module 1 seed; module 2 Claude tool-use agent with 4 tools; module 7 RAG, chat with a simulated user, planner + specialists, vision; module 10 action tools and guardrails, simulated)
 labs/annotate/            the trace review app (FastAPI + HTMX, keyboard-driven, localhost only; module 9)
 data/kb/                  knowledge-base notes the agent retrieves from
 data/kb_v2/               second-edition knowledge base (25 docs, 57 sections) for the module 7 retrieval evals
@@ -58,12 +63,13 @@ data/synth/               stand-in "beta" queries used as style examples and see
 data/labels/              reference annotations and failure-mode definitions (synthetic-authored)
 data/golden/              the golden set's manifest, labelled-answer digests, hygiene review (module 8)
 data/production/          a simulated week of production traffic and the AV1 drift cases (module 9, synthetic-authored)
+data/redteam/             the adversarial suite and benign traffic, injected clips, logs, poisoned KB notes, a fake workspace with canary secrets (module 10, synthetic-authored)
 data/media/               small ffmpeg-generated sample clips + cached ffprobe output; frames/ has module 7's test frames and spectrograms
 data/devices/, data/logs/ fictional device codec tables and synthetic logcat captures
 fixtures/recorded/        SHA-256 keyed JSONL recorded responses (replayed in CI)
 scripts/                  maintenance scripts (fixture authoring, version report)
 tests/                    pytest suite, offline
-evals/                    the eval suite as pytest tests (fast and judge tiers) and the committed baseline (module 8)
+evals/                    the eval suite as pytest tests (fast and judge tiers), the red-team regression tests, and the committed baselines (modules 8, 10)
 .github/workflows/        ci.yml, deploy.yml (GitHub Pages), eval-gate.yml (module 8 gate), live-evals.yml (manual)
 ```
 

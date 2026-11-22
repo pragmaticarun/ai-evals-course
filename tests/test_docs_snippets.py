@@ -57,6 +57,7 @@ def test_solution_snippet_runs(code):
         "07-architectures",
         "08-ci-cd",
         "09-monitoring-and-annotation",
+        "10-red-teaming",
     ],
 )
 def test_solutions_are_collapsed(module):
@@ -76,6 +77,7 @@ def test_solutions_are_collapsed(module):
         ("07-architectures", 10),
         ("08-ci-cd", 8),
         ("09-monitoring-and-annotation", 8),
+        ("10-red-teaming", 8),
     ],
 )
 def test_quiz_answers_are_collapsed(module, n):
