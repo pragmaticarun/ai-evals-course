@@ -1,0 +1,20 @@
+{
+  "name": "mediadoctor-synthetic",
+  "version": "v1",
+  "created": "2026-11-23 02:15 IST",
+  "source": "synthetic-authored",
+  "space": "config/synth/mediadoctor.toml",
+  "space_sha256": "82aa70a1da3baf62f2deedd70fae78da0e38807bd6f5363b07d085889d89ed9d",
+  "tuples": 200,
+  "tuple_strategy": "pairwise + stratified by topic, seed 4",
+  "dedup_threshold": 0.6,
+  "group_threshold": 0.35,
+  "dropped_as_duplicates": 18,
+  "count": 182,
+  "splits": {
+    "dev": 45,
+    "test": 49,
+    "train": 88
+  },
+  "sha256": "80989008024ba825b3aa49390e22a036a8ddf5c1480980430a2de4f7cd5250bc"
+}

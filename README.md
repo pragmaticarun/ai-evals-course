@@ -16,6 +16,8 @@ uv run mediadoctor-lab02 run --out runs/t.jsonl   # module 2: tool-using agent, 
 uv run evalkit view runs/t.jsonl m2q03    # read one trace in the terminal
 uv run mediadoctor-lab03 rank             # module 3: ranked failure modes from the reference labels
 uv run mediadoctor-lab03 annotate --labels runs/m3_labels.csv   # label the 100 traces yourself
+uv run mediadoctor-lab04 generate --out runs/m4_v1.jsonl   # module 4: tuples -> synthetic queries -> dataset v1
+uv run mediadoctor-lab04 coverage         # coverage matrix of the frozen dataset
 uv run zensical serve                     # the course site at http://localhost:8000
 ```
 
@@ -26,11 +28,13 @@ environment (or a git-ignored `.env`) and use `EVALS_LLM_MODE=record`. See `docs
 
 ```text
 config/models.toml        Claude model per role (agent; cheaper judge and synth)
+config/synth/             test dimensions and exclusion rules for synthetic data (module 4)
 docs/                     course site (Zensical, Material-compatible mkdocs.yml)
-labs/evalkit/             record/replay LLM wrapper, fixtures, tracer, trace viewer, OTLP export, annotation and taxonomy tools
+labs/evalkit/             record/replay LLM wrapper, fixtures, tracer, trace viewer, OTLP export, annotation and taxonomy tools, synthetic data (tuples, batching, dedup, coverage, splits)
 labs/mediadoctor/         the running agent (module 1 seed; module 2 Claude tool-use agent with 4 tools)
 data/kb/                  knowledge-base notes the agent retrieves from
-data/datasets/            versioned case sets (module03_cases.jsonl: 100-trace error-analysis set)
+data/datasets/            versioned case sets (module03_cases.jsonl: 100-trace error-analysis set; module04_v1.jsonl: synthetic dataset v1 + manifest)
+data/synth/               stand-in "beta" queries used as style examples and seeds (synthetic-authored)
 data/labels/              reference annotations and failure-mode definitions (synthetic-authored)
 data/media/               small ffmpeg-generated sample clips + cached ffprobe output
 data/devices/, data/logs/ fictional device codec tables and synthetic logcat captures

@@ -15,9 +15,24 @@ anyone serious about evals should read them directly and consider their course.
 | Binary pass/fail judges aligned with a domain expert | Modules 1, 5 | [Using LLM-as-a-Judge For Evaluation](https://hamel.dev/blog/posts/llm-judge/), Hamel Husain |
 | Open coding then axial coding of traces; theoretical saturation; noting the first failure in a trace; reviewing at least 100 traces; a single domain expert as "benevolent dictator"; binary pass/fail verdicts | Module 3 | [AI Evals FAQ](https://hamel.dev/blog/posts/evals-faq/), Hamel Husain and Shreya Shankar, and their [Maven course](https://maven.com/parlance-labs/evals) |
 | Error analysis as the highest-return activity; bottom-up categories from your own data | Module 3 | [A Field Guide to Rapidly Improving AI Products](https://hamel.dev/blog/posts/field-guide/), Hamel Husain |
+| Synthetic queries from dimensions and tuples: start from failure hypotheses, write tuples by hand first, generate tuples and natural-language queries in two separate steps; synthetic data cannot tell you how common a failure is, and compare with real data as soon as it exists | Module 4 | [AI Evals FAQ: What is the best approach for generating synthetic data?](https://hamel.dev/blog/posts/evals-faq/what-is-the-best-approach-for-generating-synthetic-data.html), Hamel Husain and Shreya Shankar |
+| Where synthetic data is unreliable (specialised domains, high stakes, cases you cannot validate) | Module 4 | [AI Evals FAQ: Are there scenarios where synthetic data may not be reliable?](https://hamel.dev/blog/posts/evals-faq/are-there-scenarios-where-synthetic-data-may-not-be-reliable.html), Hamel Husain and Shreya Shankar |
 | Criteria drift: reviewers' criteria change as they see outputs | Modules 3, 5 | Shreya Shankar et al., [Who Validates the Validators?](https://arxiv.org/abs/2404.12272) |
 | Instrument first; build simple custom viewers for traces | Module 2 | [A Field Guide to Rapidly Improving AI Products](https://hamel.dev/blog/posts/field-guide/), Hamel Husain |
 | Validating evaluators against human labels; criteria drift | Modules 5, 6 | Shreya Shankar et al., [Who Validates the Validators? Aligning LLM-Assisted Evaluation of LLM Outputs with Human Preferences](https://arxiv.org/abs/2404.12272) (arXiv 2404.12272) |
+
+## Module 4 references
+
+| Topic | Source |
+|---|---|
+| Pairwise (all-pairs) testing and covering arrays | [All-pairs testing](https://en.wikipedia.org/wiki/All-pairs_testing) |
+| Shingles and Jaccard similarity for near-duplicates | [w-shingling](https://en.wikipedia.org/wiki/W-shingling), [Jaccard index](https://en.wikipedia.org/wiki/Jaccard_index) |
+| Distinct-n diversity | Li et al., [A Diversity-Promoting Objective Function for Neural Conversation Models](https://arxiv.org/abs/1510.03055) (arXiv 1510.03055) |
+| Message Batches API | [Anthropic: batch processing](https://docs.anthropic.com/en/docs/build-with-claude/batch-processing) |
+
+The dimensions, rules, beta queries, generated queries, dataset v1, the template query writer, and the dev-slice
+traces and reference labels are synthetic-authored for this course (`config/synth/`, `data/synth/`,
+`scripts/module04_writer.py`, `scripts/author_module04_fixtures.py`).
 
 ## Module 3 references
 

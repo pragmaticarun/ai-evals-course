@@ -245,7 +245,7 @@ wheels = [
 
 [[package]]
 name = "evalkit"
-version = "0.3.0"
+version = "0.4.0"
 source = { editable = "labs/evalkit" }
 dependencies = [
     { name = "anthropic" },
@@ -495,7 +495,7 @@ wheels = [
 
 [[package]]
 name = "mediadoctor"
-version = "0.3.0"
+version = "0.4.0"
 source = { editable = "labs/mediadoctor" }
 dependencies = [
     { name = "evalkit" },

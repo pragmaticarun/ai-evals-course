@@ -1,0 +1,289 @@
+"""Write the module 4 fixtures: synthetic queries, dataset v1, and an agent run on its dev slice.
+
+No API key was used to write the course. Two scripted fake clients stand in for the models:
+
+1. The query writer (claude-haiku via the Message Batches API in a live run) is replaced by
+   scripts/module04_writer.py, a deterministic template writer that follows the same written
+   instructions as the real prompt (persona, expertise, typos, pasted logs, vague references,
+   false premises). The real evalkit.synth.create_many batch path records its results.
+2. The MediaDoctor agent on the dev slice is scripted per query from the module 3 scenario
+   library, with one behaviour per ambiguity value (see `build_turns`).
+
+Every fixture record is tagged "source": "synthetic-authored". The reference labels are synthetic
+too and labelled as such.
+
+Outputs:
+  fixtures/recorded/mediadoctor-synth.jsonl     200 query responses + the naive one-prompt baseline
+  data/datasets/module04_v1.jsonl               dataset v1 (deduplicated, split)
+  data/datasets/module04_v1.manifest.json       counts, thresholds, sha256
+  fixtures/recorded/mediadoctor-m4.jsonl        agent responses for the dev slice
+  data/labels/module04_dev_reference.csv        reference labels for the dev slice
+
+Usage:  uv run python scripts/author_module04_fixtures.py
+"""
+
+from __future__ import annotations
+
+import csv
+import hashlib
+import json
+import subprocess
+import sys
+from pathlib import Path
+from types import SimpleNamespace
+from typing import Any
+
+sys.path.insert(0, str(Path(__file__).parent))
+
+from author_module03_fixtures import FakeClock, ScriptedClient, T, answer  # noqa: E402
+from module03_scenarios import S  # noqa: E402
+from module04_writer import NAIVE_RESPONSE, write_query  # noqa: E402
+
+from evalkit import LLM, Tracer  # noqa: E402
+from evalkit.synth import file_sha256, write_jsonl  # noqa: E402
+from mediadoctor import lab04  # noqa: E402
+from mediadoctor.synth_spec import NAIVE_PROMPT, SYNTH_NAMESPACE  # noqa: E402
+from mediadoctor.toolagent import run_agent  # noqa: E402
+
+
+class FakeWriter:
+    """Answers synth requests with module04_writer, through messages.create or a fake batch."""
+
+    def __init__(self) -> None:
+        self.batches_store: dict[str, list[dict[str, Any]]] = {}
+        self.messages = SimpleNamespace(
+            create=self._create,
+            batches=SimpleNamespace(
+                create=self._batch_create, retrieve=self._retrieve, results=self._results
+            ),
+        )
+
+    def _create(self, **req: Any) -> dict[str, Any]:
+        content = req["messages"][0]["content"]
+        text = (
+            "\n".join(NAIVE_RESPONSE)
+            if content == NAIVE_PROMPT
+            else write_query(json.loads(content))
+        )
+        return {
+            "id": "msg_synthetic_" + hashlib.sha256(content.encode()).hexdigest()[:12],
+            "type": "message",
+            "role": "assistant",
+            "model": req["model"],
+            "content": [{"type": "text", "text": text}],
+            "stop_reason": "end_turn",
+            "usage": {
+                "input_tokens": len(json.dumps(req)) // 4,
+                "output_tokens": max(1, len(text) // 4),
+            },
+        }
+
+    def _batch_create(self, requests: list[dict[str, Any]]) -> dict[str, Any]:
+        bid = f"msgbatch_synthetic_{len(self.batches_store) + 1:03d}"
+        self.batches_store[bid] = requests
+        return {"id": bid, "processing_status": "in_progress"}
+
+    def _retrieve(self, bid: str) -> dict[str, Any]:
+        return {"id": bid, "processing_status": "ended"}
+
+    def _results(self, bid: str):
+        for r in self.batches_store[bid]:
+            msg = self._create(**r["params"])
+            msg["id"] = f"msg_synthetic_{r['custom_id']}"
+            yield {"custom_id": r["custom_id"], "result": {"type": "succeeded", "message": msg}}
+
+
+# --- Agent behaviour per ambiguity value -----------------------------------------------------------
+
+ADOPT = {  # scenario -> (field the premise corrupts, wrong text)
+    "av1-lumen": ("cause", S["av1-lumen"]["ignored"][0][0]),
+    "av1-atlas": ("cause", S["av1-atlas"]["ignored"][0][0]),
+    "hdr-lumen": ("cause", S["hdr-lumen"]["ignored"][0][0]),
+    "hdr-atlas": (
+        "cause",
+        "The atlas-a1 display cannot show HDR, so Android tone-maps the stream to SDR and it looks "
+        "flat; that is expected on this phone.",
+    ),
+    "latemoov": ("cause", S["latemoov"]["ignored"][0][0]),
+    "faststart": ("cause", S["faststart"]["ignored"][0][0]),
+    "avoffset": ("cause", S["avoffset"]["ignored"][0][0]),
+    "thumbs": ("cause", S["thumbs"]["ignored"][0][0]),
+    "main10": (
+        "cause",
+        "The lumen-l3 decodes HEVC Main 10, so configure() is failing on malformed codec-specific "
+        "data in the stream; re-muxing should fix it.",
+    ),
+    "live": (
+        "cause",
+        "This is an audio focus problem: the app loses audio focus in the background, so playback "
+        "cannot resume.",
+    ),
+    "widevine": ("cause", S["widevine"]["ignored"][0][0]),
+    "audiofocus": ("next", S["audiofocus"]["api"][0]),
+    "av1-api": ("next", S["av1-api"]["api"][1][0]),
+    "hdr-display-api": ("next", S["hdr-display-api"]["api"][0][0]),
+}
+
+ASK = {
+    "media-file": "the exact file name (for example from the test clip library)",
+    "device": "the device model",
+    "file+device": "the exact file name and the device model",
+    "log": "the logcat lines around the failure",
+}
+
+
+def build_turns(
+    row: dict[str, Any], behaviour: str, cid: str
+) -> tuple[list[list[dict]], dict[str, str]]:
+    sid = lab04.scenario_for(row)
+    sc = S[sid]
+    n = 0
+
+    def U(name: str, args: dict) -> dict:
+        nonlocal n
+        n += 1
+        return {"type": "tool_use", "id": f"toolu_{cid}_{n:02d}", "name": name, "input": args}
+
+    tool_turns = [
+        ([T(sc["pre"])] if k == 0 and sc.get("pre") else []) + [U(name, a) for name, a in t]
+        for k, t in enumerate(sc["turns"])
+    ]
+    cause, nxt = sc["cause"], sc["next"]
+    note, mode, upstream = "", "", ""
+    if behaviour == "assume":
+        named = sorted(
+            {
+                v
+                for t in sc["turns"]
+                for nm, a in t
+                if nm != "search_kb"
+                for k, v in a.items()
+                if k in ("file", "device", "log")
+            }
+        )
+        note = (
+            f"user never named it, agent assumed {' and '.join(named)} and answered as if confirmed"
+        )
+        mode, upstream = "assumed-unstated-detail", "chat:plan"
+        script = tool_turns + [answer(cause, nxt, sc["src"])]
+    elif behaviour == "ask":
+        script = [
+            answer(
+                "Not enough to tell yet: the answer depends on which "
+                + ASK[row["evidence"]].split(" (")[0].replace("the ", "", 1)
+                + " this is.",
+                f"Send {ASK[row['evidence']]} and I will check it before suggesting a fix.",
+                "none",
+            )
+        ]
+    elif behaviour == "adopt":
+        field, wrong = ADOPT[sid]
+        cause, nxt = (wrong, nxt) if field == "cause" else (cause, wrong)
+        script = tool_turns + [answer(cause, nxt, sc["src"])]
+        note = f"repeated the user's false premise ('{row['premise']}') instead of checking it against the evidence"
+        mode, upstream = "accepted-false-premise", "chat:answer"
+    elif behaviour == "correct":
+        script = tool_turns + [answer(f"That premise does not hold here. {cause}", nxt, sc["src"])]
+    else:
+        script = tool_turns + [answer(cause, nxt, sc["src"])]
+    ref = {
+        "verdict": "fail" if mode else "pass",
+        "note": note,
+        "first_upstream": upstream,
+        "modes": mode,
+    }
+    return script, ref
+
+
+def behaviours(rows: list[dict[str, Any]]) -> list[str]:
+    """clear -> good; missing-detail alternates assume/ask; false-premise alternates adopt/correct."""
+    seen = {"missing-detail": 0, "false-premise": 0}
+    out = []
+    for r in rows:
+        a = r["ambiguity"]
+        if a == "clear":
+            out.append("good")
+            continue
+        k = seen[a]
+        seen[a] += 1
+        out.append(
+            ("assume", "ask")[k % 2] if a == "missing-detail" else ("adopt", "correct")[k % 2]
+        )
+    return out
+
+
+def main() -> None:
+    space = lab04.load_default_space()
+    tuples = lab04.make_tuples(space)
+
+    # 1. Query fixtures through the real batch path.
+    writer = LLM(
+        namespace=SYNTH_NAMESPACE, mode="record", client=FakeWriter(), source="synthetic-authored"
+    )
+    if writer.store.path.exists():
+        writer.store.path.unlink()
+    lab04.generate_queries(tuples, llm=writer, use_batch=True)
+    lab04.naive_queries(llm=writer)
+    print(f"synth fixtures: {len(writer.store.records())} records")
+
+    # 2. Freeze dataset v1 from a replay of those fixtures (exactly what the lab does).
+    rows = lab04.generate_queries(tuples, llm=LLM(namespace=SYNTH_NAMESPACE, mode="replay"))
+    dataset, report = lab04.build_dataset(rows)
+    assert not report["leakage_pairs"], report["leakage_pairs"]
+    write_jsonl(lab04.dataset_path(), dataset)
+    created = subprocess.run(
+        ["date", "+%Y-%m-%d %H:%M %Z"], capture_output=True, text=True
+    ).stdout.strip()
+    manifest = {
+        "name": "mediadoctor-synthetic",
+        "version": "v1",
+        "created": created,
+        "source": "synthetic-authored",
+        "space": "config/synth/mediadoctor.toml",
+        "space_sha256": file_sha256(lab04.space_path()),
+        "tuples": len(tuples),
+        "tuple_strategy": f"pairwise + stratified by topic, seed {lab04.SEED}",
+        "dedup_threshold": lab04.DEDUP_THRESHOLD,
+        "group_threshold": lab04.GROUP_THRESHOLD,
+        "dropped_as_duplicates": len(report["dropped_as_duplicates"]),
+        "count": len(dataset),
+        "splits": dict(sorted(report["splits"].items())),
+        "sha256": file_sha256(lab04.dataset_path()),
+    }
+    lab04.manifest_path().write_text(json.dumps(manifest, indent=2) + "\n")
+    print(json.dumps(manifest, indent=2))
+
+    # 3. Agent run on the dev slice.
+    slice_rows = lab04.agent_slice(dataset)
+    scripts, refs = {}, []
+    for row, beh in zip(slice_rows, behaviours(slice_rows), strict=True):
+        scripts[row["id"]], ref = build_turns(row, beh, row["id"])
+        refs.append({"case_id": row["id"], **ref, "annotator": "reference (synthetic-authored)"})
+    clock = FakeClock()
+    by_q = {r["question"]: r["id"] for r in slice_rows}
+    llm = LLM(
+        namespace=lab04.AGENT_NAMESPACE,
+        mode="record",
+        client=ScriptedClient(scripts, by_q, clock),
+        source="synthetic-authored",
+        clock=clock,
+    )
+    if llm.store.path.exists():
+        llm.store.path.unlink()
+    for r in slice_rows:
+        res = run_agent(r["question"], llm=llm, tracer=Tracer(), case_id=r["id"])
+        assert res.stop_reason == "end_turn", (r["id"], res.stop_reason)
+    with lab04.dev_reference_path().open("w", newline="", encoding="utf-8") as fh:
+        w = csv.DictWriter(
+            fh, ["case_id", "verdict", "note", "first_upstream", "modes", "annotator"]
+        )
+        w.writeheader()
+        w.writerows(refs)
+    fails = sum(r["verdict"] == "fail" for r in refs)
+    print(
+        f"agent slice: {len(slice_rows)} dev queries, {fails} failing, {len(llm.store.records())} records"
+    )
+
+
+if __name__ == "__main__":
+    main()

@@ -67,8 +67,8 @@ def reference_modes_path() -> Path:
     return repo_root() / "data" / "labels" / "module03_modes.toml"
 
 
-def load_cases() -> list[dict[str, Any]]:
-    with cases_path().open(encoding="utf-8") as fh:
+def load_cases(path: Path | str | None = None) -> list[dict[str, Any]]:
+    with Path(path or cases_path()).open(encoding="utf-8") as fh:
         return [json.loads(line) for line in fh if line.strip()]
 
 
@@ -411,8 +411,10 @@ def main(argv: list[str] | None = None) -> int:
     ):
         sp = sub.add_parser(name, help=helptext)
         sp.add_argument("--traces")
+        sp.add_argument("--cases", help="cases JSONL (default: the module 3 cases)")
     m = sub.add_parser("compare", help="compare your labels with the reference labels")
     m.add_argument("--labels", required=True)
+    m.add_argument("--reference", help="reference labels CSV (default: the module 3 reference)")
     args = p.parse_args(argv)
 
     if args.cmd == "run":
@@ -470,7 +472,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.cmd in ("signals", "errors", "retrieval"):
         traces = load_traces(args.traces)
-        cases = {c["id"]: c for c in load_cases()}
+        cases = {c["id"]: c for c in load_cases(args.cases)}
         if args.cmd == "signals":
             table = signal_table(traces, cases)
             for cid, sig in table.items():
@@ -501,7 +503,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.cmd == "compare":
         mine = load_annotations(args.labels)
-        ref = load_annotations(reference_labels_path())
+        ref = load_annotations(args.reference or reference_labels_path())
         ag = compare_verdicts(mine, ref)
         print(f"{ag.common} traces in common; pass/fail agreement {100 * ag.agreement:.0f}%")
         print(f"  you failed, reference passed: {', '.join(ag.only_mine_fail) or '-'}")

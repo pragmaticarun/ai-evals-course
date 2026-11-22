@@ -29,8 +29,23 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Cost per trace** [2]
 : The summed price of a run's model calls (tokens times per-token price). Divide by successful runs to get cost per successful task.
 
+**Coverage matrix** [4]
+: A table of counts for two dimensions (for example topic × evidence), marking combinations excluded by rules and showing real gaps as zeros.
+
+**Covering array** [4]
+: A set of test configurations in which every combination of values for any *t* dimensions appears at least once; pairwise coverage is the case *t* = 2.
+
 **Criteria drift** [3, 5]
 : The way reviewers' idea of a good or bad output changes as they see more outputs; definitions and earlier labels need revisiting.
+
+**Data leakage (split leakage)** [4]
+: Test examples that are copies or near-copies of training or dev examples, so tuning on one inflates scores on the other. Prevented by grouping similar items before splitting.
+
+**Dimension (test dimension)** [4]
+: One way real inputs differ, such as persona, topic, or expertise, with a few concrete values. Chosen from failure hypotheses.
+
+**Distinct-n** [4]
+: The share of unique n-grams (distinct-1: words, distinct-2: bigrams) in a set of texts; a rough lexical diversity measure that does not measure coverage.
 
 **Eval** [1]
 : Any repeatable procedure that measures some aspect of a system's output quality over a set of cases.
@@ -44,6 +59,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Failure taxonomy** [3]
 : The list of failure modes for a system with definitions, counts, severity, and priority; kept as a sheet and updated after each round of error analysis.
 
+**False premise** [4]
+: A wrong belief stated as fact in a question ("the lumen-l3 has a hardware AV1 decoder"). Tests whether the system checks claims or repeats them.
+
 **Finish reason / stop reason** [2]
 : Why the model stopped generating: for Claude, `end_turn` (final answer), `tool_use` (wants a tool), or `max_tokens` (cut off).
 
@@ -56,8 +74,17 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Ground truth / label** [1]
 : A human judgment of whether an output is acceptable, made by someone who knows the domain.
 
+**Held-out split (test split)** [4]
+: The part of a dataset kept for occasional reporting and never used for tuning or read while improving the system.
+
+**LLM tells** [4]
+: Phrasing typical of model-written text ("I'm experiencing", "Could you please", "best practices") that makes synthetic queries unlike real ones.
+
 **LLM-as-judge (model judge)** [1, 5]
 : An LLM prompted to grade another model's output against a specific criterion. Trust it only after validating it against labels.
+
+**Near-duplicate** [4]
+: Two items whose texts are highly similar without being identical; here measured as Jaccard similarity of word 3-grams.
 
 **Open coding** [3]
 : The first pass of error analysis: writing short free-text notes on what went wrong in each trace, without predefined categories.
@@ -67,6 +94,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **OTLP** [2]
 : The OpenTelemetry protocol for sending traces, metrics, and logs to a backend, over HTTP or gRPC, encoded as protobuf or JSON.
+
+**Pairwise coverage (all-pairs)** [4]
+: A set of tuples in which every feasible pair of values from any two dimensions appears at least once.
 
 **Parent span** [2]
 : The span that contains another; parent links turn a flat list of spans into a tree for one trace.
@@ -92,6 +122,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Root cause (first upstream failure)** [1, 3]
 : The earliest step in a run where something went wrong; fixing it often fixes later symptoms.
 
+**Seed queries** [4]
+: Real user queries used to start or steer synthetic generation: as style examples and as the starting point for coverage, so only gaps are generated.
+
 **Seeded ids** [2]
 : Trace and span ids generated from a fixed seed so replayed traces are identical across runs.
 
@@ -107,6 +140,12 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Span** [2]
 : One timed unit of work inside a trace (a model call, a tool call, a retrieval), with a name, start and end time, status, and attributes.
 
+**Stratified sampling** [4]
+: Sampling so that each value of a chosen dimension gets a similar count, instead of leaving small slices to chance.
+
+**Synthetic data** [4]
+: Test inputs written by a model or by templates rather than by real users. Useful for coverage before launch and for rare cases; not evidence of how often anything happens.
+
 **Theoretical saturation** [3]
 : The point where reading more traces no longer reveals new failure modes or changes definitions; the signal to stop an error-analysis round.
 
@@ -118,6 +157,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Trace** [1, 2]
 : A structured record of everything one run did: model calls, tool calls, retrieved context, timings, tokens.
+
+**Tuple** [4]
+: One combination of values, one per dimension, describing a single test situation before it is written as a query.
 
 **Virtual clock** [2]
 : A clock that advances only by recorded or simulated durations, so replayed traces have stable timestamps.

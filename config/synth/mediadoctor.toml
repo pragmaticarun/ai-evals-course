@@ -1,0 +1,80 @@
+# Test dimensions for MediaDoctor (module 4). Each dimension is one way real questions differ.
+# Tuples are combinations of one value per dimension; [[exclude]] rules remove impossible or
+# meaningless combinations. Edit this file to add a dimension; rerun the lab to see coverage move.
+
+[[dimension]]
+name = "persona"
+description = "Who is asking. Changes vocabulary, framing, and what they paste."
+values = ["app-developer", "media-engineer", "qa-tester", "support-agent"]
+
+[[dimension]]
+name = "topic"
+description = "The media area the problem is in."
+values = ["av1-playback", "hdr-colour", "mp4-startup", "av-sync", "codec-limits", "live-stream", "audio-focus", "drm-resolution"]
+
+[[dimension]]
+name = "goal"
+description = "What they want: an explanation of a failure, instructions, or a yes/no compatibility check."
+values = ["diagnose", "how-to", "check"]
+
+[[dimension]]
+name = "evidence"
+description = "What the question gives the agent to inspect with tools."
+values = ["none", "media-file", "device", "file+device", "log"]
+
+[[dimension]]
+name = "expertise"
+description = "How the question is written: precise and technical, plain, or vague with typos."
+values = ["expert", "intermediate", "novice"]
+
+[[dimension]]
+name = "ambiguity"
+description = "Clear; refers to evidence without naming it; or states something false as fact."
+values = ["clear", "missing-detail", "false-premise"]
+
+# --- Impossible or meaningless combinations ------------------------------------------------------
+
+[[exclude]]
+reason = "audio focus has no clip, device table, or log in the data"
+when = { topic = "audio-focus" }
+forbid = { evidence = ["media-file", "device", "file+device", "log"] }
+
+[[exclude]]
+reason = "live-stream evidence is a log, not a clip or device"
+when = { topic = "live-stream" }
+forbid = { evidence = ["media-file", "device", "file+device"] }
+
+[[exclude]]
+reason = "codec limits are diagnosed from logs and device tables; no clip shows them"
+when = { topic = "codec-limits" }
+forbid = { evidence = ["media-file", "file+device"] }
+
+[[exclude]]
+reason = "Widevine level comes from the device; there is no DRM clip or log"
+when = { topic = "drm-resolution" }
+forbid = { evidence = ["media-file", "file+device", "log"] }
+
+[[exclude]]
+reason = "container start-up and A/V offset are properties of the file, not of a device or log"
+when = { topic = ["mp4-startup", "av-sync"] }
+forbid = { evidence = ["device", "file+device", "log"] }
+
+[[exclude]]
+reason = "no log captures exist for these topics"
+when = { topic = ["av1-playback", "hdr-colour"] }
+forbid = { evidence = "log" }
+
+[[exclude]]
+reason = "a compatibility check needs a device to check against"
+when = { goal = "check" }
+forbid = { evidence = ["none", "media-file", "log"] }
+
+[[exclude]]
+reason = "nothing to leave unnamed when the question has no evidence"
+when = { evidence = "none" }
+forbid = { ambiguity = "missing-detail" }
+
+[[exclude]]
+reason = "support agents relay customer reports; they do not write expert-level questions"
+when = { persona = "support-agent" }
+forbid = { expertise = "expert" }

@@ -72,7 +72,11 @@ nav:
           - Lab: modules/03-error-analysis/lab.md
           - Exercises: modules/03-error-analysis/exercises.md
           - Quiz: modules/03-error-analysis/quiz.md
-      - "4. Synthetic data": modules/04-synthetic-data/index.md
+      - "4. Synthetic data":
+          - modules/04-synthetic-data/index.md
+          - Lab: modules/04-synthetic-data/lab.md
+          - Exercises: modules/04-synthetic-data/exercises.md
+          - Quiz: modules/04-synthetic-data/quiz.md
       - "5. Evaluators and judge validation": modules/05-evaluators-and-judges/index.md
       - "6. Trustworthy metrics": modules/06-trustworthy-metrics/index.md
       - "7. Architectures": modules/07-architectures/index.md
@@ -85,8 +89,10 @@ nav:
       - The eval loop: cheatsheets/eval-loop.md
       - Tracing an agent: cheatsheets/tracing.md
       - Error analysis: cheatsheets/error-analysis.md
+      - Synthetic data: cheatsheets/synthetic-data.md
   - Templates:
       - Failure taxonomy sheet: eval-templates/failure-taxonomy.md
+      - Dimensions sheet: eval-templates/dimensions-sheet.md
       - Judge prompt: eval-templates/judge-prompt.md
       - Eval report: eval-templates/eval-report.md
   - Glossary: glossary.md
