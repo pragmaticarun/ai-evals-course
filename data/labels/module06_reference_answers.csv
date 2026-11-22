@@ -1,0 +1,275 @@
+case_id,reference
+m4q001,"Likely cause: The device is not the limit: the atlas-a1 has a hardware HEVC decoder with Main10HDR10 and an HDR10 display, so the app's rendering path is flattening the HDR output, most likely a TextureView compositing through the GPU.
+Next step: Render the video into a SurfaceView instead of a TextureView and confirm the decoder output format reports PQ transfer."
+m4q002,"Likely cause: Yes: the atlas-a1 has c2.atlas.av1.decoder, a hardware AV1 decoder for Main and Main10 up to 3840x2160 at 60 fps, which covers this AV1 Main 3840x2160 60 fps clip.
+Next step: Make sure the player picks c2.atlas.av1.decoder rather than the software c2.android.av1.decoder, checking MediaCodecInfo.isHardwareAccelerated()."
+m4q003,"Likely cause: The lumen-l3 reports Widevine security level L3 (software only), and content owners commonly restrict HD keys to L1 devices such as the atlas-a1.
+Next step: Read MediaDrm(WIDEVINE_UUID).getPropertyString(""securityLevel"") on the device and log the license response to confirm the HD key was refused by policy."
+m4q004,"Likely cause: The device is not the limit: the atlas-a1 has a hardware HEVC decoder with Main10HDR10 and an HDR10 display, so the app's rendering path is flattening the HDR output, most likely a TextureView compositing through the GPU.
+Next step: Render the video into a SurfaceView instead of a TextureView and confirm the decoder output format reports PQ transfer."
+m4q005,"Likely cause: Yes: the atlas-a1 has c2.atlas.av1.decoder, a hardware AV1 decoder for Main and Main10 up to 3840x2160 at 60 fps, which covers this AV1 Main 3840x2160 60 fps clip.
+Next step: Make sure the player picks c2.atlas.av1.decoder rather than the software c2.android.av1.decoder, checking MediaCodecInfo.isHardwareAccelerated()."
+m4q006,"Likely cause: The device is not the limit: the atlas-a1 has a hardware HEVC decoder with Main10HDR10 and an HDR10 display, so the app's rendering path is flattening the HDR output, most likely a TextureView compositing through the GPU.
+Next step: Render the video into a SurfaceView instead of a TextureView and confirm the decoder output format reports PQ transfer."
+m4q007,"Likely cause: Each visible thumbnail allocates its own c2.lumen.avc.decoder and recycled items never release theirs; the fifth allocation fails with NO_MEMORY (max instances reached), and the lumen-l3 allows only 4 concurrent hardware video decoders.
+Next step: Call MediaCodec.release() when a thumbnail is recycled and cap concurrent decoders at 4, or extract one frame per video and cache it as a bitmap."
+m4q008,"Likely cause: After about 11 minutes in the background, playback fell behind the 30-second live window, so Media3 raised BehindLiveWindowException (ERROR_CODE_BEHIND_LIVE_WINDOW) and the app shows an error screen with no retry.
+Next step: In onPlayerError, when the error code is ERROR_CODE_BEHIND_LIVE_WINDOW, call seekToDefaultPosition() and then prepare() to rejoin at the live edge."
+m4q009,"Likely cause: After about 11 minutes in the background, playback fell behind the 30-second live window, so Media3 raised BehindLiveWindowException (ERROR_CODE_BEHIND_LIVE_WINDOW) and the app shows an error screen with no retry.
+Next step: In onPlayerError, when the error code is ERROR_CODE_BEHIND_LIVE_WINDOW, call seekToDefaultPosition() and then prepare() to rejoin at the live edge."
+m4q010,"Likely cause: Each visible thumbnail allocates its own c2.lumen.avc.decoder and recycled items never release theirs; the fifth allocation fails with NO_MEMORY (max instances reached), and the lumen-l3 allows only 4 concurrent hardware video decoders.
+Next step: Call MediaCodec.release() when a thumbnail is recycled and cap concurrent decoders at 4, or extract one frame per video and cache it as a bitmap."
+m4q011,"Likely cause: ffprobe shows the top-level boxes in the order ftyp, free, mdat, moov: the moov index is at the end, so the player must fetch the end of the file before it can start.
+Next step: Remux with ffmpeg -i in.mp4 -c copy -movflags +faststart out.mp4 to move moov to the front."
+m4q012,"Likely cause: The video stream starts at 0.300 s and the audio at 0.000 s, so the offset is in the file's timestamps, not in the player.
+Next step: Fix the step that delays video when muxing, or remux with corrected timestamps, then check that both streams report the same start_time."
+m4q014,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q017,"Likely cause: The lumen-l3's only HEVC decoder (c2.lumen.hevc.decoder) supports the Main profile, not Main 10, so configure() fails for a 10-bit stream.
+Next step: Check CodecCapabilities.profileLevels for HEVCProfileMain10 before configuring, and fall back to an 8-bit rendition when it is missing."
+m4q018,"Likely cause: The lumen-l3 reports Widevine security level L3 (software only), and content owners commonly restrict HD keys to L1 devices such as the atlas-a1.
+Next step: Read MediaDrm(WIDEVINE_UUID).getPropertyString(""securityLevel"") on the device and log the license response to confirm the HD key was refused by policy."
+m4q019,"Likely cause: The video stream starts at 0.300 s and the audio at 0.000 s, so the offset is in the file's timestamps, not in the player.
+Next step: Fix the step that delays video when muxing, or remux with corrected timestamps, then check that both streams report the same start_time."
+m4q021,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q023,"Likely cause: The file is fine: ffprobe shows ftyp, moov, free, mdat, so the index is at the front and the player can start after the first bytes; the delay is elsewhere.
+Next step: Check the CDN: confirm it honours HTTP range requests and measure time to first byte for the first request."
+m4q024,"Likely cause: The video stream starts at 0.300 s and the audio at 0.000 s, so the offset is in the file's timestamps, not in the player.
+Next step: Fix the step that delays video when muxing, or remux with corrected timestamps, then check that both streams report the same start_time."
+m4q025,"Likely cause: After about 11 minutes in the background, playback fell behind the 30-second live window, so Media3 raised BehindLiveWindowException (ERROR_CODE_BEHIND_LIVE_WINDOW) and the app shows an error screen with no retry.
+Next step: In onPlayerError, when the error code is ERROR_CODE_BEHIND_LIVE_WINDOW, call seekToDefaultPosition() and then prepare() to rejoin at the live edge."
+m4q026,"Likely cause: Yes: the atlas-a1 has c2.atlas.av1.decoder, a hardware AV1 decoder for Main and Main10 up to 3840x2160 at 60 fps, which covers this AV1 Main 3840x2160 60 fps clip.
+Next step: Make sure the player picks c2.atlas.av1.decoder rather than the software c2.android.av1.decoder, checking MediaCodecInfo.isHardwareAccelerated()."
+m4q027,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q030,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q031,"Likely cause: Android 10 (API 29) ships the software decoder c2.android.av1.decoder; hardware AV1 depends on the SoC, not the Android version.
+Next step: Enumerate MediaCodecList for video/av01 and use MediaCodecInfo.isHardwareAccelerated() (API 29+) to prefer hardware decoders."
+m4q033,"Likely cause: The display, not the decoder, decides whether HDR can be shown; Android exposes this through the Display object.
+Next step: Call Display.getHdrCapabilities() and check getSupportedHdrTypes() for HDR10 (or Display.isHdr() on API 26+)."
+m4q034,"Likely cause: The clip is HEVC Main 10 with PQ (smpte2084) transfer and BT.2020 primaries, but the lumen-l3's only HEVC decoder supports Main, not Main 10, and its display reports no HDR types, so the stream either fails to decode or is shown without tone mapping.
+Next step: Serve an 8-bit SDR rendition to devices without a Main 10 decoder or an HDR display, checking CodecCapabilities and Display.getHdrCapabilities() first."
+m4q036,"Likely cause: The video stream starts at 0.300 s and the audio at 0.000 s, so the offset is in the file's timestamps, not in the player.
+Next step: Fix the step that delays video when muxing, or remux with corrected timestamps, then check that both streams report the same start_time."
+m4q037,"Likely cause: The lumen-l3's only HEVC decoder (c2.lumen.hevc.decoder) supports the Main profile, not Main 10, so configure() fails for a 10-bit stream.
+Next step: Check CodecCapabilities.profileLevels for HEVCProfileMain10 before configuring, and fall back to an 8-bit rendition when it is missing."
+m4q039,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q040,"Likely cause: The lumen-l3 reports Widevine security level L3 (software only), and content owners commonly restrict HD keys to L1 devices such as the atlas-a1.
+Next step: Read MediaDrm(WIDEVINE_UUID).getPropertyString(""securityLevel"") on the device and log the license response to confirm the HD key was refused by policy."
+m4q041,"Likely cause: Yes: the atlas-a1 has c2.atlas.av1.decoder, a hardware AV1 decoder for Main and Main10 up to 3840x2160 at 60 fps, which covers this AV1 Main 3840x2160 60 fps clip.
+Next step: Make sure the player picks c2.atlas.av1.decoder rather than the software c2.android.av1.decoder, checking MediaCodecInfo.isHardwareAccelerated()."
+m4q042,"Likely cause: The clip is HEVC Main 10 with PQ (smpte2084) transfer and BT.2020 primaries, but the lumen-l3's only HEVC decoder supports Main, not Main 10, and its display reports no HDR types, so the stream either fails to decode or is shown without tone mapping.
+Next step: Serve an 8-bit SDR rendition to devices without a Main 10 decoder or an HDR display, checking CodecCapabilities and Display.getHdrCapabilities() first."
+m4q047,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q049,"Likely cause: Yes: the atlas-a1 has c2.atlas.av1.decoder, a hardware AV1 decoder for Main and Main10 up to 3840x2160 at 60 fps, which covers this AV1 Main 3840x2160 60 fps clip.
+Next step: Make sure the player picks c2.atlas.av1.decoder rather than the software c2.android.av1.decoder, checking MediaCodecInfo.isHardwareAccelerated()."
+m4q050,"Likely cause: The clip is HEVC Main 10 with PQ (smpte2084) transfer and BT.2020 primaries, but the lumen-l3's only HEVC decoder supports Main, not Main 10, and its display reports no HDR types, so the stream either fails to decode or is shown without tone mapping.
+Next step: Serve an 8-bit SDR rendition to devices without a Main 10 decoder or an HDR display, checking CodecCapabilities and Display.getHdrCapabilities() first."
+m4q054,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q055,"Likely cause: The lumen-l3 reports Widevine security level L3 (software only), and content owners commonly restrict HD keys to L1 devices such as the atlas-a1.
+Next step: Read MediaDrm(WIDEVINE_UUID).getPropertyString(""securityLevel"") on the device and log the license response to confirm the HD key was refused by policy."
+m4q056,"Likely cause: Android 10 (API 29) ships the software decoder c2.android.av1.decoder; hardware AV1 depends on the SoC, not the Android version.
+Next step: Enumerate MediaCodecList for video/av01 and use MediaCodecInfo.isHardwareAccelerated() (API 29+) to prefer hardware decoders."
+m4q057,"Likely cause: The device is not the limit: the atlas-a1 has a hardware HEVC decoder with Main10HDR10 and an HDR10 display, so the app's rendering path is flattening the HDR output, most likely a TextureView compositing through the GPU.
+Next step: Render the video into a SurfaceView instead of a TextureView and confirm the decoder output format reports PQ transfer."
+m4q059,"Likely cause: The video stream starts at 0.300 s and the audio at 0.000 s, so the offset is in the file's timestamps, not in the player.
+Next step: Fix the step that delays video when muxing, or remux with corrected timestamps, then check that both streams report the same start_time."
+m4q060,"Likely cause: The lumen-l3's only HEVC decoder (c2.lumen.hevc.decoder) supports the Main profile, not Main 10, so configure() fails for a 10-bit stream.
+Next step: Check CodecCapabilities.profileLevels for HEVCProfileMain10 before configuring, and fall back to an 8-bit rendition when it is missing."
+m4q061,"Likely cause: After about 11 minutes in the background, playback fell behind the 30-second live window, so Media3 raised BehindLiveWindowException (ERROR_CODE_BEHIND_LIVE_WINDOW) and the app shows an error screen with no retry.
+Next step: In onPlayerError, when the error code is ERROR_CODE_BEHIND_LIVE_WINDOW, call seekToDefaultPosition() and then prepare() to rejoin at the live edge."
+m4q062,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q063,"Likely cause: The lumen-l3 reports Widevine security level L3 (software only), and content owners commonly restrict HD keys to L1 devices such as the atlas-a1.
+Next step: Read MediaDrm(WIDEVINE_UUID).getPropertyString(""securityLevel"") on the device and log the license response to confirm the HD key was refused by policy."
+m4q064,"Likely cause: The clip is AV1 Main at 3840x2160 and 60 fps, but the lumen-l3 only has the software decoder c2.android.av1.decoder, rated up to 1920x1080 at 30 fps, so it cannot keep up.
+Next step: Serve a 1080p30 AV1 or an HEVC rendition to devices without a hardware AV1 decoder, selected with MediaCodecInfo.isHardwareAccelerated() (API 29+) and VideoCapabilities."
+m4q065,"Likely cause: The device is not the limit: the atlas-a1 has a hardware HEVC decoder with Main10HDR10 and an HDR10 display, so the app's rendering path is flattening the HDR output, most likely a TextureView compositing through the GPU.
+Next step: Render the video into a SurfaceView instead of a TextureView and confirm the decoder output format reports PQ transfer."
+m4q066,"Likely cause: The file is fine: ffprobe shows ftyp, moov, free, mdat, so the index is at the front and the player can start after the first bytes; the delay is elsewhere.
+Next step: Check the CDN: confirm it honours HTTP range requests and measure time to first byte for the first request."
+m4q067,"Likely cause: The video stream starts at 0.300 s and the audio at 0.000 s, so the offset is in the file's timestamps, not in the player.
+Next step: Fix the step that delays video when muxing, or remux with corrected timestamps, then check that both streams report the same start_time."
+m4q068,"Likely cause: The lumen-l3's only HEVC decoder (c2.lumen.hevc.decoder) supports the Main profile, not Main 10, so configure() fails for a 10-bit stream.
+Next step: Check CodecCapabilities.profileLevels for HEVCProfileMain10 before configuring, and fall back to an 8-bit rendition when it is missing."
+m4q070,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q071,"Likely cause: The lumen-l3 reports Widevine security level L3 (software only), and content owners commonly restrict HD keys to L1 devices such as the atlas-a1.
+Next step: Read MediaDrm(WIDEVINE_UUID).getPropertyString(""securityLevel"") on the device and log the license response to confirm the HD key was refused by policy."
+m4q072,"Likely cause: The clip is AV1 Main at 3840x2160 and 60 fps, but the lumen-l3 only has the software decoder c2.android.av1.decoder, rated up to 1920x1080 at 30 fps, so it cannot keep up.
+Next step: Serve a 1080p30 AV1 or an HEVC rendition to devices without a hardware AV1 decoder, selected with MediaCodecInfo.isHardwareAccelerated() (API 29+) and VideoCapabilities."
+m4q073,"Likely cause: The display, not the decoder, decides whether HDR can be shown; Android exposes this through the Display object.
+Next step: Call Display.getHdrCapabilities() and check getSupportedHdrTypes() for HDR10 (or Display.isHdr() on API 26+)."
+m4q075,"Likely cause: The video stream starts at 0.300 s and the audio at 0.000 s, so the offset is in the file's timestamps, not in the player.
+Next step: Fix the step that delays video when muxing, or remux with corrected timestamps, then check that both streams report the same start_time."
+m4q076,"Likely cause: The lumen-l3's only HEVC decoder (c2.lumen.hevc.decoder) supports the Main profile, not Main 10, so configure() fails for a 10-bit stream.
+Next step: Check CodecCapabilities.profileLevels for HEVCProfileMain10 before configuring, and fall back to an 8-bit rendition when it is missing."
+m4q078,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q079,"Likely cause: The lumen-l3 reports Widevine security level L3 (software only), and content owners commonly restrict HD keys to L1 devices such as the atlas-a1.
+Next step: Read MediaDrm(WIDEVINE_UUID).getPropertyString(""securityLevel"") on the device and log the license response to confirm the HD key was refused by policy."
+m4q081,"Likely cause: The clip is HEVC Main 10 with PQ (smpte2084) transfer and BT.2020 primaries, but the lumen-l3's only HEVC decoder supports Main, not Main 10, and its display reports no HDR types, so the stream either fails to decode or is shown without tone mapping.
+Next step: Serve an 8-bit SDR rendition to devices without a Main 10 decoder or an HDR display, checking CodecCapabilities and Display.getHdrCapabilities() first."
+m4q083,"Likely cause: The video stream starts at 0.300 s and the audio at 0.000 s, so the offset is in the file's timestamps, not in the player.
+Next step: Fix the step that delays video when muxing, or remux with corrected timestamps, then check that both streams report the same start_time."
+m4q084,"Likely cause: Each visible thumbnail allocates its own c2.lumen.avc.decoder and recycled items never release theirs; the fifth allocation fails with NO_MEMORY (max instances reached), and the lumen-l3 allows only 4 concurrent hardware video decoders.
+Next step: Call MediaCodec.release() when a thumbnail is recycled and cap concurrent decoders at 4, or extract one frame per video and cache it as a bitmap."
+m4q085,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q086,"Likely cause: The lumen-l3 reports Widevine security level L3 (software only), and content owners commonly restrict HD keys to L1 devices such as the atlas-a1.
+Next step: Read MediaDrm(WIDEVINE_UUID).getPropertyString(""securityLevel"") on the device and log the license response to confirm the HD key was refused by policy."
+m4q087,"Likely cause: Android 10 (API 29) ships the software decoder c2.android.av1.decoder; hardware AV1 depends on the SoC, not the Android version.
+Next step: Enumerate MediaCodecList for video/av01 and use MediaCodecInfo.isHardwareAccelerated() (API 29+) to prefer hardware decoders."
+m4q088,"Likely cause: The display, not the decoder, decides whether HDR can be shown; Android exposes this through the Display object.
+Next step: Call Display.getHdrCapabilities() and check getSupportedHdrTypes() for HDR10 (or Display.isHdr() on API 26+)."
+m4q089,"Likely cause: ffprobe shows the top-level boxes in the order ftyp, free, mdat, moov: the moov index is at the end, so the player must fetch the end of the file before it can start.
+Next step: Remux with ffmpeg -i in.mp4 -c copy -movflags +faststart out.mp4 to move moov to the front."
+m4q090,"Likely cause: The video stream starts at 0.300 s and the audio at 0.000 s, so the offset is in the file's timestamps, not in the player.
+Next step: Fix the step that delays video when muxing, or remux with corrected timestamps, then check that both streams report the same start_time."
+m4q092,"Likely cause: After about 11 minutes in the background, playback fell behind the 30-second live window, so Media3 raised BehindLiveWindowException (ERROR_CODE_BEHIND_LIVE_WINDOW) and the app shows an error screen with no retry.
+Next step: In onPlayerError, when the error code is ERROR_CODE_BEHIND_LIVE_WINDOW, call seekToDefaultPosition() and then prepare() to rejoin at the live edge."
+m4q093,"Likely cause: The lumen-l3 reports Widevine security level L3 (software only), and content owners commonly restrict HD keys to L1 devices such as the atlas-a1.
+Next step: Read MediaDrm(WIDEVINE_UUID).getPropertyString(""securityLevel"") on the device and log the license response to confirm the HD key was refused by policy."
+m4q095,"Likely cause: ffprobe shows the top-level boxes in the order ftyp, free, mdat, moov: the moov index is at the end, so the player must fetch the end of the file before it can start.
+Next step: Remux with ffmpeg -i in.mp4 -c copy -movflags +faststart out.mp4 to move moov to the front."
+m4q099,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q100,"Likely cause: The lumen-l3 reports Widevine security level L3 (software only), and content owners commonly restrict HD keys to L1 devices such as the atlas-a1.
+Next step: Read MediaDrm(WIDEVINE_UUID).getPropertyString(""securityLevel"") on the device and log the license response to confirm the HD key was refused by policy."
+m4q102,"Likely cause: The clip is HEVC Main 10 with PQ (smpte2084) transfer and BT.2020 primaries, but the lumen-l3's only HEVC decoder supports Main, not Main 10, and its display reports no HDR types, so the stream either fails to decode or is shown without tone mapping.
+Next step: Serve an 8-bit SDR rendition to devices without a Main 10 decoder or an HDR display, checking CodecCapabilities and Display.getHdrCapabilities() first."
+m4q104,"Likely cause: The video stream starts at 0.300 s and the audio at 0.000 s, so the offset is in the file's timestamps, not in the player.
+Next step: Fix the step that delays video when muxing, or remux with corrected timestamps, then check that both streams report the same start_time."
+m4q105,"Likely cause: The lumen-l3's only HEVC decoder (c2.lumen.hevc.decoder) supports the Main profile, not Main 10, so configure() fails for a 10-bit stream.
+Next step: Check CodecCapabilities.profileLevels for HEVCProfileMain10 before configuring, and fall back to an 8-bit rendition when it is missing."
+m4q106,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q107,"Likely cause: The lumen-l3 reports Widevine security level L3 (software only), and content owners commonly restrict HD keys to L1 devices such as the atlas-a1.
+Next step: Read MediaDrm(WIDEVINE_UUID).getPropertyString(""securityLevel"") on the device and log the license response to confirm the HD key was refused by policy."
+m4q108,"Likely cause: Yes: the atlas-a1 has c2.atlas.av1.decoder, a hardware AV1 decoder for Main and Main10 up to 3840x2160 at 60 fps, which covers this AV1 Main 3840x2160 60 fps clip.
+Next step: Make sure the player picks c2.atlas.av1.decoder rather than the software c2.android.av1.decoder, checking MediaCodecInfo.isHardwareAccelerated()."
+m4q109,"Likely cause: The display, not the decoder, decides whether HDR can be shown; Android exposes this through the Display object.
+Next step: Call Display.getHdrCapabilities() and check getSupportedHdrTypes() for HDR10 (or Display.isHdr() on API 26+)."
+m4q110,"Likely cause: ffprobe shows the top-level boxes in the order ftyp, free, mdat, moov: the moov index is at the end, so the player must fetch the end of the file before it can start.
+Next step: Remux with ffmpeg -i in.mp4 -c copy -movflags +faststart out.mp4 to move moov to the front."
+m4q112,"Likely cause: The lumen-l3's only HEVC decoder (c2.lumen.hevc.decoder) supports the Main profile, not Main 10, so configure() fails for a 10-bit stream.
+Next step: Check CodecCapabilities.profileLevels for HEVCProfileMain10 before configuring, and fall back to an 8-bit rendition when it is missing."
+m4q114,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q115,"Likely cause: The lumen-l3 reports Widevine security level L3 (software only), and content owners commonly restrict HD keys to L1 devices such as the atlas-a1.
+Next step: Read MediaDrm(WIDEVINE_UUID).getPropertyString(""securityLevel"") on the device and log the license response to confirm the HD key was refused by policy."
+m4q116,"Likely cause: Yes: the atlas-a1 has c2.atlas.av1.decoder, a hardware AV1 decoder for Main and Main10 up to 3840x2160 at 60 fps, which covers this AV1 Main 3840x2160 60 fps clip.
+Next step: Make sure the player picks c2.atlas.av1.decoder rather than the software c2.android.av1.decoder, checking MediaCodecInfo.isHardwareAccelerated()."
+m4q118,"Likely cause: The file is fine: ffprobe shows ftyp, moov, free, mdat, so the index is at the front and the player can start after the first bytes; the delay is elsewhere.
+Next step: Check the CDN: confirm it honours HTTP range requests and measure time to first byte for the first request."
+m4q119,"Likely cause: Each visible thumbnail allocates its own c2.lumen.avc.decoder and recycled items never release theirs; the fifth allocation fails with NO_MEMORY (max instances reached), and the lumen-l3 allows only 4 concurrent hardware video decoders.
+Next step: Call MediaCodec.release() when a thumbnail is recycled and cap concurrent decoders at 4, or extract one frame per video and cache it as a bitmap."
+m4q120,"Likely cause: After about 11 minutes in the background, playback fell behind the 30-second live window, so Media3 raised BehindLiveWindowException (ERROR_CODE_BEHIND_LIVE_WINDOW) and the app shows an error screen with no retry.
+Next step: In onPlayerError, when the error code is ERROR_CODE_BEHIND_LIVE_WINDOW, call seekToDefaultPosition() and then prepare() to rejoin at the live edge."
+m4q121,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q122,"Likely cause: The lumen-l3 reports Widevine security level L3 (software only), and content owners commonly restrict HD keys to L1 devices such as the atlas-a1.
+Next step: Read MediaDrm(WIDEVINE_UUID).getPropertyString(""securityLevel"") on the device and log the license response to confirm the HD key was refused by policy."
+m4q123,"Likely cause: The clip is AV1 Main at 3840x2160 and 60 fps, but the lumen-l3 only has the software decoder c2.android.av1.decoder, rated up to 1920x1080 at 30 fps, so it cannot keep up.
+Next step: Serve a 1080p30 AV1 or an HEVC rendition to devices without a hardware AV1 decoder, selected with MediaCodecInfo.isHardwareAccelerated() (API 29+) and VideoCapabilities."
+m4q125,"Likely cause: The file is fine: ffprobe shows ftyp, moov, free, mdat, so the index is at the front and the player can start after the first bytes; the delay is elsewhere.
+Next step: Check the CDN: confirm it honours HTTP range requests and measure time to first byte for the first request."
+m4q126,"Likely cause: The video stream starts at 0.300 s and the audio at 0.000 s, so the offset is in the file's timestamps, not in the player.
+Next step: Fix the step that delays video when muxing, or remux with corrected timestamps, then check that both streams report the same start_time."
+m4q127,"Likely cause: The lumen-l3's only HEVC decoder (c2.lumen.hevc.decoder) supports the Main profile, not Main 10, so configure() fails for a 10-bit stream.
+Next step: Check CodecCapabilities.profileLevels for HEVCProfileMain10 before configuring, and fall back to an 8-bit rendition when it is missing."
+m4q128,"Likely cause: After about 11 minutes in the background, playback fell behind the 30-second live window, so Media3 raised BehindLiveWindowException (ERROR_CODE_BEHIND_LIVE_WINDOW) and the app shows an error screen with no retry.
+Next step: In onPlayerError, when the error code is ERROR_CODE_BEHIND_LIVE_WINDOW, call seekToDefaultPosition() and then prepare() to rejoin at the live edge."
+m4q129,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q130,"Likely cause: The lumen-l3 reports Widevine security level L3 (software only), and content owners commonly restrict HD keys to L1 devices such as the atlas-a1.
+Next step: Read MediaDrm(WIDEVINE_UUID).getPropertyString(""securityLevel"") on the device and log the license response to confirm the HD key was refused by policy."
+m4q131,"Likely cause: Yes: the atlas-a1 has c2.atlas.av1.decoder, a hardware AV1 decoder for Main and Main10 up to 3840x2160 at 60 fps, which covers this AV1 Main 3840x2160 60 fps clip.
+Next step: Make sure the player picks c2.atlas.av1.decoder rather than the software c2.android.av1.decoder, checking MediaCodecInfo.isHardwareAccelerated()."
+m4q132,"Likely cause: The clip is HEVC Main 10 with PQ (smpte2084) transfer and BT.2020 primaries, but the lumen-l3's only HEVC decoder supports Main, not Main 10, and its display reports no HDR types, so the stream either fails to decode or is shown without tone mapping.
+Next step: Serve an 8-bit SDR rendition to devices without a Main 10 decoder or an HDR display, checking CodecCapabilities and Display.getHdrCapabilities() first."
+m4q135,"Likely cause: The lumen-l3's only HEVC decoder (c2.lumen.hevc.decoder) supports the Main profile, not Main 10, so configure() fails for a 10-bit stream.
+Next step: Check CodecCapabilities.profileLevels for HEVCProfileMain10 before configuring, and fall back to an 8-bit rendition when it is missing."
+m4q136,"Likely cause: After about 11 minutes in the background, playback fell behind the 30-second live window, so Media3 raised BehindLiveWindowException (ERROR_CODE_BEHIND_LIVE_WINDOW) and the app shows an error screen with no retry.
+Next step: In onPlayerError, when the error code is ERROR_CODE_BEHIND_LIVE_WINDOW, call seekToDefaultPosition() and then prepare() to rejoin at the live edge."
+m4q137,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q138,"Likely cause: The lumen-l3 reports Widevine security level L3 (software only), and content owners commonly restrict HD keys to L1 devices such as the atlas-a1.
+Next step: Read MediaDrm(WIDEVINE_UUID).getPropertyString(""securityLevel"") on the device and log the license response to confirm the HD key was refused by policy."
+m4q139,"Likely cause: Yes: the atlas-a1 has c2.atlas.av1.decoder, a hardware AV1 decoder for Main and Main10 up to 3840x2160 at 60 fps, which covers this AV1 Main 3840x2160 60 fps clip.
+Next step: Make sure the player picks c2.atlas.av1.decoder rather than the software c2.android.av1.decoder, checking MediaCodecInfo.isHardwareAccelerated()."
+m4q141,"Likely cause: The video stream starts at 0.300 s and the audio at 0.000 s, so the offset is in the file's timestamps, not in the player.
+Next step: Fix the step that delays video when muxing, or remux with corrected timestamps, then check that both streams report the same start_time."
+m4q142,"Likely cause: The lumen-l3's only HEVC decoder (c2.lumen.hevc.decoder) supports the Main profile, not Main 10, so configure() fails for a 10-bit stream.
+Next step: Check CodecCapabilities.profileLevels for HEVCProfileMain10 before configuring, and fall back to an 8-bit rendition when it is missing."
+m4q143,"Likely cause: After about 11 minutes in the background, playback fell behind the 30-second live window, so Media3 raised BehindLiveWindowException (ERROR_CODE_BEHIND_LIVE_WINDOW) and the app shows an error screen with no retry.
+Next step: In onPlayerError, when the error code is ERROR_CODE_BEHIND_LIVE_WINDOW, call seekToDefaultPosition() and then prepare() to rejoin at the live edge."
+m4q144,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q146,"Likely cause: The display, not the decoder, decides whether HDR can be shown; Android exposes this through the Display object.
+Next step: Call Display.getHdrCapabilities() and check getSupportedHdrTypes() for HDR10 (or Display.isHdr() on API 26+)."
+m4q147,"Likely cause: The video stream starts at 0.300 s and the audio at 0.000 s, so the offset is in the file's timestamps, not in the player.
+Next step: Fix the step that delays video when muxing, or remux with corrected timestamps, then check that both streams report the same start_time."
+m4q148,"Likely cause: The lumen-l3's only HEVC decoder (c2.lumen.hevc.decoder) supports the Main profile, not Main 10, so configure() fails for a 10-bit stream.
+Next step: Check CodecCapabilities.profileLevels for HEVCProfileMain10 before configuring, and fall back to an 8-bit rendition when it is missing."
+m4q149,"Likely cause: After about 11 minutes in the background, playback fell behind the 30-second live window, so Media3 raised BehindLiveWindowException (ERROR_CODE_BEHIND_LIVE_WINDOW) and the app shows an error screen with no retry.
+Next step: In onPlayerError, when the error code is ERROR_CODE_BEHIND_LIVE_WINDOW, call seekToDefaultPosition() and then prepare() to rejoin at the live edge."
+m4q150,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q152,"Likely cause: The clip is AV1 Main at 3840x2160 and 60 fps, but the lumen-l3 only has the software decoder c2.android.av1.decoder, rated up to 1920x1080 at 30 fps, so it cannot keep up.
+Next step: Serve a 1080p30 AV1 or an HEVC rendition to devices without a hardware AV1 decoder, selected with MediaCodecInfo.isHardwareAccelerated() (API 29+) and VideoCapabilities."
+m4q153,"Likely cause: The display, not the decoder, decides whether HDR can be shown; Android exposes this through the Display object.
+Next step: Call Display.getHdrCapabilities() and check getSupportedHdrTypes() for HDR10 (or Display.isHdr() on API 26+)."
+m4q155,"Likely cause: The lumen-l3's only HEVC decoder (c2.lumen.hevc.decoder) supports the Main profile, not Main 10, so configure() fails for a 10-bit stream.
+Next step: Check CodecCapabilities.profileLevels for HEVCProfileMain10 before configuring, and fall back to an 8-bit rendition when it is missing."
+m4q156,"Likely cause: After about 11 minutes in the background, playback fell behind the 30-second live window, so Media3 raised BehindLiveWindowException (ERROR_CODE_BEHIND_LIVE_WINDOW) and the app shows an error screen with no retry.
+Next step: In onPlayerError, when the error code is ERROR_CODE_BEHIND_LIVE_WINDOW, call seekToDefaultPosition() and then prepare() to rejoin at the live edge."
+m4q158,"Likely cause: The clip is AV1 Main at 3840x2160 and 60 fps, but the lumen-l3 only has the software decoder c2.android.av1.decoder, rated up to 1920x1080 at 30 fps, so it cannot keep up.
+Next step: Serve a 1080p30 AV1 or an HEVC rendition to devices without a hardware AV1 decoder, selected with MediaCodecInfo.isHardwareAccelerated() (API 29+) and VideoCapabilities."
+m4q159,"Likely cause: The device is not the limit: the atlas-a1 has a hardware HEVC decoder with Main10HDR10 and an HDR10 display, so the app's rendering path is flattening the HDR output, most likely a TextureView compositing through the GPU.
+Next step: Render the video into a SurfaceView instead of a TextureView and confirm the decoder output format reports PQ transfer."
+m4q160,"Likely cause: The file is fine: ffprobe shows ftyp, moov, free, mdat, so the index is at the front and the player can start after the first bytes; the delay is elsewhere.
+Next step: Check the CDN: confirm it honours HTTP range requests and measure time to first byte for the first request."
+m4q161,"Likely cause: The video stream starts at 0.300 s and the audio at 0.000 s, so the offset is in the file's timestamps, not in the player.
+Next step: Fix the step that delays video when muxing, or remux with corrected timestamps, then check that both streams report the same start_time."
+m4q162,"Likely cause: After about 11 minutes in the background, playback fell behind the 30-second live window, so Media3 raised BehindLiveWindowException (ERROR_CODE_BEHIND_LIVE_WINDOW) and the app shows an error screen with no retry.
+Next step: In onPlayerError, when the error code is ERROR_CODE_BEHIND_LIVE_WINDOW, call seekToDefaultPosition() and then prepare() to rejoin at the live edge."
+m4q163,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q165,"Likely cause: The device is not the limit: the atlas-a1 has a hardware HEVC decoder with Main10HDR10 and an HDR10 display, so the app's rendering path is flattening the HDR output, most likely a TextureView compositing through the GPU.
+Next step: Render the video into a SurfaceView instead of a TextureView and confirm the decoder output format reports PQ transfer."
+m4q167,"Likely cause: The video stream starts at 0.300 s and the audio at 0.000 s, so the offset is in the file's timestamps, not in the player.
+Next step: Fix the step that delays video when muxing, or remux with corrected timestamps, then check that both streams report the same start_time."
+m4q168,"Likely cause: Each visible thumbnail allocates its own c2.lumen.avc.decoder and recycled items never release theirs; the fifth allocation fails with NO_MEMORY (max instances reached), and the lumen-l3 allows only 4 concurrent hardware video decoders.
+Next step: Call MediaCodec.release() when a thumbnail is recycled and cap concurrent decoders at 4, or extract one frame per video and cache it as a bitmap."
+m4q169,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q170,"Likely cause: The lumen-l3 reports Widevine security level L3 (software only), and content owners commonly restrict HD keys to L1 devices such as the atlas-a1.
+Next step: Read MediaDrm(WIDEVINE_UUID).getPropertyString(""securityLevel"") on the device and log the license response to confirm the HD key was refused by policy."
+m4q171,"Likely cause: Yes: the atlas-a1 has c2.atlas.av1.decoder, a hardware AV1 decoder for Main and Main10 up to 3840x2160 at 60 fps, which covers this AV1 Main 3840x2160 60 fps clip.
+Next step: Make sure the player picks c2.atlas.av1.decoder rather than the software c2.android.av1.decoder, checking MediaCodecInfo.isHardwareAccelerated()."
+m4q172,"Likely cause: The device is not the limit: the atlas-a1 has a hardware HEVC decoder with Main10HDR10 and an HDR10 display, so the app's rendering path is flattening the HDR output, most likely a TextureView compositing through the GPU.
+Next step: Render the video into a SurfaceView instead of a TextureView and confirm the decoder output format reports PQ transfer."
+m4q173,"Likely cause: The file is fine: ffprobe shows ftyp, moov, free, mdat, so the index is at the front and the player can start after the first bytes; the delay is elsewhere.
+Next step: Check the CDN: confirm it honours HTTP range requests and measure time to first byte for the first request."
+m4q174,"Likely cause: The lumen-l3's only HEVC decoder (c2.lumen.hevc.decoder) supports the Main profile, not Main 10, so configure() fails for a 10-bit stream.
+Next step: Check CodecCapabilities.profileLevels for HEVCProfileMain10 before configuring, and fall back to an 8-bit rendition when it is missing."
+m4q175,"Likely cause: After about 11 minutes in the background, playback fell behind the 30-second live window, so Media3 raised BehindLiveWindowException (ERROR_CODE_BEHIND_LIVE_WINDOW) and the app shows an error screen with no retry.
+Next step: In onPlayerError, when the error code is ERROR_CODE_BEHIND_LIVE_WINDOW, call seekToDefaultPosition() and then prepare() to rejoin at the live edge."
+m4q176,"Likely cause: The app does not request audio focus, or ignores losing it, so it keeps playing when a call takes focus.
+Next step: Pass AudioAttributes with handleAudioFocus = true to ExoPlayer.setAudioAttributes, or request focus with AudioFocusRequest (API 26+) and pause on AUDIOFOCUS_LOSS_TRANSIENT."
+m4q177,"Likely cause: The lumen-l3 reports Widevine security level L3 (software only), and content owners commonly restrict HD keys to L1 devices such as the atlas-a1.
+Next step: Read MediaDrm(WIDEVINE_UUID).getPropertyString(""securityLevel"") on the device and log the license response to confirm the HD key was refused by policy."
+m4q178,"Likely cause: Yes: the atlas-a1 has c2.atlas.av1.decoder, a hardware AV1 decoder for Main and Main10 up to 3840x2160 at 60 fps, which covers this AV1 Main 3840x2160 60 fps clip.
+Next step: Make sure the player picks c2.atlas.av1.decoder rather than the software c2.android.av1.decoder, checking MediaCodecInfo.isHardwareAccelerated()."
+m4q180,"Likely cause: ffprobe shows the top-level boxes in the order ftyp, free, mdat, moov: the moov index is at the end, so the player must fetch the end of the file before it can start.
+Next step: Remux with ffmpeg -i in.mp4 -c copy -movflags +faststart out.mp4 to move moov to the front."
+m4q181,"Likely cause: The video stream starts at 0.300 s and the audio at 0.000 s, so the offset is in the file's timestamps, not in the player.
+Next step: Fix the step that delays video when muxing, or remux with corrected timestamps, then check that both streams report the same start_time."
+m4q182,"Likely cause: Each visible thumbnail allocates its own c2.lumen.avc.decoder and recycled items never release theirs; the fifth allocation fails with NO_MEMORY (max instances reached), and the lumen-l3 allows only 4 concurrent hardware video decoders.
+Next step: Call MediaCodec.release() when a thumbnail is recycled and cap concurrent decoders at 4, or extract one frame per video and cache it as a bitmap."

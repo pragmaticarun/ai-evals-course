@@ -53,6 +53,7 @@ def test_solution_snippet_runs(code):
         "03-error-analysis",
         "04-synthetic-data",
         "05-evaluators-and-judges",
+        "06-trustworthy-metrics",
     ],
 )
 def test_solutions_are_collapsed(module):
@@ -68,6 +69,7 @@ def test_solutions_are_collapsed(module):
         ("03-error-analysis", 10),
         ("04-synthetic-data", 8),
         ("05-evaluators-and-judges", 10),
+        ("06-trustworthy-metrics", 10),
     ],
 )
 def test_quiz_answers_are_collapsed(module, n):

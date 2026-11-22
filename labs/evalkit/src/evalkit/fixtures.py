@@ -10,6 +10,10 @@ The key is the SHA-256 of the canonical JSON of the request (sorted keys, no
 whitespace, UTF-8), prefixed with a schema version. Any change to the model ID,
 system prompt, messages, tools, or parameters therefore produces a new key, and a
 replay run fails loudly instead of silently reusing a stale answer.
+
+Repeated runs (module 6): the same request sent five times gets five different answers from the
+live API, but would share one key. A `trial` number > 0 is mixed into the key (and stored as
+"trial" in the record), so trial 0 is the ordinary fixture and trials 1, 2, ... are repeats.
 """
 
 from __future__ import annotations
@@ -43,8 +47,9 @@ def canonical_json(obj: Any) -> str:
     return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
 
-def request_key(request: dict[str, Any]) -> str:
-    payload = KEY_SCHEMA + "\n" + canonical_json(request)
+def request_key(request: dict[str, Any], trial: int = 0) -> str:
+    head = KEY_SCHEMA if trial == 0 else f"{KEY_SCHEMA}\ntrial={trial}"
+    payload = head + "\n" + canonical_json(request)
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
@@ -73,18 +78,18 @@ class FixtureStore:
                         self._cache[rec["request_sha256"]] = rec
         return self._cache
 
-    def get(self, request: dict[str, Any]) -> dict[str, Any]:
-        return self.get_record(request)["response"]
+    def get(self, request: dict[str, Any], trial: int = 0) -> dict[str, Any]:
+        return self.get_record(request, trial)["response"]
 
-    def get_record(self, request: dict[str, Any]) -> dict[str, Any]:
-        key = request_key(request)
+    def get_record(self, request: dict[str, Any], trial: int = 0) -> dict[str, Any]:
+        key = request_key(request, trial)
         rec = self._load().get(key)
         if rec is None:
             raise FixtureMissingError(key, self.namespace, self.path)
         return rec
 
-    def has(self, request: dict[str, Any]) -> bool:
-        return request_key(request) in self._load()
+    def has(self, request: dict[str, Any], trial: int = 0) -> bool:
+        return request_key(request, trial) in self._load()
 
     def put(
         self,
@@ -92,8 +97,9 @@ class FixtureStore:
         response: dict[str, Any],
         source: str = "live",
         latency_ms: float | None = None,
+        trial: int = 0,
     ) -> str:
-        key = request_key(request)
+        key = request_key(request, trial)
         rec = {
             "request_sha256": key,
             "request": request,
@@ -101,6 +107,8 @@ class FixtureStore:
             "recorded_at": datetime.now().astimezone().isoformat(timespec="seconds"),
             "source": source,
         }
+        if trial:
+            rec["trial"] = trial
         if latency_ms is not None:
             rec["latency_ms"] = round(float(latency_ms), 1)
         self.directory.mkdir(parents=True, exist_ok=True)

@@ -66,12 +66,16 @@ class LLM:
         client: MessagesClient | None = None,
         source: str = "live",
         clock: Callable[[], float] = time.perf_counter,
+        trial: int = 0,
     ):
         self.mode = Mode(mode or os.environ.get("EVALS_LLM_MODE", Mode.REPLAY))
         self.store = FixtureStore(fixtures_dir or repo_root() / "fixtures" / "recorded", namespace)
         self._client = client
         self.source = source  # provenance label written to fixtures in record mode
         self._clock = clock  # seconds; injectable so synthetic recordings get stable latencies
+        # Repeated runs of the same requests (module 6): trial 0 is the ordinary fixture; trials
+        # 1, 2, ... are stored under separate keys so each repeat replays its own answer.
+        self.trial = trial
         self.calls = 0  # number of real API calls made by this instance
         # Facts about the most recent create() call, read by the tracer (module 2).
         self.last_latency_ms: float | None = None
@@ -86,7 +90,7 @@ class LLM:
     def create(self, **request: Any) -> dict[str, Any]:
         """Same arguments as `anthropic.Anthropic().messages.create(...)`."""
         if self.mode is Mode.REPLAY:
-            rec = self.store.get_record(request)
+            rec = self.store.get_record(request, self.trial)
             self.last_latency_ms = rec.get("latency_ms")  # the original call's latency, if known
             self.last_replayed = True
             return rec["response"]
@@ -96,7 +100,13 @@ class LLM:
         self.last_replayed = False
         self.calls += 1
         if self.mode is Mode.RECORD:
-            self.store.put(request, response, source=self.source, latency_ms=self.last_latency_ms)
+            self.store.put(
+                request,
+                response,
+                source=self.source,
+                latency_ms=self.last_latency_ms,
+                trial=self.trial,
+            )
         return response
 
 

@@ -42,3 +42,9 @@ def test_missing_fixture_explains_how_to_rerecord(tmp_path):
     with pytest.raises(FixtureMissingError) as exc:
         FixtureStore(tmp_path, "ns").get(REQ)
     assert "EVALS_LLM_MODE=record" in str(exc.value)
+
+
+def test_trial_zero_keeps_the_original_key():
+    req = {"model": "m", "messages": []}
+    assert request_key(req, 0) == request_key(req)
+    assert request_key(req, 1) != request_key(req) != request_key(req, 2)

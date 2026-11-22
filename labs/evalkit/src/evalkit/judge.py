@@ -11,6 +11,9 @@ and it is validated like any classifier, against human labels:
     corrected_pass_rate      ->  the Rogan-Gladen correction of a judge-measured pass rate
     bootstrap_corrected      ->  a percentile bootstrap interval for that corrected rate
 
+The correction and its bootstrap live in evalkit.stats since module 6; they are re-exported here so
+module 5 code keeps working.
+
 Convention: PASS is the positive class, as in the course text. A judge that misses failures has a low
 TNR; a judge that fails good answers has a low TPR.
 """
@@ -18,7 +21,6 @@ TNR; a judge that fails good answers has a low TPR.
 from __future__ import annotations
 
 import json
-import random
 import re
 import tomllib
 from collections.abc import Callable, Iterable, Mapping
@@ -27,6 +29,28 @@ from pathlib import Path
 from typing import Any
 
 from evalkit.config import load_models
+from evalkit.stats import Estimate, bootstrap_corrected, corrected_pass_rate  # re-exported
+
+__all__ = [
+    "VERDICTS",
+    "Confusion",
+    "Estimate",
+    "Example",
+    "Item",
+    "JudgeSpec",
+    "Verdict",
+    "bootstrap_corrected",
+    "build_judge_request",
+    "confusion",
+    "corrected_pass_rate",
+    "disagreements",
+    "leakage_problems",
+    "load_judge",
+    "parse_verdict",
+    "render_examples",
+    "render_item",
+    "run_judge",
+]
 
 VERDICTS = ("PASS", "FAIL")
 
@@ -286,78 +310,6 @@ def disagreements(
         if bool(judged[cid]) != human[cid]:
             out.append((cid, "judge FAIL, human PASS" if human[cid] else "judge PASS, human FAIL"))
     return out
-
-
-def corrected_pass_rate(p_observed: float, tpr: float, tnr: float) -> float:
-    """Rogan-Gladen: the true pass rate implied by a judge's observed pass rate.
-
-    observed = true * TPR + (1 - true) * (1 - TNR)   =>   true = (observed + TNR - 1) / (TPR + TNR - 1)
-
-    Clipped to [0, 1]. Undefined when TPR + TNR <= 1 (the judge is no better than chance).
-    """
-    denom = tpr + tnr - 1
-    if denom <= 0:
-        raise ValueError(f"TPR + TNR must exceed 1 (got {tpr:.2f} + {tnr:.2f})")
-    return min(1.0, max(0.0, (p_observed + tnr - 1) / denom))
-
-
-@dataclass(frozen=True)
-class Estimate:
-    observed: float
-    corrected: float
-    low: float
-    high: float
-    n_unlabelled: int
-    n_labelled: int
-    draws: int
-
-    def __str__(self) -> str:
-        return (
-            f"observed pass rate {self.observed:.3f} on {self.n_unlabelled} unlabelled traces; "
-            f"corrected {self.corrected:.3f}, 95% CI [{self.low:.3f}, {self.high:.3f}] "
-            f"({self.draws} bootstrap draws, judge error from {self.n_labelled} labelled traces)"
-        )
-
-
-def bootstrap_corrected(
-    labelled: list[tuple[bool, bool]],
-    unlabelled: list[bool],
-    draws: int = 2000,
-    seed: int = 0,
-    level: float = 0.95,
-) -> Estimate:
-    """Corrected pass rate with a percentile bootstrap interval.
-
-    `labelled` is (human_pass, judge_pass) on a held-out labelled set (the test split): it estimates
-    the judge's TPR and TNR. `unlabelled` is the judge's verdicts on the traffic you want to measure.
-    Both are resampled with replacement in every draw, so the interval includes uncertainty about the
-    judge as well as about the traffic. Draws where TPR + TNR <= 1 are skipped and counted.
-    """
-
-    def tpr_tnr(pairs: list[tuple[bool, bool]]) -> tuple[float, float]:
-        pos = [j for h, j in pairs if h]
-        neg = [j for h, j in pairs if not h]
-        if not pos or not neg:
-            return float("nan"), float("nan")
-        return sum(pos) / len(pos), sum(not j for j in neg) / len(neg)
-
-    p_obs = sum(unlabelled) / len(unlabelled)
-    tpr, tnr = tpr_tnr(labelled)
-    point = corrected_pass_rate(p_obs, tpr, tnr)
-    rng = random.Random(seed)
-    samples = []
-    for _ in range(draws):
-        lab = [labelled[rng.randrange(len(labelled))] for _ in labelled]
-        unl = [unlabelled[rng.randrange(len(unlabelled))] for _ in unlabelled]
-        t1, t0 = tpr_tnr(lab)
-        if not (t1 + t0 > 1):  # nan or a useless judge in this resample
-            continue
-        samples.append(corrected_pass_rate(sum(unl) / len(unl), t1, t0))
-    samples.sort()
-    alpha = (1 - level) / 2
-    lo = samples[int(alpha * (len(samples) - 1))]
-    hi = samples[int((1 - alpha) * (len(samples) - 1))]
-    return Estimate(p_obs, point, lo, hi, len(unlabelled), len(labelled), len(samples))
 
 
 def run_judge(

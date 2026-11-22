@@ -14,6 +14,11 @@ Modules 3 to 5 add:
   - evalkit.annotate  annotation CSVs, failure-mode ranking, saturation
   - evalkit.synth     dimensions, tuples, coverage, batching, dedup, splits
   - evalkit.judge     LLM judge specs and prompts, TPR/TNR, corrected pass rate with bootstrap CI
+
+Module 6 adds:
+  - evalkit.stats     Wilson and bootstrap intervals, judge-error correction, paired comparisons
+                      (McNemar, paired bootstrap), Holm adjustment, pass@k and pass^k, sample sizes
+  - LLM(..., trial=n) repeated runs of the same request, replayed separately
 """
 
 from evalkit.checks import Check, CheckResult, run_checks, summarize

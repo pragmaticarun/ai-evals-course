@@ -100,3 +100,26 @@ def test_record_stores_latency_and_replay_returns_it(tmp_path):
     rep = LLM("ns", mode="replay", fixtures_dir=tmp_path)
     rep.create(**REQ)
     assert rep.last_latency_ms == 1250.0 and rep.last_replayed is True
+
+
+def test_trials_record_and_replay_separately(tmp_path):
+    """Module 6: the same request recorded as trials 0 and 1 replays two different answers."""
+    answers = iter(["first", "second"])
+
+    class Varying:
+        messages = SimpleNamespace(
+            create=lambda **r: {
+                "content": [{"type": "text", "text": next(answers)}],
+                "stop_reason": "end_turn",
+            }
+        )
+
+    for trial in (0, 1):
+        LLM("ns", mode="record", fixtures_dir=tmp_path, client=Varying(), trial=trial).create(**REQ)
+    got = [
+        text_of(LLM("ns", mode="replay", fixtures_dir=tmp_path, trial=t).create(**REQ))
+        for t in (0, 1)
+    ]
+    assert got == ["first", "second"]
+    with pytest.raises(FixtureMissingError):
+        LLM("ns", mode="replay", fixtures_dir=tmp_path, trial=2).create(**REQ)

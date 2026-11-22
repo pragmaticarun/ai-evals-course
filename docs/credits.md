@@ -21,8 +21,31 @@ anyone serious about evals should read them directly and consider their course.
 | One judge per failure mode; binary pass/fail rather than 1 to 5 scales; aim for 50+ passes and 50+ failures when validating; what to do when a judge will not agree with reviewers | Module 5 | [AI Evals FAQ: binary vs Likert](https://hamel.dev/blog/posts/evals-faq/why-do-you-recommend-binary-passfail-evaluations-instead-of-1-5-ratings-likert-scales.html), [How much of a trace should I give an LLM judge?](https://hamel.dev/blog/posts/evals-faq/how-much-of-a-trace-should-i-give-an-llm-judge.html), [When I can't get my LLM judge to agree with human reviewers](https://hamel.dev/blog/posts/evals-faq/what-should-i-do-when-i-cant-get-my-llm-judge-to-agree-with-human-reviewers.html), Hamel Husain and Shreya Shankar |
 | Critique before verdict; iterating with a domain expert; few-shot examples from labelled data | Module 5 | [Using LLM-as-a-Judge For Evaluation](https://hamel.dev/blog/posts/llm-judge/), Hamel Husain |
 | Train/dev/test splits for judges; TPR and TNR; correcting a judge-measured pass rate with a bootstrap interval | Module 5 | Hamel Husain and Shreya Shankar's [Maven course](https://maven.com/parlance-labs/evals) and their open-source [judgy](https://github.com/ai-evals-course/judgy) library (the code here is an independent implementation) |
+| Every metric gets an interval; paired comparisons; clustered resampling; power analysis for evals | Module 6 | Evan Miller, [Adding Error Bars to Evals](https://arxiv.org/abs/2411.00640) (arXiv 2411.00640) |
+| A pass-all rate with drill-down instead of a weighted composite; generic metrics and similarity scores are not quality measures | Module 6 | [How do I combine my evals into a single metric?](https://hamel.dev/blog/posts/evals-faq/how-do-i-combine-my-evals-into-a-single-metric.html), [Should I use "ready-to-use" evaluation metrics?](https://hamel.dev/blog/posts/evals-faq/should-i-use-ready-to-use-evaluation-metrics.html), [Are similarity metrics useful?](https://hamel.dev/blog/posts/evals-faq/are-similarity-metrics-bertscore-rouge-etc-useful-for-evaluating-llm-outputs.html), Hamel Husain and Shreya Shankar |
+| Judge-error correction, bootstrap intervals, and paired tests as part of an evals curriculum | Modules 5, 6 | Hamel Husain and Shreya Shankar's [Maven course](https://maven.com/parlance-labs/evals) |
 | Instrument first; build simple custom viewers for traces | Module 2 | [A Field Guide to Rapidly Improving AI Products](https://hamel.dev/blog/posts/field-guide/), Hamel Husain |
 | Validating evaluators against human labels; criteria drift | Modules 5, 6 | Shreya Shankar et al., [Who Validates the Validators? Aligning LLM-Assisted Evaluation of LLM Outputs with Human Preferences](https://arxiv.org/abs/2404.12272) (arXiv 2404.12272) |
+
+## Module 6 references
+
+| Topic | Source |
+|---|---|
+| Wilson score interval and alternatives | [Binomial proportion confidence interval](https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval) (Wilson, 1927) |
+| Bootstrap | [Bootstrapping (statistics)](https://en.wikipedia.org/wiki/Bootstrapping_(statistics)) (Efron, 1979) |
+| McNemar's test | [McNemar's test](https://en.wikipedia.org/wiki/McNemar%27s_test) (McNemar, 1947) |
+| Sample size for paired proportions | Connor, [Sample size for testing differences in proportions for the paired-sample design](https://pubmed.ncbi.nlm.nih.gov/3567305/), Biometrics, 1987 |
+| Power | [Power (statistics)](https://en.wikipedia.org/wiki/Power_(statistics)) |
+| Multiple comparisons; Holm-Bonferroni | [Multiple comparisons problem](https://en.wikipedia.org/wiki/Multiple_comparisons_problem), [Holm-Bonferroni method](https://en.wikipedia.org/wiki/Holm%E2%80%93Bonferroni_method) (Holm, 1979) |
+| pass@k unbiased estimator | Chen et al., [Evaluating Large Language Models Trained on Code](https://arxiv.org/abs/2107.03374) (arXiv 2107.03374) |
+| pass^k | Yao et al., [τ-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains](https://arxiv.org/abs/2406.12045) (arXiv 2406.12045) |
+| Temperature and determinism on Claude | [Anthropic: Messages API reference](https://platform.claude.com/docs/en/api/messages) (the `temperature` parameter) |
+| Nondeterminism in LLM serving | Horace He and Thinking Machines Lab, [Defeating Nondeterminism in LLM Inference](https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/) |
+
+The module 6 runs (agent prompt v2, and repeats of both prompts), their labels, the reference answers, and the
+helpfulness judge's scores are synthetic-authored for this course (`scripts/author_module06_fixtures.py`,
+`data/labels/module06_runs.csv`, `data/labels/module06_reference_answers.csv`). They were not produced by running
+the models live.
 
 ## Module 5 references
 

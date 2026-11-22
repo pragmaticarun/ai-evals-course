@@ -1,0 +1,571 @@
+prompt,run,case_id,verdict,modes,note
+v1,1,m4q001,pass,,
+v1,1,m4q002,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the atlas-a1 only decodes AV1 in software') although the tool output contradicts it
+v1,1,m4q003,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v1,1,m4q004,pass,,
+v1,1,m4q005,pass,,
+v1,1,m4q006,pass,,
+v1,1,m4q007,fail,ignored-tool-output,answer contradicts the tool output: says 16 concurrent decoders; codec_caps says max_concurrent_hw_video_decoders=4
+v1,1,m4q008,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('this is an audio focus problem') although the tool output contradicts it
+v1,1,m4q009,fail,assumed-unstated-detail,user never named it; agent assumed live_resume.txt and answered as if confirmed
+v1,1,m4q010,pass,,
+v1,1,m4q011,fail,ignored-tool-output,"answer contradicts the tool output: says moov is at the front; ffprobe boxes are ftyp, free, mdat, moov (moov last)"
+v1,1,m4q012,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('both streams in the file start at zero') although the tool output contradicts it
+v1,1,m4q014,fail,vague-next-step,"cause fine, next step 'Check the app's audio settings.' is not actionable"
+v1,1,m4q017,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v1,1,m4q018,fail,vague-next-step,"cause fine, next step 'Contact your DRM provider.' is not actionable"
+v1,1,m4q019,pass,,
+v1,1,m4q021,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v1,1,m4q023,fail,assumed-unstated-detail,user never named it; agent assumed progressive_faststart.mp4 and answered as if confirmed
+v1,1,m4q024,pass,,
+v1,1,m4q025,fail,skipped-investigation;fabricated-evidence,"no tool calls, but Sources lists [tool:logcat_grep] [kb:behind-live-window]: citations are made up"
+v1,1,m4q026,fail,ignored-tool-output,answer contradicts the tool output: says atlas-a1 is software-only for AV1; codec_caps lists c2.atlas.av1.decoder hardware=true 4K60
+v1,1,m4q027,pass,,
+v1,1,m4q030,pass,,
+v1,1,m4q031,pass,,
+v1,1,m4q033,fail,accepted-false-premise,repeated the user's false premise ('Display.isHdr() works from API 21')
+v1,1,m4q034,fail,assumed-unstated-detail,user never named it; agent assumed hdr10_hevc_1080p.mp4 and lumen-l3 and answered as if confirmed
+v1,1,m4q036,pass,,
+v1,1,m4q037,fail,vague-next-step,"cause fine, next step 'Check the codec documentation.' is not actionable"
+v1,1,m4q039,fail,skipped-investigation;fabricated-evidence,"no tool calls, but Sources lists [kb:audio-focus]: citations are made up"
+v1,1,m4q040,pass,,
+v1,1,m4q041,fail,assumed-unstated-detail,user never named it; agent assumed atlas-a1 and av1_2160p60.mkv and answered as if confirmed
+v1,1,m4q042,pass,,
+v1,1,m4q047,pass,,
+v1,1,m4q049,pass,,
+v1,1,m4q050,fail,skipped-investigation;fabricated-evidence,"no tool calls, but Sources lists [tool:ffprobe] [tool:codec_caps] [kb:hdr-tone-mapping]: citations are made up"
+v1,1,m4q054,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v1,1,m4q055,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 is a Widevine L1 device') although the tool output contradicts it
+v1,1,m4q056,fail,accepted-false-premise,repeated the user's false premise ('Android has shipped an AV1 decoder since Android 8')
+v1,1,m4q057,pass,,
+v1,1,m4q059,fail,assumed-unstated-detail,user never named it; agent assumed av_offset_300ms.mp4 and answered as if confirmed
+v1,1,m4q060,pass,,
+v1,1,m4q061,fail,vague-next-step,"cause fine, next step 'Look into how the player handles backgrounding.' is not actionable"
+v1,1,m4q062,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v1,1,m4q063,pass,,
+v1,1,m4q064,fail,vague-next-step,"cause fine, next step 'Try a different device or lower the quality.' is not actionable"
+v1,1,m4q065,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the atlas-a1 display cannot show HDR') although the tool output contradicts it
+v1,1,m4q066,pass,,
+v1,1,m4q067,fail,assumed-unstated-detail,user never named it; agent assumed av_offset_300ms.mp4 and answered as if confirmed
+v1,1,m4q068,pass,,
+v1,1,m4q070,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v1,1,m4q071,pass,,
+v1,1,m4q072,pass,,
+v1,1,m4q073,fail,accepted-false-premise,repeated the user's false premise ('Display.isHdr() works from API 21')
+v1,1,m4q075,fail,ignored-tool-output,answer contradicts the tool output: says both streams start at 0; ffprobe shows video start_time 0.300
+v1,1,m4q076,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v1,1,m4q078,fail,vague-next-step,"cause fine, next step 'Check the app's audio settings.' is not actionable"
+v1,1,m4q079,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v1,1,m4q081,pass,,
+v1,1,m4q083,pass,,
+v1,1,m4q084,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 can run 16 hardware decoders at once') although the tool output contradicts it
+v1,1,m4q085,fail,vague-next-step,"cause fine, next step 'Check the app's audio settings.' is not actionable"
+v1,1,m4q086,pass,,
+v1,1,m4q087,pass,,
+v1,1,m4q088,fail,wrong-api-detail,wrong API detail: says Display.isHdr() is API 21; KB says API 26
+v1,1,m4q089,fail,ignored-tool-output,"answer contradicts the tool output: says moov is at the front; ffprobe boxes are ftyp, free, mdat, moov (moov last)"
+v1,1,m4q090,pass,,
+v1,1,m4q092,fail,assumed-unstated-detail,user never named it; agent assumed live_resume.txt and answered as if confirmed
+v1,1,m4q093,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 is a Widevine L1 device') although the tool output contradicts it
+v1,1,m4q095,fail,assumed-unstated-detail,user never named it; agent assumed progressive_late_moov.mp4 and answered as if confirmed
+v1,1,m4q099,fail,vague-next-step,"cause fine, next step 'Check the app's audio settings.' is not actionable"
+v1,1,m4q100,pass,,
+v1,1,m4q102,pass,,
+v1,1,m4q104,pass,,
+v1,1,m4q105,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 decodes HEVC Main 10') although the tool output contradicts it
+v1,1,m4q106,fail,vague-next-step,"cause fine, next step 'Check the app's audio settings.' is not actionable"
+v1,1,m4q107,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 is a Widevine L1 device') although the tool output contradicts it
+v1,1,m4q108,pass,,
+v1,1,m4q109,fail,wrong-api-detail,wrong API detail: answers with a decoder API for a display question (isHardwareAccelerated != HDR display)
+v1,1,m4q110,fail,assumed-unstated-detail,user never named it; agent assumed progressive_late_moov.mp4 and answered as if confirmed
+v1,1,m4q112,fail,vague-next-step,"cause fine, next step 'Check the codec documentation.' is not actionable"
+v1,1,m4q114,fail,wrong-api-detail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+
+v1,1,m4q115,pass,,
+v1,1,m4q116,fail,format-violation,no Sources line
+v1,1,m4q118,fail,vague-next-step,"cause fine, next step 'Look at the CDN configuration.' is not actionable"
+v1,1,m4q119,pass,,
+v1,1,m4q120,fail,wrong-api-detail,wrong API detail: suggests try/catch around play(); the exception arrives async via onPlayerError
+v1,1,m4q121,fail,wrong-api-detail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+
+v1,1,m4q122,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v1,1,m4q123,fail,vague-next-step,"cause fine, next step 'Try a different device or lower the quality.' is not actionable"
+v1,1,m4q125,pass,,
+v1,1,m4q126,pass,,
+v1,1,m4q127,pass,,
+v1,1,m4q128,fail,skipped-investigation;fabricated-evidence,"no tool calls, but Sources lists [tool:logcat_grep] [kb:behind-live-window]: citations are made up"
+v1,1,m4q129,fail,wrong-api-detail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+
+v1,1,m4q130,pass,,
+v1,1,m4q131,fail,assumed-unstated-detail,user never named it; agent assumed atlas-a1 and av1_2160p60.mkv and answered as if confirmed
+v1,1,m4q132,fail,vague-next-step,"cause fine, next step 'Check the device settings.' is not actionable"
+v1,1,m4q135,pass,,
+v1,1,m4q136,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('this is an audio focus problem') although the tool output contradicts it
+v1,1,m4q137,fail,wrong-api-detail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+
+v1,1,m4q138,pass,,
+v1,1,m4q139,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the atlas-a1 only decodes AV1 in software') although the tool output contradicts it
+v1,1,m4q141,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('both streams in the file start at zero') although the tool output contradicts it
+v1,1,m4q142,fail,vague-next-step,"cause fine, next step 'Check the codec documentation.' is not actionable"
+v1,1,m4q143,fail,assumed-unstated-detail,user never named it; agent assumed live_resume.txt and answered as if confirmed
+v1,1,m4q144,pass,,
+v1,1,m4q146,fail,wrong-api-detail,wrong API detail: says Display.isHdr() is API 21; KB says API 26
+v1,1,m4q147,fail,ignored-tool-output,answer contradicts the tool output: says both streams start at 0; ffprobe shows video start_time 0.300
+v1,1,m4q148,pass,,
+v1,1,m4q149,fail,wrong-api-detail,wrong API detail: suggests try/catch around play(); the exception arrives async via onPlayerError
+v1,1,m4q150,fail,format-violation,no Sources line
+v1,1,m4q152,fail,format-violation,no Sources line
+v1,1,m4q153,fail,vague-next-step,"cause fine, next step 'Test on more devices.' is not actionable"
+v1,1,m4q155,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 decodes HEVC Main 10') although the tool output contradicts it
+v1,1,m4q156,pass,,
+v1,1,m4q158,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 has a hardware AV1 decoder') although the tool output contradicts it
+v1,1,m4q159,fail,assumed-unstated-detail,user never named it; agent assumed atlas-a1 and hdr10_hevc_1080p.mp4 and answered as if confirmed
+v1,1,m4q160,fail,format-violation,no Sources line
+v1,1,m4q161,fail,vague-next-step,"cause fine, next step 'Investigate the sync logic.' is not actionable"
+v1,1,m4q162,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('this is an audio focus problem') although the tool output contradicts it
+v1,1,m4q163,pass,,
+v1,1,m4q165,pass,,
+v1,1,m4q167,pass,,
+v1,1,m4q168,fail,vague-next-step,"cause fine, next step 'Profile the app's memory.' is not actionable"
+v1,1,m4q169,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v1,1,m4q170,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v1,1,m4q171,pass,,
+v1,1,m4q172,pass,,
+v1,1,m4q173,fail,ignored-tool-output,"answer contradicts the tool output: says moov is at the end; ffprobe shows ftyp, moov, free, mdat (moov 2nd)"
+v1,1,m4q174,pass,,
+v1,1,m4q175,pass,,
+v1,1,m4q176,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v1,1,m4q177,fail,vague-next-step,"cause fine, next step 'Contact your DRM provider.' is not actionable"
+v1,1,m4q178,pass,,
+v1,1,m4q180,fail,assumed-unstated-detail,user never named it; agent assumed progressive_late_moov.mp4 and answered as if confirmed
+v1,1,m4q181,pass,,
+v1,1,m4q182,pass,,
+v1,2,m4q004,pass,,
+v1,2,m4q017,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v1,2,m4q021,pass,,
+v1,2,m4q026,fail,ignored-tool-output,answer contradicts the tool output: says atlas-a1 is software-only for AV1; codec_caps lists c2.atlas.av1.decoder hardware=true 4K60
+v1,2,m4q031,pass,,
+v1,2,m4q037,fail,vague-next-step,"cause fine, next step 'Check the codec documentation.' is not actionable"
+v1,2,m4q042,pass,,
+v1,2,m4q049,pass,,
+v1,2,m4q050,fail,skipped-investigation;fabricated-evidence,"no tool calls, but Sources lists [tool:ffprobe] [tool:codec_caps] [kb:hdr-tone-mapping]: citations are made up"
+v1,2,m4q056,fail,accepted-false-premise,repeated the user's false premise ('Android has shipped an AV1 decoder since Android 8')
+v1,2,m4q060,pass,,
+v1,2,m4q061,pass,,
+v1,2,m4q062,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v1,2,m4q063,pass,,
+v1,2,m4q065,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the atlas-a1 display cannot show HDR') although the tool output contradicts it
+v1,2,m4q068,pass,,
+v1,2,m4q070,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v1,2,m4q075,fail,ignored-tool-output,answer contradicts the tool output: says both streams start at 0; ffprobe shows video start_time 0.300
+v1,2,m4q076,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v1,2,m4q078,pass,,
+v1,2,m4q087,fail,accepted-false-premise,repeated the user's false premise ('Android has shipped an AV1 decoder since Android 8')
+v1,2,m4q105,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 decodes HEVC Main 10') although the tool output contradicts it
+v1,2,m4q108,pass,,
+v1,2,m4q114,fail,wrong-api-detail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+
+v1,2,m4q129,fail,wrong-api-detail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+
+v1,2,m4q130,pass,,
+v1,2,m4q139,pass,,
+v1,2,m4q150,fail,format-violation,no Sources line
+v1,2,m4q153,fail,vague-next-step,"cause fine, next step 'Test on more devices.' is not actionable"
+v1,2,m4q156,pass,,
+v1,2,m4q158,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 has a hardware AV1 decoder') although the tool output contradicts it
+v1,2,m4q163,pass,,
+v1,2,m4q169,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v1,2,m4q170,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v1,2,m4q171,fail,format-violation,no Sources line
+v1,2,m4q172,pass,,
+v1,2,m4q178,pass,,
+v1,3,m4q004,fail,vague-next-step,"cause fine, next step 'Look into the rendering code.' is not actionable"
+v1,3,m4q017,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v1,3,m4q021,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v1,3,m4q026,fail,ignored-tool-output,answer contradicts the tool output: says atlas-a1 is software-only for AV1; codec_caps lists c2.atlas.av1.decoder hardware=true 4K60
+v1,3,m4q031,pass,,
+v1,3,m4q037,pass,,
+v1,3,m4q042,pass,,
+v1,3,m4q049,pass,,
+v1,3,m4q050,fail,skipped-investigation;fabricated-evidence,"no tool calls, but Sources lists [tool:ffprobe] [tool:codec_caps] [kb:hdr-tone-mapping]: citations are made up"
+v1,3,m4q056,fail,accepted-false-premise,repeated the user's false premise ('Android has shipped an AV1 decoder since Android 8')
+v1,3,m4q060,pass,,
+v1,3,m4q061,fail,vague-next-step,"cause fine, next step 'Look into how the player handles backgrounding.' is not actionable"
+v1,3,m4q062,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v1,3,m4q063,pass,,
+v1,3,m4q065,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the atlas-a1 display cannot show HDR') although the tool output contradicts it
+v1,3,m4q068,pass,,
+v1,3,m4q070,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v1,3,m4q075,fail,ignored-tool-output,answer contradicts the tool output: says both streams start at 0; ffprobe shows video start_time 0.300
+v1,3,m4q076,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v1,3,m4q078,fail,vague-next-step,"cause fine, next step 'Check the app's audio settings.' is not actionable"
+v1,3,m4q087,pass,,
+v1,3,m4q105,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 decodes HEVC Main 10') although the tool output contradicts it
+v1,3,m4q108,pass,,
+v1,3,m4q114,fail,wrong-api-detail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+
+v1,3,m4q129,fail,skipped-investigation;fabricated-evidence,"no tool calls, but Sources lists [kb:audio-focus]: citations are made up"
+v1,3,m4q130,pass,,
+v1,3,m4q139,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the atlas-a1 only decodes AV1 in software') although the tool output contradicts it
+v1,3,m4q150,fail,format-violation,no Sources line
+v1,3,m4q153,fail,vague-next-step,"cause fine, next step 'Test on more devices.' is not actionable"
+v1,3,m4q156,pass,,
+v1,3,m4q158,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 has a hardware AV1 decoder') although the tool output contradicts it
+v1,3,m4q163,pass,,
+v1,3,m4q169,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v1,3,m4q170,pass,,
+v1,3,m4q171,pass,,
+v1,3,m4q172,pass,,
+v1,3,m4q178,pass,,
+v1,4,m4q004,pass,,
+v1,4,m4q017,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v1,4,m4q021,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v1,4,m4q026,fail,ignored-tool-output,answer contradicts the tool output: says atlas-a1 is software-only for AV1; codec_caps lists c2.atlas.av1.decoder hardware=true 4K60
+v1,4,m4q031,pass,,
+v1,4,m4q037,fail,vague-next-step,"cause fine, next step 'Check the codec documentation.' is not actionable"
+v1,4,m4q042,pass,,
+v1,4,m4q049,fail,assumed-unstated-detail,user never named it; agent assumed atlas-a1 and av1_2160p60.mkv and answered as if confirmed
+v1,4,m4q050,fail,skipped-investigation;fabricated-evidence,"no tool calls, but Sources lists [tool:ffprobe] [tool:codec_caps] [kb:hdr-tone-mapping]: citations are made up"
+v1,4,m4q056,pass,,
+v1,4,m4q060,pass,,
+v1,4,m4q061,fail,vague-next-step,"cause fine, next step 'Look into how the player handles backgrounding.' is not actionable"
+v1,4,m4q062,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v1,4,m4q063,pass,,
+v1,4,m4q065,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the atlas-a1 display cannot show HDR') although the tool output contradicts it
+v1,4,m4q068,pass,,
+v1,4,m4q070,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v1,4,m4q075,fail,ignored-tool-output,answer contradicts the tool output: says both streams start at 0; ffprobe shows video start_time 0.300
+v1,4,m4q076,pass,,
+v1,4,m4q078,fail,vague-next-step,"cause fine, next step 'Check the app's audio settings.' is not actionable"
+v1,4,m4q087,pass,,
+v1,4,m4q105,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 decodes HEVC Main 10') although the tool output contradicts it
+v1,4,m4q108,pass,,
+v1,4,m4q114,fail,vague-next-step,"cause fine, next step 'Check the app's audio settings.' is not actionable"
+v1,4,m4q129,fail,vague-next-step,"cause fine, next step 'Check the app's audio settings.' is not actionable"
+v1,4,m4q130,pass,,
+v1,4,m4q139,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the atlas-a1 only decodes AV1 in software') although the tool output contradicts it
+v1,4,m4q150,fail,format-violation,no Sources line
+v1,4,m4q153,fail,vague-next-step,"cause fine, next step 'Test on more devices.' is not actionable"
+v1,4,m4q156,pass,,
+v1,4,m4q158,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 has a hardware AV1 decoder') although the tool output contradicts it
+v1,4,m4q163,pass,,
+v1,4,m4q169,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v1,4,m4q170,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v1,4,m4q171,pass,,
+v1,4,m4q172,pass,,
+v1,4,m4q178,pass,,
+v1,5,m4q004,pass,,
+v1,5,m4q017,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v1,5,m4q021,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v1,5,m4q026,fail,ignored-tool-output,answer contradicts the tool output: says atlas-a1 is software-only for AV1; codec_caps lists c2.atlas.av1.decoder hardware=true 4K60
+v1,5,m4q031,pass,,
+v1,5,m4q037,fail,vague-next-step,"cause fine, next step 'Check the codec documentation.' is not actionable"
+v1,5,m4q042,pass,,
+v1,5,m4q049,pass,,
+v1,5,m4q050,fail,skipped-investigation;fabricated-evidence,"no tool calls, but Sources lists [tool:ffprobe] [tool:codec_caps] [kb:hdr-tone-mapping]: citations are made up"
+v1,5,m4q056,fail,accepted-false-premise,repeated the user's false premise ('Android has shipped an AV1 decoder since Android 8')
+v1,5,m4q060,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 decodes HEVC Main 10') although the tool output contradicts it
+v1,5,m4q061,fail,vague-next-step,"cause fine, next step 'Look into how the player handles backgrounding.' is not actionable"
+v1,5,m4q062,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v1,5,m4q063,pass,,
+v1,5,m4q065,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the atlas-a1 display cannot show HDR') although the tool output contradicts it
+v1,5,m4q068,pass,,
+v1,5,m4q070,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v1,5,m4q075,pass,,
+v1,5,m4q076,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v1,5,m4q078,pass,,
+v1,5,m4q087,pass,,
+v1,5,m4q105,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 decodes HEVC Main 10') although the tool output contradicts it
+v1,5,m4q108,pass,,
+v1,5,m4q114,fail,wrong-api-detail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+
+v1,5,m4q129,fail,wrong-api-detail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+
+v1,5,m4q130,pass,,
+v1,5,m4q139,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the atlas-a1 only decodes AV1 in software') although the tool output contradicts it
+v1,5,m4q150,fail,format-violation,no Sources line
+v1,5,m4q153,fail,vague-next-step,"cause fine, next step 'Test on more devices.' is not actionable"
+v1,5,m4q156,pass,,
+v1,5,m4q158,pass,,
+v1,5,m4q163,pass,,
+v1,5,m4q169,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v1,5,m4q170,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v1,5,m4q171,pass,,
+v1,5,m4q172,pass,,
+v1,5,m4q178,pass,,
+v2,1,m4q001,pass,,
+v2,1,m4q002,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,1,m4q003,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v2,1,m4q004,fail,vague-next-step,"cause fine, next step 'Look into the rendering code.' is not actionable"
+v2,1,m4q005,pass,,
+v2,1,m4q006,pass,,
+v2,1,m4q007,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,1,m4q008,pass,,
+v2,1,m4q009,fail,assumed-unstated-detail,user never named it; agent assumed live_resume.txt and answered as if confirmed
+v2,1,m4q010,fail,ignored-tool-output,answer contradicts the tool output: says 16 concurrent decoders; codec_caps says max_concurrent_hw_video_decoders=4
+v2,1,m4q011,fail,ignored-tool-output,"answer contradicts the tool output: says moov is at the front; ffprobe boxes are ftyp, free, mdat, moov (moov last)"
+v2,1,m4q012,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('both streams in the file start at zero') although the tool output contradicts it
+v2,1,m4q014,pass,,
+v2,1,m4q017,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v2,1,m4q018,fail,vague-next-step,"cause fine, next step 'Contact your DRM provider.' is not actionable"
+v2,1,m4q019,pass,,
+v2,1,m4q021,pass,,
+v2,1,m4q023,pass,,
+v2,1,m4q024,pass,,
+v2,1,m4q025,fail,skipped-investigation;fabricated-evidence,"no tool calls, but Sources lists [tool:logcat_grep] [kb:behind-live-window]: citations are made up"
+v2,1,m4q026,fail,ignored-tool-output,answer contradicts the tool output: says atlas-a1 is software-only for AV1; codec_caps lists c2.atlas.av1.decoder hardware=true 4K60
+v2,1,m4q027,pass,,
+v2,1,m4q030,pass,,
+v2,1,m4q031,pass,,
+v2,1,m4q033,pass,,
+v2,1,m4q034,fail,assumed-unstated-detail,user never named it; agent assumed hdr10_hevc_1080p.mp4 and lumen-l3 and answered as if confirmed
+v2,1,m4q036,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,1,m4q037,fail,vague-next-step,"cause fine, next step 'Check the codec documentation.' is not actionable"
+v2,1,m4q039,pass,,
+v2,1,m4q040,pass,,
+v2,1,m4q041,pass,,
+v2,1,m4q042,pass,,
+v2,1,m4q047,pass,,
+v2,1,m4q049,pass,,
+v2,1,m4q050,fail,skipped-investigation;fabricated-evidence,"no tool calls, but Sources lists [tool:ffprobe] [tool:codec_caps] [kb:hdr-tone-mapping]: citations are made up"
+v2,1,m4q054,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,1,m4q055,pass,,
+v2,1,m4q056,pass,,
+v2,1,m4q057,pass,,
+v2,1,m4q059,fail,assumed-unstated-detail,user never named it; agent assumed av_offset_300ms.mp4 and answered as if confirmed
+v2,1,m4q060,pass,,
+v2,1,m4q061,pass,,
+v2,1,m4q062,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,1,m4q063,pass,,
+v2,1,m4q064,fail,vague-next-step,"cause fine, next step 'Try a different device or lower the quality.' is not actionable"
+v2,1,m4q065,pass,,
+v2,1,m4q066,pass,,
+v2,1,m4q067,fail,assumed-unstated-detail,user never named it; agent assumed av_offset_300ms.mp4 and answered as if confirmed
+v2,1,m4q068,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 decodes HEVC Main 10') although the tool output contradicts it
+v2,1,m4q070,pass,,
+v2,1,m4q071,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,1,m4q072,pass,,
+v2,1,m4q073,fail,accepted-false-premise,repeated the user's false premise ('Display.isHdr() works from API 21')
+v2,1,m4q075,pass,,
+v2,1,m4q076,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v2,1,m4q078,fail,vague-next-step,"cause fine, next step 'Check the app's audio settings.' is not actionable"
+v2,1,m4q079,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v2,1,m4q081,pass,,
+v2,1,m4q083,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('both streams in the file start at zero') although the tool output contradicts it
+v2,1,m4q084,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 can run 16 hardware decoders at once') although the tool output contradicts it
+v2,1,m4q085,pass,,
+v2,1,m4q086,pass,,
+v2,1,m4q087,pass,,
+v2,1,m4q088,fail,skipped-investigation;fabricated-evidence,"no tool calls, but Sources lists [kb:hdr-tone-mapping]: citations are made up"
+v2,1,m4q089,pass,,
+v2,1,m4q090,pass,,
+v2,1,m4q092,pass,,
+v2,1,m4q093,pass,,
+v2,1,m4q095,fail,assumed-unstated-detail,user never named it; agent assumed progressive_late_moov.mp4 and answered as if confirmed
+v2,1,m4q099,fail,vague-next-step,"cause fine, next step 'Check the app's audio settings.' is not actionable"
+v2,1,m4q100,pass,,
+v2,1,m4q102,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,1,m4q104,pass,,
+v2,1,m4q105,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,1,m4q106,fail,vague-next-step,"cause fine, next step 'Check the app's audio settings.' is not actionable"
+v2,1,m4q107,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 is a Widevine L1 device') although the tool output contradicts it
+v2,1,m4q108,pass,,
+v2,1,m4q109,fail,wrong-api-detail,wrong API detail: answers with a decoder API for a display question (isHardwareAccelerated != HDR display)
+v2,1,m4q110,fail,assumed-unstated-detail,user never named it; agent assumed progressive_late_moov.mp4 and answered as if confirmed
+v2,1,m4q112,fail,vague-next-step,"cause fine, next step 'Check the codec documentation.' is not actionable"
+v2,1,m4q114,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,1,m4q115,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v2,1,m4q116,fail,format-violation,no Sources line
+v2,1,m4q118,fail,vague-next-step,"cause fine, next step 'Look at the CDN configuration.' is not actionable"
+v2,1,m4q119,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,1,m4q120,fail,wrong-api-detail,wrong API detail: suggests try/catch around play(); the exception arrives async via onPlayerError
+v2,1,m4q121,fail,wrong-api-detail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+
+v2,1,m4q122,pass,,
+v2,1,m4q123,fail,vague-next-step,"cause fine, next step 'Try a different device or lower the quality.' is not actionable"
+v2,1,m4q125,pass,,
+v2,1,m4q126,fail,ignored-tool-output,answer contradicts the tool output: says both streams start at 0; ffprobe shows video start_time 0.300
+v2,1,m4q127,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v2,1,m4q128,fail,skipped-investigation;fabricated-evidence,"no tool calls, but Sources lists [tool:logcat_grep] [kb:behind-live-window]: citations are made up"
+v2,1,m4q129,fail,vague-next-step,"cause fine, next step 'Check the app's audio settings.' is not actionable"
+v2,1,m4q130,pass,,
+v2,1,m4q131,pass,,
+v2,1,m4q132,fail,vague-next-step,"cause fine, next step 'Check the device settings.' is not actionable"
+v2,1,m4q135,pass,,
+v2,1,m4q136,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('this is an audio focus problem') although the tool output contradicts it
+v2,1,m4q137,fail,wrong-api-detail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+
+v2,1,m4q138,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,1,m4q139,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,1,m4q141,pass,,
+v2,1,m4q142,fail,vague-next-step,"cause fine, next step 'Check the codec documentation.' is not actionable"
+v2,1,m4q143,fail,assumed-unstated-detail,user never named it; agent assumed live_resume.txt and answered as if confirmed
+v2,1,m4q144,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,1,m4q146,pass,,
+v2,1,m4q147,pass,,
+v2,1,m4q148,pass,,
+v2,1,m4q149,fail,wrong-api-detail,wrong API detail: suggests try/catch around play(); the exception arrives async via onPlayerError
+v2,1,m4q150,fail,format-violation,no Sources line
+v2,1,m4q152,fail,format-violation,no Sources line
+v2,1,m4q153,fail,vague-next-step,"cause fine, next step 'Test on more devices.' is not actionable"
+v2,1,m4q155,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 decodes HEVC Main 10') although the tool output contradicts it
+v2,1,m4q156,pass,,
+v2,1,m4q158,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,1,m4q159,pass,,
+v2,1,m4q160,fail,format-violation,no Sources line
+v2,1,m4q161,fail,vague-next-step,"cause fine, next step 'Investigate the sync logic.' is not actionable"
+v2,1,m4q162,pass,,
+v2,1,m4q163,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,1,m4q165,pass,,
+v2,1,m4q167,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,1,m4q168,fail,vague-next-step,"cause fine, next step 'Profile the app's memory.' is not actionable"
+v2,1,m4q169,pass,,
+v2,1,m4q170,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v2,1,m4q171,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,1,m4q172,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,1,m4q173,pass,,
+v2,1,m4q174,pass,,
+v2,1,m4q175,pass,,
+v2,1,m4q176,fail,accepted-false-premise,repeated the user's false premise ('AudioFocusRequest works from API 21')
+v2,1,m4q177,fail,vague-next-step,"cause fine, next step 'Contact your DRM provider.' is not actionable"
+v2,1,m4q178,pass,,
+v2,1,m4q180,fail,assumed-unstated-detail,user never named it; agent assumed progressive_late_moov.mp4 and answered as if confirmed
+v2,1,m4q181,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,1,m4q182,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and thumbs_codec_exhaustion.txt and answered as if confirmed
+v2,2,m4q004,pass,,
+v2,2,m4q017,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v2,2,m4q021,pass,,
+v2,2,m4q026,pass,,
+v2,2,m4q031,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,2,m4q037,fail,vague-next-step,"cause fine, next step 'Check the codec documentation.' is not actionable"
+v2,2,m4q042,pass,,
+v2,2,m4q049,pass,,
+v2,2,m4q050,fail,vague-next-step,"cause fine, next step 'Check the device settings.' is not actionable"
+v2,2,m4q056,pass,,
+v2,2,m4q060,pass,,
+v2,2,m4q061,fail,vague-next-step,"cause fine, next step 'Look into how the player handles backgrounding.' is not actionable"
+v2,2,m4q062,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,2,m4q063,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,2,m4q065,pass,,
+v2,2,m4q068,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,2,m4q070,pass,,
+v2,2,m4q075,pass,,
+v2,2,m4q076,pass,,
+v2,2,m4q078,fail,vague-next-step,"cause fine, next step 'Check the app's audio settings.' is not actionable"
+v2,2,m4q087,pass,,
+v2,2,m4q105,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 decodes HEVC Main 10') although the tool output contradicts it
+v2,2,m4q108,pass,,
+v2,2,m4q114,fail,wrong-api-detail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+
+v2,2,m4q129,fail,vague-next-step,"cause fine, next step 'Check the app's audio settings.' is not actionable"
+v2,2,m4q130,pass,,
+v2,2,m4q139,pass,,
+v2,2,m4q150,fail,format-violation,no Sources line
+v2,2,m4q153,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,2,m4q156,pass,,
+v2,2,m4q158,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,2,m4q163,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,2,m4q169,pass,,
+v2,2,m4q170,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v2,2,m4q171,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,2,m4q172,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,2,m4q178,pass,,
+v2,3,m4q004,pass,,
+v2,3,m4q017,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v2,3,m4q021,pass,,
+v2,3,m4q026,fail,ignored-tool-output,answer contradicts the tool output: says atlas-a1 is software-only for AV1; codec_caps lists c2.atlas.av1.decoder hardware=true 4K60
+v2,3,m4q031,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,3,m4q037,fail,vague-next-step,"cause fine, next step 'Check the codec documentation.' is not actionable"
+v2,3,m4q042,pass,,
+v2,3,m4q049,pass,,
+v2,3,m4q050,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,3,m4q056,pass,,
+v2,3,m4q060,pass,,
+v2,3,m4q061,pass,,
+v2,3,m4q062,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,3,m4q063,pass,,
+v2,3,m4q065,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,3,m4q068,pass,,
+v2,3,m4q070,pass,,
+v2,3,m4q075,pass,,
+v2,3,m4q076,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v2,3,m4q078,fail,vague-next-step,"cause fine, next step 'Check the app's audio settings.' is not actionable"
+v2,3,m4q087,pass,,
+v2,3,m4q105,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 decodes HEVC Main 10') although the tool output contradicts it
+v2,3,m4q108,pass,,
+v2,3,m4q114,fail,wrong-api-detail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+
+v2,3,m4q129,fail,wrong-api-detail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+
+v2,3,m4q130,pass,,
+v2,3,m4q139,pass,,
+v2,3,m4q150,fail,format-violation,no Sources line
+v2,3,m4q153,fail,vague-next-step,"cause fine, next step 'Test on more devices.' is not actionable"
+v2,3,m4q156,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('this is an audio focus problem') although the tool output contradicts it
+v2,3,m4q158,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 has a hardware AV1 decoder') although the tool output contradicts it
+v2,3,m4q163,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,3,m4q169,pass,,
+v2,3,m4q170,pass,,
+v2,3,m4q171,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,3,m4q172,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,3,m4q178,pass,,
+v2,4,m4q004,pass,,
+v2,4,m4q017,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v2,4,m4q021,pass,,
+v2,4,m4q026,fail,skipped-investigation;fabricated-evidence,"no tool calls, but Sources lists [tool:codec_caps] [tool:ffprobe]: citations are made up"
+v2,4,m4q031,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,4,m4q037,fail,vague-next-step,"cause fine, next step 'Check the codec documentation.' is not actionable"
+v2,4,m4q042,pass,,
+v2,4,m4q049,pass,,
+v2,4,m4q050,pass,,
+v2,4,m4q056,pass,,
+v2,4,m4q060,pass,,
+v2,4,m4q061,fail,vague-next-step,"cause fine, next step 'Look into how the player handles backgrounding.' is not actionable"
+v2,4,m4q062,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,4,m4q063,pass,,
+v2,4,m4q065,pass,,
+v2,4,m4q068,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,4,m4q070,pass,,
+v2,4,m4q075,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,4,m4q076,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v2,4,m4q078,fail,vague-next-step,"cause fine, next step 'Check the app's audio settings.' is not actionable"
+v2,4,m4q087,pass,,
+v2,4,m4q105,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 decodes HEVC Main 10') although the tool output contradicts it
+v2,4,m4q108,pass,,
+v2,4,m4q114,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,4,m4q129,fail,wrong-api-detail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+
+v2,4,m4q130,pass,,
+v2,4,m4q139,pass,,
+v2,4,m4q150,fail,vague-next-step,"cause fine, next step 'Check the app's audio settings.' is not actionable"
+v2,4,m4q153,fail,vague-next-step,"cause fine, next step 'Test on more devices.' is not actionable"
+v2,4,m4q156,pass,,
+v2,4,m4q158,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,4,m4q163,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,4,m4q169,pass,,
+v2,4,m4q170,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v2,4,m4q171,pass,,
+v2,4,m4q172,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,4,m4q178,fail,assumed-unstated-detail,user never named it; agent assumed atlas-a1 and av1_2160p60.mkv and answered as if confirmed
+v2,5,m4q004,pass,,
+v2,5,m4q017,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v2,5,m4q021,pass,,
+v2,5,m4q026,fail,ignored-tool-output,answer contradicts the tool output: says atlas-a1 is software-only for AV1; codec_caps lists c2.atlas.av1.decoder hardware=true 4K60
+v2,5,m4q031,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,5,m4q037,pass,,
+v2,5,m4q042,pass,,
+v2,5,m4q049,pass,,
+v2,5,m4q050,fail,skipped-investigation;fabricated-evidence,"no tool calls, but Sources lists [tool:ffprobe] [tool:codec_caps] [kb:hdr-tone-mapping]: citations are made up"
+v2,5,m4q056,fail,accepted-false-premise,repeated the user's false premise ('Android has shipped an AV1 decoder since Android 8')
+v2,5,m4q060,pass,,
+v2,5,m4q061,fail,vague-next-step,"cause fine, next step 'Look into how the player handles backgrounding.' is not actionable"
+v2,5,m4q062,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,5,m4q063,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 is a Widevine L1 device') although the tool output contradicts it
+v2,5,m4q065,pass,,
+v2,5,m4q068,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,5,m4q070,pass,,
+v2,5,m4q075,pass,,
+v2,5,m4q076,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v2,5,m4q078,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,5,m4q087,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,5,m4q105,fail,accepted-false-premise;ignored-tool-output,repeated the user's false premise ('the lumen-l3 decodes HEVC Main 10') although the tool output contradicts it
+v2,5,m4q108,pass,,
+v2,5,m4q114,fail,wrong-api-detail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+
+v2,5,m4q129,fail,wrong-api-detail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+
+v2,5,m4q130,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v2,5,m4q139,pass,,
+v2,5,m4q150,fail,format-violation,no Sources line
+v2,5,m4q153,fail,vague-next-step,"cause fine, next step 'Test on more devices.' is not actionable"
+v2,5,m4q156,pass,,
+v2,5,m4q158,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,5,m4q163,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,5,m4q169,pass,,
+v2,5,m4q170,fail,assumed-unstated-detail,user never named it; agent assumed lumen-l3 and answered as if confirmed
+v2,5,m4q171,fail,vague-next-step,"cause fine, next step 'Test it on a few devices.' is not actionable"
+v2,5,m4q172,fail,format-violation,opened with 'Premise check:' instead of 'Likely cause:'
+v2,5,m4q178,pass,,
