@@ -14,6 +14,8 @@ uv run pytest -q                          # offline: replays recorded Claude res
 uv run mediadoctor-lab01 compare v1 v2    # the module 1 worked example
 uv run mediadoctor-lab02 run --out runs/t.jsonl   # module 2: tool-using agent, traced
 uv run evalkit view runs/t.jsonl m2q03    # read one trace in the terminal
+uv run mediadoctor-lab03 rank             # module 3: ranked failure modes from the reference labels
+uv run mediadoctor-lab03 annotate --labels runs/m3_labels.csv   # label the 100 traces yourself
 uv run zensical serve                     # the course site at http://localhost:8000
 ```
 
@@ -25,10 +27,11 @@ environment (or a git-ignored `.env`) and use `EVALS_LLM_MODE=record`. See `docs
 ```text
 config/models.toml        Claude model per role (agent; cheaper judge and synth)
 docs/                     course site (Zensical, Material-compatible mkdocs.yml)
-labs/evalkit/             record/replay LLM wrapper, fixtures, tracer, trace viewer and OTLP export
+labs/evalkit/             record/replay LLM wrapper, fixtures, tracer, trace viewer, OTLP export, annotation and taxonomy tools
 labs/mediadoctor/         the running agent (module 1 seed; module 2 Claude tool-use agent with 4 tools)
 data/kb/                  knowledge-base notes the agent retrieves from
-data/datasets/            versioned case sets
+data/datasets/            versioned case sets (module03_cases.jsonl: 100-trace error-analysis set)
+data/labels/              reference annotations and failure-mode definitions (synthetic-authored)
 data/media/               small ffmpeg-generated sample clips + cached ffprobe output
 data/devices/, data/logs/ fictional device codec tables and synthetic logcat captures
 fixtures/recorded/        SHA-256 keyed JSONL recorded responses (replayed in CI)

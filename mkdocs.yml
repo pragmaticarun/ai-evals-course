@@ -67,7 +67,11 @@ nav:
           - Exercises: modules/02-agent-with-tracing/exercises.md
           - Quiz: modules/02-agent-with-tracing/quiz.md
           - Tracing backends: modules/02-agent-with-tracing/backends.md
-      - "3. Error analysis": modules/03-error-analysis/index.md
+      - "3. Error analysis":
+          - modules/03-error-analysis/index.md
+          - Lab: modules/03-error-analysis/lab.md
+          - Exercises: modules/03-error-analysis/exercises.md
+          - Quiz: modules/03-error-analysis/quiz.md
       - "4. Synthetic data": modules/04-synthetic-data/index.md
       - "5. Evaluators and judge validation": modules/05-evaluators-and-judges/index.md
       - "6. Trustworthy metrics": modules/06-trustworthy-metrics/index.md
@@ -80,6 +84,7 @@ nav:
   - Cheat sheets:
       - The eval loop: cheatsheets/eval-loop.md
       - Tracing an agent: cheatsheets/tracing.md
+      - Error analysis: cheatsheets/error-analysis.md
   - Templates:
       - Failure taxonomy sheet: eval-templates/failure-taxonomy.md
       - Judge prompt: eval-templates/judge-prompt.md

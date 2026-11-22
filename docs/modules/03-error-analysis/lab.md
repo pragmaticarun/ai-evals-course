@@ -1,0 +1,153 @@
+# Lab 3: Error analysis on 100 traces (offline)
+
+**Time:** about 4 hours, most of it reading. **Needs:** the setup from [lab 1](../01-why-evals/lab.md).
+**Does not need:** an API key or network access.
+
+You will label 100 MediaDoctor traces, build failure taxonomy v1, rank the modes, draw a Pareto chart, and compare
+your result with the course's reference labels. Keep your own files under `runs/`, which git ignores.
+
+## 1. Update and check
+
+```bash
+git pull
+uv sync
+uv run pytest -q
+```
+
+## 2. Replay the trace set
+
+```bash
+uv run mediadoctor-lab03 run --out runs/m3_traces.jsonl
+```
+
+Expected: `100 traces, 580 spans, total cost $0.5771 (replayed)`. The traces are the same on every run, so your
+labels stay attached to the right traces.
+
+Look at two traces in the review layout before you start:
+
+```bash
+uv run mediadoctor-lab03 review m3t006 --traces runs/m3_traces.jsonl   # a passing trace
+uv run mediadoctor-lab03 review m3t033 --traces runs/m3_traces.jsonl   # the one from the lesson
+```
+
+Steps are numbered in the order they ran. `chat:plan` is a model call that asked for tools; `chat:answer` is the
+one that wrote the final answer. For every attribute, `uv run evalkit view runs/m3_traces.jsonl m3t033 --all` from
+module 2 still works.
+
+## 3. Open coding (about 2 hours)
+
+```bash
+uv run mediadoctor-lab03 annotate --traces runs/m3_traces.jsonl --labels runs/m3_labels.csv --annotator "your name"
+```
+
+For each trace:
+
+1. Read the question and the answer. Would you accept it? Type `p` or `f`.
+2. On a fail, write one line about **the first thing that went wrong**, in your own words.
+3. Give the number of the step where it first went wrong (press Enter if you are not sure).
+4. Leave the failure modes empty for now (press Enter). You will code them in step 4.
+
+The file is saved after every trace. Type `q` to stop and run the same command later to continue where you left off;
+`s` skips a trace and `b` goes back. Aim for about one minute per trace and take a break every 30.
+
+!!! warning "Don't open the reference labels yet"
+    `data/labels/module03_reference.csv` is the answer key. Looking at it first turns open coding into copying.
+    You will compare in step 7.
+
+If you have less time, label at least the first 50 traces; the lesson explains what you may miss by stopping early.
+
+## 4. Axial coding
+
+Print your failure notes, grouped by the step you said went wrong:
+
+```bash
+uv run mediadoctor-lab03 notes --labels runs/m3_labels.csv
+```
+
+Read them all. Group notes that describe the same problem and that would be fixed the same way. Then write your
+definitions in `runs/m3_modes.toml`, one block per mode:
+
+```toml
+[[mode]]
+id = "short-kebab-case-id"
+name = "Human-readable name"
+definition = "One sentence a new reviewer could apply without asking you."
+severity = 2        # 1 annoying, 2 misleading or costly, 3 harmful or trust-breaking
+fixability = "easy" # easy, medium, or hard
+detector = "code"   # code, judge, or none: how you expect to measure it in module 5
+owner = "tools"     # who would fix it
+```
+
+Aim for 5 to 10 modes. Then assign modes to each failing trace:
+
+```bash
+uv run mediadoctor-lab03 code --labels runs/m3_labels.csv --modes runs/m3_modes.toml
+```
+
+You can also edit the `modes` column of the CSV directly in a spreadsheet; separate several modes with `;`. If a
+note fits no mode, either write a new mode or sharpen a definition, then re-check the traces you already coded.
+
+## 5. Rank, chart, and export the taxonomy sheet
+
+```bash
+uv run mediadoctor-lab03 rank --labels runs/m3_labels.csv --modes runs/m3_modes.toml \
+    --taxonomy runs/taxonomy.csv --svg runs/pareto.svg
+```
+
+This prints your ranked list (priority = traces × severity; ties go to the easier fix), a text Pareto chart, and the
+first-upstream counts. It writes `runs/taxonomy.csv` in the format of the
+[failure taxonomy template](../../eval-templates/failure-taxonomy.md) and `runs/pareto.svg`, which you can open in any
+browser. If `rank` reports modes that are used but not defined, fix the TOML or the labels; it refuses to rank
+undefined modes.
+
+Check your saturation curve:
+
+```bash
+uv run mediadoctor-lab03 saturation --labels runs/m3_labels.csv
+```
+
+How many traces did you read after the last new mode appeared? Under about 20, the lesson says to keep going.
+
+## 6. Focused analyses
+
+```bash
+uv run mediadoctor-lab03 errors    --traces runs/m3_traces.jsonl   # every failed tool call and what happened next
+uv run mediadoctor-lab03 retrieval --traces runs/m3_traces.jsonl   # each search against the document it needed
+uv run mediadoctor-lab03 signals   --traces runs/m3_traces.jsonl   # automatic flags per trace
+```
+
+Compare these with your labels. Did you mark the 4 recovered tool errors as passes? Did you catch every retrieval
+miss, and for each one, would a better query have found the document? Which of your failures have no signal at all?
+
+## 7. Compare with the reference
+
+```bash
+uv run mediadoctor-lab03 compare --labels runs/m3_labels.csv
+uv run mediadoctor-lab03 rank --taxonomy runs/reference_taxonomy.csv --svg runs/reference_pareto.svg
+```
+
+`compare` shows pass/fail agreement, the traces where you and the reference disagree, and, for each reference mode,
+which of *your* modes you gave the same traces. Different names are fine; what matters is whether the groupings
+match. Look at every disagreement and decide who is right: the reference is one reviewer's opinion, written for the
+course. If you are confident you are right, keep your label and note why.
+
+## 8. Optional: your own traces from Claude
+
+With an API key, run the same 100 questions against the real model and analyse what it actually does:
+
+```bash
+EVALS_LLM_MODE=live uv run mediadoctor-lab03 run --out runs/m3_live.jsonl
+uv run mediadoctor-lab03 annotate --traces runs/m3_live.jsonl --labels runs/m3_live_labels.csv
+```
+
+This costs real money (on the order of a dollar for 100 runs at current prices, depending on how many steps the
+model takes). Expect different failure modes from the synthetic set. That is the point: the categories have to come
+from the traces you have.
+
+## Checkpoint
+
+- [ ] `runs/m3_labels.csv` with a verdict for at least 50 (ideally 100) traces and a note on every failure
+- [ ] `runs/m3_modes.toml` with definitions, severity, and fixability
+- [ ] `runs/taxonomy.csv` and `runs/pareto.svg`
+- [ ] Your saturation point, and whether you stopped too early
+- [ ] Three disagreements with the reference, each resolved with a reason
