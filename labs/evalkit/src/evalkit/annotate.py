@@ -403,3 +403,63 @@ def mode_overlap(mine: list[Annotation], ref: list[Annotation]) -> dict[str, Cou
             )
             out.setdefault(rm, Counter()).update(mine_modes)
     return dict(sorted(out.items()))
+
+
+# --- Inter-annotator agreement (module 9) ----------------------------------------------------------
+
+
+def cohen_kappa(a: list[str] | tuple[str, ...], b: list[str] | tuple[str, ...]) -> float:
+    """Cohen's kappa for two raters labelling the same items: (p_o - p_e) / (1 - p_e).
+
+    p_o is the share of items they agree on; p_e is the agreement expected if each rater labelled
+    at random with their own label frequencies. NaN when p_e is 1 (both used a single label), where
+    agreement says nothing about skill."""
+    if len(a) != len(b):
+        raise ValueError("both raters must label the same items")
+    n = len(a)
+    if n == 0:
+        return float("nan")
+    po = sum(x == y for x, y in zip(a, b, strict=True)) / n
+    ca, cb = Counter(a), Counter(b)
+    pe = sum(ca[k] * cb[k] for k in set(ca) | set(cb)) / (n * n)
+    return float("nan") if pe == 1 else (po - pe) / (1 - pe)
+
+
+@dataclass
+class KappaReport:
+    left: str
+    right: str
+    common: list[str]
+    observed: float  # raw pass/fail agreement
+    kappa: float  # pass/fail kappa
+    per_mode: dict[str, tuple[float, int, int, int]]  # mode: (kappa, both, left only, right only)
+    disagreements: list[str]  # case ids with different verdicts
+
+
+def kappa_report(
+    left: list[Annotation], right: list[Annotation], left_name: str = "A", right_name: str = "B"
+) -> KappaReport:
+    """Agreement between two annotators on the cases both labelled: pass/fail kappa, plus a kappa
+    per failure mode (mode present or absent on each common case)."""
+    r = {x.case_id: x for x in right}
+    pairs = [(x, r[x.case_id]) for x in left if x.case_id in r]
+    va = [x.verdict for x, _ in pairs]
+    vb = [y.verdict for _, y in pairs]
+    observed = sum(x == y for x, y in zip(va, vb, strict=True)) / len(pairs) if pairs else 0.0
+    per_mode = {}
+    for m in sorted({m for x, y in pairs for m in x.modes + y.modes}):
+        ha = ["y" if m in x.modes else "n" for x, _ in pairs]
+        hb = ["y" if m in y.modes else "n" for _, y in pairs]
+        both = sum(p == q == "y" for p, q in zip(ha, hb, strict=True))
+        lo = sum(p == "y" and q == "n" for p, q in zip(ha, hb, strict=True))
+        ro = sum(p == "n" and q == "y" for p, q in zip(ha, hb, strict=True))
+        per_mode[m] = (cohen_kappa(ha, hb), both, lo, ro)
+    return KappaReport(
+        left_name,
+        right_name,
+        [x.case_id for x, _ in pairs],
+        observed,
+        cohen_kappa(va, vb),
+        per_mode,
+        [x.case_id for x, y in pairs if x.verdict != y.verdict],
+    )

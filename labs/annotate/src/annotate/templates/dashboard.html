@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block body %}
+<section class="card">
+  <h2>{{ d.title }}</h2>
+  <p class="muted">{% for e in d.events %}{{ e.when[:16] | replace("T", " ") }}: {{ e.what }}{% if not loop.last %} · {% endif %}{% endfor %}</p>
+</section>
+<section class="card">
+  <h3>Cited-but-failed evidence, per day (p-chart, 3-sigma limits)</h3>
+  {{ svg | safe }}
+  <p class="muted">Red points are above the upper limit computed from the reference window (Mon to Wed).</p>
+</section>
+<section class="card">
+  <h3>Alarms</h3>
+  <ul>{% for a in d.alarms %}<li><b>{{ a.metric }}</b>: {% if a.when %}CUSUM alarm {{ a.when[:16] | replace("T", " ") }} IST ({{ "%+.1f" | format(a.hours_after_rollout) }} h from the rollout){% else %}no alarm{% endif %} <span class="muted">p0 {{ "%.3f" | format(a.p0) }} → p1 {{ "%.3f" | format(a.p1) }}</span></li>{% endfor %}</ul>
+</section>
+<section class="card">
+  <h3>Per day</h3>
+  <table class="mini">
+    <tr><th>day</th><th>n</th><th>evidence fail</th><th>tool error</th><th>thumbs-down</th><th>retried</th><th>AV1 share</th><th>topic PSI</th><th>new devices</th></tr>
+    {% for r in d.days %}
+    <tr><td>{{ r.label }}</td><td>{{ r.n }}</td>
+      <td>{{ "%.1f" | format(100 * r.rates.evidence_fail) }}%</td><td>{{ "%.1f" | format(100 * r.rates.tool_error) }}%</td>
+      <td>{{ "%.1f" | format(100 * r.rates.thumbs_down) }}%</td><td>{{ "%.1f" | format(100 * r.rates.retried) }}%</td>
+      <td>{{ "%.0f" | format(100 * r.av1_share) }}%</td><td class="{{ 'hot' if r.topic_psi > 0.25 else '' }}">{{ "%.2f" | format(r.topic_psi) }}</td>
+      <td>{{ r.new_devices | join(", ") }}</td></tr>
+    {% endfor %}
+  </table>
+</section>
+<section class="card">
+  <h3>Online judge (sampled, corrected for judge error)</h3>
+  <table class="mini">
+    <tr><th>period</th><th>n</th><th>observed</th><th>corrected [95% CI]</th></tr>
+    {% for j in d.judge %}<tr><td>{{ j.period }}</td><td>{{ j.n }}</td><td>{{ "%.3f" | format(j.observed) }}</td><td>{{ "%.3f" | format(j.corrected) }} [{{ "%.3f" | format(j.low) }}, {{ "%.3f" | format(j.high) }}]</td></tr>{% endfor %}
+  </table>
+</section>
+{% endblock %}

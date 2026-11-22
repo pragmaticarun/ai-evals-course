@@ -8,6 +8,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Analyze, measure, improve** [1]
 : The eval loop: find and name failures, build evaluators you trust for them, change the system and verify the change. Then repeat.
 
+**Annotation queue** [9]
+: The ordered list of production traces put in front of reviewers: triggered, random, and stratified picks, with duplicates folded and each pick's inclusion probability recorded.
+
 **Answer relevance** [7]
 : Whether an answer addresses the question that was asked, judged from the question and the answer only. A refusal or an answer about another problem fails.
 
@@ -22,6 +25,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Benevolent dictator** [3]
 : The single domain expert who owns pass/fail verdicts and failure-mode definitions, taking input from others but deciding (term used by Hamel Husain).
+
+**Bernoulli CUSUM** [9]
+: A cumulative-sum control chart for a 0/1 stream: each event adds the log-likelihood ratio of a raised rate p1 against the reference rate p0, the sum is floored at zero, and an alarm fires when it exceeds a threshold h (E. S. Page, 1954).
 
 **BM25 (Okapi BM25)** [7]
 : A ranking function for keyword search that weights rare query words more and saturates repeated ones, with a document-length correction. A strong baseline for retrieval.
@@ -53,6 +59,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Code check (validated)** [5]
 : A deterministic evaluator measured against human labels like a judge; precise, but its definition can still be narrower than the expert's.
 
+**Cohen's kappa** [9]
+: Agreement between two annotators corrected for chance: (p_o − p_e) / (1 − p_e). 1 is perfect, 0 is chance level; low for rare categories even when raw agreement is high.
+
 **Compounding failure** [3]
 : An early mistake in a multi-step run that causes later symptoms, such as a bad tool argument followed by an answer citing the failed tool. Label the first one.
 
@@ -64,6 +73,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Context retention** [7]
 : In a conversation, using what the user already said. A turn that asks again for a fact the user gave earlier fails it.
+
+**Control chart (p-chart)** [9]
+: A chart of a failure proportion over time with limits of about three standard errors around a reference rate; a point outside the limits signals a change.
 
 **Corrected pass rate (Rogan-Gladen)** [5, 6]
 : A judge-measured pass rate adjusted for the judge's TPR and TNR: (observed + TNR − 1) / (TPR + TNR − 1). Defined only when TPR + TNR > 1.
@@ -95,6 +107,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Distinct-n** [4]
 : The share of unique n-grams (distinct-1: words, distinct-2: bigrams) in a set of texts; a rough lexical diversity measure that does not measure coverage.
 
+**Drift (input, output, system)** [9]
+: A change in production: in what users send (input), in what the agent produces or how it scores (output and metric), or in the model, prompt, or tools behind it (system).
+
 **Eval** [1]
 : Any repeatable procedure that measures some aspect of a system's output quality over a set of cases.
 
@@ -103,6 +118,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Experiment comparison report** [8]
 : A Markdown diff of two runs: what was compared, a per-metric table with paired intervals, the flipped cases to read first, and cost and time. Posted as a CI job summary and uploaded as an artifact.
+
+**Explicit and implicit feedback** [9]
+: Explicit: ratings users give on purpose (thumbs up or down). Implicit: behaviour that hints at quality (retries, copies, abandonment). Both are sparse or ambiguous and biased; use them to pick traces, not as the metric.
 
 **Fabricated evidence** [2]
 : An answer that cites a tool result, log line, or document the trace shows it never obtained. Detectable with a code check over the trace.
@@ -143,6 +161,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Ground truth / label** [1]
 : A human judgment of whether an output is acceptable, made by someone who knows the domain.
 
+**Hajek estimator (inverse-probability weighting)** [9]
+: A rate estimated from a non-uniform sample by weighting each label by one over its inclusion probability and dividing by the sum of the weights; the ratio form of the Horvitz-Thompson estimator.
+
 **Handoff error** [7]
 : Information lost or distorted when one agent passes work to another, such as a planner's brief that drops the file name the user gave.
 
@@ -157,6 +178,12 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Holm-Bonferroni adjustment** [6]
 : A step-down correction of p-values for multiple tests that controls the chance of any false positive; less blunt than plain Bonferroni.
+
+**Inclusion probability** [9]
+: The chance that a sampling rule picks a given trace (1 for a signal-triggered pick, the rate for a random one); needed to turn a biased queue into an unbiased estimate.
+
+**Inter-annotator agreement** [9]
+: How consistently two or more people label the same items, usually reported as Cohen's kappa per label with the counts.
 
 **Job summary (GitHub Actions)** [8]
 : Markdown a workflow step appends to the file named by `$GITHUB_STEP_SUMMARY`; GitHub shows it on the run's summary page.
@@ -182,6 +209,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Minimum detectable difference** [6]
 : The smallest change an eval set of a given size can detect at the chosen significance level and power.
 
+**Model snapshot** [9]
+: A dated version of a hosted model (for example `claude-sonnet-5-5-20261116`); providers can change it under the same alias, so every trace should record it.
+
 **MRR (mean reciprocal rank)** [7]
 : The mean over queries of 1 / rank of the first relevant result (0 if none is retrieved).
 
@@ -196,6 +226,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Near-duplicate** [4]
 : Two items whose texts are highly similar without being identical; here measured as Jaccard similarity of word 3-grams.
+
+**Offline vs online eval** [9]
+: Offline: evaluators run on a fixed, labelled dataset before release (in CI). Online: the same evaluators run on live production traffic, on all of it (code checks) or on a sample (judges).
 
 **Open coding** [3]
 : The first pass of error analysis: writing short free-text notes on what went wrong in each trace, without predefined categories.
@@ -248,6 +281,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Priority (failure mode)** [3]
 : A ranking score for failure modes; in this course, traces affected times severity, with fixability breaking ties.
 
+**PSI (population stability index)** [9]
+: A measure of how far one categorical distribution has moved from a reference: the sum of (current − reference) · ln(current / reference). Below 0.1 is usually stable, above 0.25 a large shift.
+
 **Re-record** [8]
 : Running the model again in record mode to replace or add fixtures. Done deliberately, for a behaviour change or to check drift, followed by reading and labelling the new outputs; never to make CI pass.
 
@@ -299,11 +335,17 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Signal (triage flag)** [3]
 : A cheap automatic check used to decide which traces to read first. Not a label: flagged traces can pass and unflagged ones can fail.
 
+**Signal-triggered sampling** [9]
+: Choosing traces for review because something flagged them: a failed check, negative feedback, a tool error, a retry, or a slow response.
+
 **Simulated user** [7]
 : A model that plays the user in multi-turn evals, with a persona, a goal, and facts it reveals only when asked. It must itself be checked for leaked or invented facts.
 
 **Span** [2]
 : One timed unit of work inside a trace (a model call, a tool call, a retrieval), with a name, start and end time, status, and attributes.
+
+**Staged rollout** [9]
+: Releasing a version to a growing share of users (for example 15%, 40%, 70%, 90%); lets monitoring compare the new version with the old one on the same days.
 
 **Stale label** [8]
 : A label whose output has changed since it was given, for example after a re-record. Found by storing a digest of each labelled output.
@@ -337,6 +379,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Trace** [1, 2]
 : A structured record of everything one run did: model calls, tool calls, retrieved context, timings, tokens.
+
+**Trace fingerprint** [9]
+: A hash of what makes a trace's behaviour (question, tool calls, answer), used to fold identical traces in a review queue.
 
 **Trajectory** [7]
 : The ordered steps of an agent run: model calls, tool calls with arguments, handoffs, and the final answer. Evaluated after the outcome.

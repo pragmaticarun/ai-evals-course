@@ -1,0 +1,114 @@
+# Production failure taxonomy v2 for MediaDoctor (module 9). Synthetic-authored, like the traces.
+# v1 plus the mode found while reviewing the week of 16 November 2026
+# (app 4.2 rollout): unknown-device-guess. The annotation app shows these as
+# checkboxes; the first nine get the number keys 1 to 9, so the most common modes come first.
+# severity: 1 = annoying, 2 = misleading or costly, 3 = harmful or trust-breaking
+
+[[mode]]
+id = "ignored-tool-output"
+name = "Answer contradicts tool output"
+definition = "A tool returned a fact (decoder, profile, box order, start time, limit) and the answer states something incompatible with it."
+severity = 3
+fixability = "medium"
+detector = "judge"
+owner = "agent prompt"
+
+
+[[mode]]
+id = "unknown-device-guess"
+name = "Guesses capabilities of an unknown device"
+definition = "The tools have no profile for the device (codec_caps fails), and the answer states the device's decoders, profiles, or limits as fact instead of saying the data is missing."
+severity = 3
+fixability = "easy"
+detector = "code"
+owner = "agent prompt"
+
+[[mode]]
+id = "fabricated-evidence"
+name = "Cites evidence it never obtained"
+definition = "The answer cites a tool or document whose call failed or never happened, or quotes details that no successful tool returned."
+severity = 3
+fixability = "easy"
+detector = "code"
+owner = "agent runtime"
+
+[[mode]]
+id = "wrong-tool-args"
+name = "Wrong tool arguments"
+definition = "A tool was called with a file, device, or log name that does not exist (usually a near-miss of the real one), so the call failed."
+severity = 2
+fixability = "easy"
+detector = "code"
+owner = "tools"
+
+[[mode]]
+id = "wrong-api-detail"
+name = "Wrong Android API detail"
+definition = "The answer names an Android or Media3 API, property, or API level that is wrong or does not do what is claimed."
+severity = 2
+fixability = "medium"
+detector = "judge"
+owner = "knowledge base"
+
+[[mode]]
+id = "skipped-investigation"
+name = "Answered without investigating"
+definition = "The question names a file, device, or log the tools can inspect, but the agent answered without calling the matching tool."
+severity = 2
+fixability = "easy"
+detector = "code"
+owner = "agent prompt"
+
+[[mode]]
+id = "retrieval-miss"
+name = "Knowledge-base retrieval miss"
+definition = "search_kb returned documents that do not contain the needed fix while a relevant document exists, and the answer follows the wrong documents."
+severity = 2
+fixability = "medium"
+detector = "code"
+owner = "retrieval"
+
+[[mode]]
+id = "redundant-steps"
+name = "Redundant tool calls"
+definition = "The agent repeats a tool call that returns the same results (for example the same documents), adding cost and latency without new information."
+severity = 1
+fixability = "easy"
+detector = "code"
+owner = "agent prompt"
+
+[[mode]]
+id = "vague-next-step"
+name = "Next step not actionable"
+definition = "The cause may be right, but the Next step line names no concrete check, API, command, or change."
+severity = 1
+fixability = "easy"
+detector = "judge"
+owner = "agent prompt"
+
+[[mode]]
+id = "format-violation"
+name = "Answer format broken"
+definition = "The answer is missing one of the Likely cause / Next step / Sources lines, or they are out of order."
+severity = 1
+fixability = "easy"
+detector = "code"
+owner = "agent prompt"
+
+[[mode]]
+id = "accepted-false-premise"
+name = "Builds on a false premise"
+definition = "The user states something as fact that the tools or the knowledge base contradict, and the answer builds its cause or next step on it."
+severity = 3
+fixability = "medium"
+detector = "judge"
+owner = "agent prompt"
+
+[[mode]]
+id = "assumed-unstated-detail"
+name = "Assumes a detail the user never gave"
+definition = "The question leaves out the file, device, or log needed to check it, and the agent picks one and answers as if the user had named it."
+severity = 2
+fixability = "easy"
+detector = "judge"
+owner = "agent prompt"

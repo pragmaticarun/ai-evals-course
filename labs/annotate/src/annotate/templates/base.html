@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ title }}</title>
+<link rel="stylesheet" href="/static/app.css">
+<script src="/static/htmx.min.js" defer></script>
+<script src="/static/keys.js" defer></script>
+</head>
+<body>
+<header class="top">
+  <a href="/" class="brand">{{ title }}</a>
+  <nav>
+    <a href="/">Queue</a>
+    <a href="/agreement">Agreement</a>
+    {% if has_dashboard %}<a href="/dashboard">Dashboard</a>{% endif %}
+    {% if annotator %}<a href="/export/labels.csv">Labels CSV</a><a href="/export/taxonomy.csv">Taxonomy CSV</a><a href="/export/golden.jsonl">Golden JSONL</a>{% endif %}
+  </nav>
+  <span class="who">{% if annotator %}annotating as <b>{{ annotator }}</b>{% else %}not signed in{% endif %}</span>
+  <button type="button" class="help-btn" data-help aria-label="Keyboard shortcuts">?</button>
+</header>
+<main>
+{% block body %}{% endblock %}
+</main>
+<div id="help" class="help" hidden>
+  <div class="help-card">
+    <h2>Keyboard</h2>
+    <table>
+      <tr><td><kbd>p</kbd> / <kbd>f</kbd></td><td>pass / fail</td></tr>
+      <tr><td><kbd>1</kbd>…<kbd>9</kbd></td><td>toggle failure mode 1 to 9 (fail only)</td></tr>
+      <tr><td><kbd>m</kbd></td><td>type a new failure mode</td></tr>
+      <tr><td><kbd>n</kbd></td><td>write a note (<kbd>Esc</kbd> to leave the box)</td></tr>
+      <tr><td><kbd>g</kbd></td><td>flag as a golden-dataset candidate</td></tr>
+      <tr><td><kbd>Enter</kbd> or <kbd>s</kbd></td><td>save and go to the next unlabelled trace</td></tr>
+      <tr><td><kbd>j</kbd> / <kbd>k</kbd></td><td>next / previous without saving</td></tr>
+      <tr><td><kbd>c</kbd></td><td>show or hide context (why it was queued, judge verdict)</td></tr>
+      <tr><td><kbd>t</kbd></td><td>expand or collapse all tool outputs</td></tr>
+      <tr><td><kbd>?</kbd></td><td>this help</td></tr>
+    </table>
+    <p class="muted">Context is hidden until you ask for it, so the judge and the user's thumbs do not anchor your verdict.</p>
+  </div>
+</div>
+</body>
+</html>

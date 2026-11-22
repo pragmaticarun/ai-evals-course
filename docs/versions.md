@@ -27,6 +27,11 @@ Exact transitive versions are pinned in `uv.lock`. Regenerate this page with `uv
 | mkdocs-material | 9.8.2 | Theme for the fallback build; in maintenance mode until 2027-05-05 |
 | pymdown-extensions | 13.1.2 | Markdown extensions (admonitions, details, tabs) |
 | hatchling | 1.33.0 (build-time pin) | Build backend for the lab packages |
+| fastapi | 0.165.0 | Web framework for the annotation app (module 9) |
+| jinja2 | 3.1.6 | Templates for the annotation app |
+| python-multipart | 0.0.34 | Form parsing for the annotation app |
+| uvicorn | 0.54.0 | Local server for the annotation app |
+| httpx | 0.28.1 | HTTP client behind FastAPI's TestClient (tests only) |
 
 ## Claude models (config/models.toml)
 

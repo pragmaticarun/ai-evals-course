@@ -1,0 +1,78 @@
+<div id="panel" class="panel" data-pos="{{ pos }}" data-total="{{ total }}">
+  <div class="bar">
+    <span><b>#{{ pos + 1 }}</b> of {{ total }} · {{ item.case_id }}{% if item.duplicates %} · +{{ item.duplicates | length }} identical{% endif %}</span>
+    <span class="muted">{{ done }} labelled{% if labelled %} · this one is labelled{% endif %}</span>
+    <span class="muted">{{ head.ms | round(0) | int }} ms · {{ head.steps }} steps{% if head.app %} · app {{ head.app }}{% endif %}</span>
+    <button type="button" data-context class="link">context (c)</button>
+  </div>
+  <div class="context" hidden>
+    queued because: <b>{{ item.reasons | join(", ") or "(no reason given)" }}</b>
+    {% for k, v in item.context.items() %} · {{ k }}: <b>{{ v }}</b>{% endfor %}
+  </div>
+  <div class="cols">
+    <section class="trace">
+      <h3>Question</h3>
+      <p class="question">{{ head.question }}</p>
+      <h3>Answer</h3>
+      <pre class="answer">{% for cls, text in answer %}{% if cls %}<span class="{{ cls }}">{{ text }}</span>{% else %}{{ text }}{% endif %}{% endfor %}</pre>
+      <p class="legend"><span class="muted">citations:</span> <span class="cite-ok">[cited, ran]</span> <span class="cite-bad">[cited, failed]</span> <span class="cite-missing">[cited, never ran]</span></p>
+      <h3>Trace</h3>
+      <ol class="tree">
+      {% for n in nodes %}
+        <li class="node op-{{ n.op }}{% if n.error %} err{% endif %}" style="--depth: {{ n.depth }}">
+          <div class="node-head"><b>{{ n.name }}</b> <span class="muted">{{ n.ms | round(0) | int }} ms</span> <span class="muted">{{ n.summary }}</span></div>
+          {% if n.args %}<code class="args">{{ n.args }}</code>{% endif %}
+          {% if n.view %}
+          <details class="tool" open>
+            <summary>{{ "error" if n.error else "output" }}</summary>
+            {% if n.view.kind == "error" %}<p class="error">{{ n.view.text }}</p>
+            {% elif n.view.kind == "decoders" %}
+              <table class="mini"><tr><th>decoder</th><th>type</th><th>profiles</th><th>max</th></tr>
+              {% for name, hw, prof, mx in n.view.rows[0] %}<tr class="{{ hw }}"><td>{{ name }}</td><td>{{ hw }}</td><td>{{ prof }}</td><td>{{ mx }}</td></tr>{% endfor %}
+              </table>
+              <p class="facts">{% for k, v in n.view.rows[1] %}<span>{{ k }}: <b>{{ v }}</b></span> {% endfor %}</p>
+            {% elif n.view.kind == "probe" %}
+              <table class="mini">{% for st, main, more in n.view.rows[0] %}<tr><td>{{ st }}</td><td><b>{{ main }}</b></td><td class="muted">{{ more }}</td></tr>{% endfor %}</table>
+              <p class="facts">{% for k, v in n.view.rows[1] %}<span>{{ k }}: <b>{{ v }}</b></span> {% endfor %}</p>
+            {% elif n.view.kind == "log" %}
+              <p class="muted">{{ n.view.text }}</p>
+              <pre class="log">{% for lvl, line in n.view.rows %}<span class="lvl-{{ lvl }}">{{ line }}</span>
+{% endfor %}</pre>
+            {% elif n.view.kind == "docs" %}
+              <ul class="docs">{% for id, t in n.view.rows %}<li><code>{{ id }}</code> {{ t }}</li>{% endfor %}</ul>
+            {% elif n.view.kind == "table" %}
+              <table class="mini">{% for k, v in n.view.rows %}<tr><td>{{ k }}</td><td>{{ v }}</td></tr>{% endfor %}</table>
+            {% else %}<pre>{{ n.view.text }}</pre>{% endif %}
+          </details>
+          {% endif %}
+          {% if n.error and not n.view %}<p class="error">{{ n.error }}</p>{% endif %}
+        </li>
+      {% endfor %}
+      </ol>
+    </section>
+    <section class="label">
+      <form id="label-form" method="post" action="/label/{{ pos }}" hx-post="/label/{{ pos }}" hx-target="#panel" hx-swap="outerHTML">
+        {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+        <fieldset class="verdict">
+          <label class="pass"><input type="radio" name="verdict" value="pass" {% if form.verdict == "pass" %}checked{% endif %}> pass <kbd>p</kbd></label>
+          <label class="fail"><input type="radio" name="verdict" value="fail" {% if form.verdict == "fail" %}checked{% endif %}> fail <kbd>f</kbd></label>
+        </fieldset>
+        <fieldset class="modes">
+          <legend>Failure modes</legend>
+          {% for m in modes %}
+          <label title="{{ m.definition }}"><input type="checkbox" name="modes" value="{{ m.id }}" {% if m.id in form.modes %}checked{% endif %}>{% if loop.index <= 9 %}<kbd>{{ loop.index }}</kbd>{% endif %} {{ m.id }}</label>
+          {% endfor %}
+          <input name="new_mode" id="new-mode" placeholder="new mode id (m)" value="{{ form.new_mode or '' }}" autocomplete="off">
+        </fieldset>
+        <label for="note">Note <kbd>n</kbd></label>
+        <textarea id="note" name="note" rows="4" placeholder="what went wrong, in your words">{{ form.note }}</textarea>
+        <label class="golden"><input type="checkbox" name="golden" value="1" {% if form.golden %}checked{% endif %}> golden-dataset candidate <kbd>g</kbd></label>
+        <div class="row">
+          <button type="submit">Save and next <kbd>Enter</kbd></button>
+          <a hx-get="/panel/{{ (pos - 1) % total }}" hx-target="#panel" hx-swap="outerHTML" href="/review/{{ (pos - 1) % total }}" data-prev>prev (k)</a>
+          <a hx-get="/panel/{{ (pos + 1) % total }}" hx-target="#panel" hx-swap="outerHTML" href="/review/{{ (pos + 1) % total }}" data-next>next (j)</a>
+        </div>
+      </form>
+    </section>
+  </div>
+</div>

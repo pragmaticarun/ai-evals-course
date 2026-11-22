@@ -7,12 +7,14 @@ requires-python = ">=3.14,<3.16"
 license = "MIT"
 authors = [{ name = "Arunkumar Maniam Rajan" }]
 dependencies = [
+    "annotate",
     "evalkit",
     "mediadoctor",
 ]
 
 [dependency-groups]
 dev = [
+    "httpx==0.28.1",  # FastAPI's TestClient (module 9)
     "pytest==9.2.0",
     "ruff==0.17.6",
 ]
@@ -28,9 +30,10 @@ docs = [
 default-groups = ["dev", "docs"]
 
 [tool.uv.workspace]
-members = ["labs/evalkit", "labs/mediadoctor"]
+members = ["labs/annotate", "labs/evalkit", "labs/mediadoctor"]
 
 [tool.uv.sources]
+annotate = { workspace = true }
 evalkit = { workspace = true }
 mediadoctor = { workspace = true }
 
@@ -51,4 +54,4 @@ select = ["E", "F", "I", "B", "UP"]
 ignore = ["E501"]  # line length is handled by `ruff format`; long strings in data scripts are fine
 
 [tool.ruff.lint.isort]
-known-first-party = ["evalkit", "mediadoctor"]
+known-first-party = ["annotate", "evalkit", "mediadoctor"]

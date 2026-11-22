@@ -28,6 +28,10 @@ uv run mediadoctor-lab07 report --out runs/m7_report.md   # RAG, multi-turn, mul
 uv run pytest evals -m "not judges"       # module 8: the eval suite's fast tier (the judge tier: -m judges)
 uv run mediadoctor-lab08 gate --prompt v2 # the regression gate on a prompt change (blocked: exit 1)
 uv run mediadoctor-lab08 hygiene          # leakage, contamination, and stale-label checks on the golden set
+uv run mediadoctor-lab09 monitor          # module 9: a simulated production week: drift, control charts, CUSUM
+uv run mediadoctor-lab09 sample           # the review queue: signal-triggered + random + stratified picks
+uv run mediadoctor-lab09 annotate         # the trace review app at http://127.0.0.1:8009 (localhost only)
+uv run annotate serve --help              # the same app on any trace store
 uv run zensical serve                     # the course site at http://localhost:8000
 ```
 
@@ -43,8 +47,9 @@ config/judges/            versioned LLM judge specs: criterion, PASS/FAIL, conte
 config/release.toml       the prompt MediaDoctor ships; the eval gate compares changes to it (module 8)
 config/eval_gate.toml     the eval gate's tiers, rule, and budgets (module 8)
 docs/                     course site (Zensical, Material-compatible mkdocs.yml)
-labs/evalkit/             record/replay LLM wrapper, fixtures, tracer, trace viewer, OTLP export, annotation and taxonomy tools, synthetic data (tuples, batching, dedup, coverage, splits), judges (prompts, TPR/TNR), statistics (Wilson and bootstrap CIs, judge-error correction, McNemar, Holm, pass^k, sample sizes), retrieval metrics, trajectory metrics and transition-failure matrices, regression gates, golden manifests, dataset hygiene
+labs/evalkit/             record/replay LLM wrapper, fixtures, tracer, trace viewer, OTLP export, annotation and taxonomy tools, synthetic data (tuples, batching, dedup, coverage, splits), judges (prompts, TPR/TNR), statistics (Wilson and bootstrap CIs, judge-error correction, McNemar, Holm, pass^k, sample sizes), retrieval metrics, trajectory metrics and transition-failure matrices, regression gates, golden manifests, dataset hygiene, production sampling and drift (PSI, p-charts, CUSUM), Cohen's kappa
 labs/mediadoctor/         the running agent (module 1 seed; module 2 Claude tool-use agent with 4 tools; module 7 RAG, chat with a simulated user, planner + specialists, vision)
+labs/annotate/            the trace review app (FastAPI + HTMX, keyboard-driven, localhost only; module 9)
 data/kb/                  knowledge-base notes the agent retrieves from
 data/kb_v2/               second-edition knowledge base (25 docs, 57 sections) for the module 7 retrieval evals
 data/sessions/            multi-turn chat scenarios for the simulated user (module 7)
@@ -52,6 +57,7 @@ data/datasets/            versioned case sets (module03_cases.jsonl: 100-trace e
 data/synth/               stand-in "beta" queries used as style examples and seeds (synthetic-authored)
 data/labels/              reference annotations and failure-mode definitions (synthetic-authored)
 data/golden/              the golden set's manifest, labelled-answer digests, hygiene review (module 8)
+data/production/          a simulated week of production traffic and the AV1 drift cases (module 9, synthetic-authored)
 data/media/               small ffmpeg-generated sample clips + cached ffprobe output; frames/ has module 7's test frames and spectrograms
 data/devices/, data/logs/ fictional device codec tables and synthetic logcat captures
 fixtures/recorded/        SHA-256 keyed JSONL recorded responses (replayed in CI)

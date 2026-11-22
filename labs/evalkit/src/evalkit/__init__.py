@@ -32,6 +32,12 @@ Module 8 adds:
   - evalkit.golden   golden-dataset manifests (file hashes, split digests, versions), the held-out
                      guard, and held-out rotation
   - evalkit.hygiene  cross-split near-duplicates, n-gram contamination, stale labels
+
+Module 9 adds:
+  - evalkit.monitor  deterministic random and stratified sampling, review queues with inclusion
+                     probabilities, weighted (Hajek) rates, PSI, new categories, p-charts,
+                     Bernoulli CUSUM, two-proportion tests
+  - evalkit.annotate cohen_kappa and kappa_report (per-mode agreement, disagreements)
 """
 
 from evalkit.checks import Check, CheckResult, run_checks, summarize

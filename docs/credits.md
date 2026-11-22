@@ -34,8 +34,30 @@ anyone serious about evals should read them directly and consider their course.
 | Gold datasets go stale and need refreshing through error analysis; weigh each eval's cost against its signal | Module 8 | [AI Evals FAQ: What should I do when my "gold" eval dataset becomes stale?](https://hamel.dev/blog/posts/evals-faq/what-should-i-do-when-my-gold-eval-dataset-becomes-stale.html), Hamel Husain and Shreya Shankar |
 | Train, dev, and test sets for evaluators; repeated use of dev results overfits even without copying examples; a test set kept for a final check | Modules 5, 8 | [AI Evals FAQ: How do I know if I can trust my automated eval?](https://hamel.dev/blog/posts/evals-faq/how-do-i-know-if-i-can-trust-my-automated-eval.html), Hamel Husain and Shreya Shankar |
 | Cheap assertions on every code change, more expensive evaluations on a slower cadence | Modules 1, 8 | [Your AI Product Needs Evals](https://hamel.dev/blog/posts/evals/), Hamel Husain |
-| Instrument first; build simple custom viewers for traces | Module 2 | [A Field Guide to Rapidly Improving AI Products](https://hamel.dev/blog/posts/field-guide/), Hamel Husain |
-| Validating evaluators against human labels; criteria drift | Modules 5, 6 | Shreya Shankar et al., [Who Validates the Validators? Aligning LLM-Assisted Evaluation of LLM Outputs with Human Preferences](https://arxiv.org/abs/2404.12272) (arXiv 2404.12272) |
+| Build a custom annotation tool; render traces for the domain, show progress, use hotkeys, keep the review in flow | Module 9 | [AI Evals FAQ: Should I build a custom annotation tool?](https://hamel.dev/blog/posts/evals-faq/should-i-build-a-custom-annotation-tool-or-use-something-off-the-shelf.html) and [What makes a good custom interface for reviewing LLM outputs?](https://hamel.dev/blog/posts/evals-faq/what-makes-a-good-custom-interface-for-reviewing-llm-outputs.html), Hamel Husain and Shreya Shankar |
+| Sampling production traces from exploratory to targeted (random, clustering, data analysis, classification, feedback), keeping random traces in every batch | Module 9 | [AI Evals FAQ: How can I efficiently sample production traces for review?](https://hamel.dev/blog/posts/evals-faq/how-can-i-efficiently-sample-production-traces-for-review.html), Hamel Husain and Shreya Shankar |
+| Surfacing problem traces beyond user feedback: random samples, existing evals as screens, outliers and stratification | Module 9 | [AI Evals FAQ: How do I surface problematic traces for review beyond user feedback?](https://hamel.dev/blog/posts/evals-faq/how-do-i-surface-problematic-traces-for-review-beyond-user-feedback.html), Hamel Husain and Shreya Shankar |
+| Cohen's kappa when more than one person annotates; label independently, then resolve disagreements by updating the rubric | Module 9 | [AI Evals FAQ: How many people should annotate my LLM outputs?](https://hamel.dev/blog/posts/evals-faq/how-many-people-should-annotate-my-llm-outputs.html), Hamel Husain and Shreya Shankar |
+| Re-running error analysis after changes and incidents, with small regular reviews of flagged traces in between | Module 9 | [AI Evals FAQ: How often should I re-run error analysis on my production system?](https://hamel.dev/blog/posts/evals-faq/how-often-should-i-re-run-error-analysis-on-my-production-system.html), Hamel Husain and Shreya Shankar |
+| Instrument first; build simple custom viewers for traces | Modules 2, 9 | [A Field Guide to Rapidly Improving AI Products](https://hamel.dev/blog/posts/field-guide/), Hamel Husain |
+| Validating evaluators against human labels; criteria drift | Modules 5, 6, 9 | Shreya Shankar et al., [Who Validates the Validators? Aligning LLM-Assisted Evaluation of LLM Outputs with Human Preferences](https://arxiv.org/abs/2404.12272) (arXiv 2404.12272) |
+
+## Module 9 references
+
+| Topic | Source |
+|---|---|
+| CUSUM charts | E. S. Page, "Continuous Inspection Schemes", Biometrika 41 (1954), doi:10.1093/biomet/41.1-2.100; overview in [Wikipedia: CUSUM](https://en.wikipedia.org/wiki/CUSUM) |
+| Control charts for proportions, and CUSUM in practice | NIST/SEMATECH e-Handbook of Statistical Methods: [attribute control charts](https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc332.htm) and [CUSUM control charts](https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc323.htm) |
+| Cohen's kappa | J. Cohen, "A Coefficient of Agreement for Nominal Scales", Educational and Psychological Measurement 20 (1960), doi:10.1177/001316446002000104; overview in [Wikipedia: Cohen's kappa](https://en.wikipedia.org/wiki/Cohen%27s_kappa) |
+| High agreement with low kappa | Feinstein and Cicchetti, [High agreement but low kappa: I. The problems of two paradoxes](https://pubmed.ncbi.nlm.nih.gov/2348207/), Journal of Clinical Epidemiology, 1990 |
+| Weighting by inclusion probability | Horvitz and Thompson, "A Generalization of Sampling Without Replacement from a Finite Universe", JASA 47 (1952), doi:10.1080/01621459.1952.10483446; overview in [Wikipedia: Horvitz-Thompson estimator](https://en.wikipedia.org/wiki/Horvitz%E2%80%93Thompson_estimator) |
+| Head and tail sampling of traces | [OpenTelemetry: Sampling](https://opentelemetry.io/docs/concepts/sampling/) |
+| HTMX (vendored in `labs/annotate`, 0BSD licence) | [htmx documentation](https://htmx.org/docs/) and [source](https://github.com/bigskysoftware/htmx) |
+| Testing the app without a server | [FastAPI: Testing](https://fastapi.tiangolo.com/tutorial/testing/) |
+
+The sampling, drift, and agreement code, the annotation app, and the monitoring pages were written for this course.
+The week of traffic, its feedback, the 40 AV1 traces, their labels, the judge verdicts on them, and both annotators'
+labels are synthetic-authored (`scripts/author_module09_fixtures.py`); the model snapshot ids are fictional.
 
 ## Module 8 references
 

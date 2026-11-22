@@ -1,6 +1,6 @@
 [project]
 name = "evalkit"
-version = "0.8.0"
+version = "0.9.0"
 description = "Small, dependency-light eval toolkit used throughout the course: LLM record/replay, checks, reports."
 requires-python = ">=3.14,<3.16"
 license = "MIT"

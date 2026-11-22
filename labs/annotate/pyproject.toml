@@ -1,0 +1,26 @@
+[project]
+name = "annotate"
+version = "0.9.0"
+description = "A keyboard-driven trace review app (FastAPI + HTMX) for labelling agent traces."
+requires-python = ">=3.14,<3.16"
+license = "MIT"
+dependencies = [
+    "evalkit",
+    "fastapi==0.165.0",
+    "jinja2==3.1.6",
+    "python-multipart==0.0.34",
+    "uvicorn==0.54.0",
+]
+
+[project.scripts]
+annotate = "annotate.cli:main"
+
+[tool.uv.sources]
+evalkit = { workspace = true }
+
+[build-system]
+requires = ["hatchling==1.33.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/annotate"]

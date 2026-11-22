@@ -1,0 +1,486 @@
+"""Write the module 9 data: AV1 traces for the drift, a simulated week of traffic, judge verdicts,
+and two annotators' labels. No API key was used to write the course.
+
+1. Drift traces. 40 AV1 questions written for this module (data/production/drift_cases.jsonl):
+   24 about the vela-v2, a new phone with no device profile (codec_caps fails), and 16 about the
+   lumen-l3 and atlas-a1 after app 4.2 made AV1 the default. Each runs through the real
+   `run_agent` loop against a scripted client (namespace mediadoctor-m9-prod). On the vela-v2 the
+   agent either says it has no data or invents a hardware AV1 decoder (the new failure mode
+   `unknown-device-guess`, half of them also citing the failed codec_caps call). On the other two
+   phones it either answers correctly or contradicts codec_caps (module 3's ignored-tool-output).
+   Reference labels: data/labels/module09_reference.csv.
+2. Traffic. Mon 16 to Sun 22 November 2026 (IST): weekday and hour-of-day volume, 180 users,
+   a model snapshot change on Tuesday 14:00, and the app 4.2 staged rollout from Thursday 10:00.
+   Each request replays a module 3 trace (passing traces drawn 2.5x as often as failing ones, so
+   production is easier than the error-analysis set) or, for 4.2 users, often a drift trace.
+   Latency, thumbs, copies, and retries are drawn from documented rules (see `feedback`), with
+   deliberate biases: raters are a minority, slow answers attract thumbs-down even when right,
+   and confident wrong answers attract thumbs-up.
+3. Judge verdicts. The online judge (tool-grounding v2) on the drift traces, scripted from the
+   reference labels with module 5's error pattern plus one new one: on unknown-device guesses it
+   sometimes flags the unsupported claim. Namespace mediadoctor-m9-judges.
+4. Two annotators. data/labels/module09_annotator_{a,b}.csv label the first 40 items of the default
+   review queue, derived from the reference with documented, deterministic disagreements.
+
+Usage:  uv run python scripts/author_module09_fixtures.py
+"""
+
+from __future__ import annotations
+
+import csv
+import hashlib
+import json
+import random
+import sys
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Any
+
+sys.path.insert(0, str(Path(__file__).parent))
+
+from author_module03_fixtures import FakeClock, ScriptedClient, T, answer  # noqa: E402
+from author_module05_fixtures import judge_errs  # noqa: E402
+from author_module08_fixtures import VerdictClient  # noqa: E402
+from module03_scenarios import S  # noqa: E402
+
+from evalkit import LLM, Tracer  # noqa: E402
+from evalkit.annotate import FIELDS  # noqa: E402
+from evalkit.judge import build_judge_request  # noqa: E402
+from mediadoctor import lab05, lab09  # noqa: E402
+from mediadoctor.toolagent import run_agent  # noqa: E402
+
+SRC = "synthetic-authored"
+REF = "reference (synthetic-authored)"
+CLIP = "av1_2160p60.mkv"
+
+# --- 1. Drift traces --------------------------------------------------------------------------------
+
+OPENERS = [
+    "Since the 4.2 update",
+    "After switching our player to AV1 in 4.2",
+    "Ever since app 4.2 went out",
+    "With the new AV1 default in 4.2",
+]
+VELA = [  # (template, mentions the clip)
+    ("{o}, av1_2160p60.mkv stutters on the vela-v2. Does that phone decode AV1 in hardware?", True),
+    ("{o}, users on the new vela-v2 say av1_2160p60.mkv drops frames. Can it handle 4K60 AV1?", True),
+    ("{o}, our AV1 streams buffer and drop frames on the vela-v2. What's going on?", False),
+    ("{o}, is it safe to send 1080p60 AV1 to the vela-v2, or should we keep HEVC for it?", False),
+    ("{o}, battery drain complaints come from vela-v2 owners watching AV1. Is it software decoding?", False),
+    ("{o}, the vela-v2 shows a black frame before AV1 playback starts. Is AV1 supported there?", False),
+]  # fmt: skip
+LUMEN = [
+    "Since the 4.2 update made AV1 the default, av1_2160p60.mkv stutters on the lumen-l3. Why?",
+    "After 4.2 switched to AV1, lumen-l3 users report dropped frames on av1_2160p60.mkv. Root cause?",
+    "Ever since app 4.2 went out, the lumen-l3 plays av1_2160p60.mkv like a slideshow. What changed?",
+    "With AV1 on by default in 4.2, can the lumen-l3 play av1_2160p60.mkv at full frame rate?",
+    "Since 4.2, our lumen-l3 test phones get hot and drop frames on av1_2160p60.mkv. Is the decoder the problem?",
+    "After the 4.2 rollout, support tickets say AV1 4K stutters on the lumen-l3 (av1_2160p60.mkv). Explain?",
+    "4.2 made AV1 our default; QA sees av1_2160p60.mkv freeze every few seconds on the lumen-l3. Why?",
+    "Since app 4.2, the video in av1_2160p60.mkv falls behind its audio on the lumen-l3. What's wrong?",
+]
+ATLAS = [
+    "Since 4.2 made AV1 the default, does the atlas-a1 decode av1_2160p60.mkv in hardware?",
+    "After the 4.2 switch to AV1, can the atlas-a1 play av1_2160p60.mkv at 60 fps?",
+    "With AV1 on by default in 4.2, is av1_2160p60.mkv safe as the top rendition for the atlas-a1?",
+    "Ever since app 4.2, a few atlas-a1 users report AV1 stutter on av1_2160p60.mkv. Is the device too weak?",
+    "4.2 moved us to AV1. Does the atlas-a1 have the decoding power for av1_2160p60.mkv?",
+    "Since the 4.2 update, should the atlas-a1 get av1_2160p60.mkv or an HEVC rendition?",
+    "After 4.2, our dashboard shows AV1 decoder errors on some atlas-a1 phones. Can it decode av1_2160p60.mkv?",
+    "With 4.2's AV1 default, will the atlas-a1 decode av1_2160p60.mkv without dropping frames?",
+]
+VELA_CYCLE = ["guess_cite", "guess_kb", "honest", "guess_cite", "honest", "guess_kb"]
+LUMEN_CYCLE = ["ignored", "good", "ignored", "good", "ignored", "good", "good", "ignored"]
+ATLAS_CYCLE = ["good", "ignored", "good", "good", "ignored", "good", "good", "good"]
+
+GUESS = [
+    "The vela-v2 has a hardware AV1 decoder (c2.vela.av1.decoder) rated for 3840x2160 at 60 fps, so "
+    "decoding is not the bottleneck; the stutter points to network throughput or buffer settings.",
+    "The vela-v2 decodes AV1 in hardware up to 4K60, so the drops come from the renderer or thermal "
+    "throttling rather than the decoder.",
+    "The vela-v2's AV1 decoder is hardware backed and supports Main10 at 4K, so the problem is "
+    "probably the ABR ladder switching renditions too aggressively.",
+]
+GUESS_NEXT = [
+    "Raise the player's minimum buffer and check the bandwidth estimate in AnalyticsListener.",
+    "Profile frame drops with adb shell dumpsys gfxinfo while the stream plays.",
+    "Cap the ABR ladder at 1080p for a day and compare rebuffering.",
+]
+HONEST = (
+    "There is no vela-v2 profile in the device tables (codec_caps found none), so I cannot confirm "
+    "hardware AV1 support; the symptoms fit software decoding."
+)
+HONEST_CLIP = (
+    " The clip is AV1 Main at 3840x2160 and 60 fps, which a software decoder cannot sustain."
+)
+HONEST_NEXT = (
+    "On a vela-v2, list MediaCodecList decoders for video/av01 and check "
+    "MediaCodecInfo.isHardwareAccelerated() (API 29+); serve HEVC or 1080p30 AV1 until a hardware "
+    "decoder is confirmed, and add the phone to the device tables."
+)
+KB_QUERY = "AV1 hardware decoder support detection"
+
+
+def h(*parts: str) -> int:
+    return int(hashlib.sha256(":".join(parts).encode()).hexdigest(), 16)
+
+
+def tool_use(cid: str, n: int, name: str, args: dict) -> dict:
+    return {"type": "tool_use", "id": f"toolu_{cid}_{n:02d}", "name": name, "input": args}
+
+
+def drift_cases() -> list[dict[str, Any]]:
+    cases = []
+    for i, (tpl, clip) in enumerate(t for t in VELA for _ in OPENERS):
+        o = OPENERS[(i + i // 4) % 4]
+        cases.append(
+            {"question": tpl.format(o=o), "device": "vela-v2", "clip": clip, "group": "vela"}
+        )
+    cases += [{"question": q, "device": "lumen-l3", "clip": True, "group": "lumen"} for q in LUMEN]
+    cases += [{"question": q, "device": "atlas-a1", "clip": True, "group": "atlas"} for q in ATLAS]
+    for i, c in enumerate(cases, 1):
+        c["id"] = f"m9p{i:02d}"
+        c["topic"] = "av1-playback"
+        c["source"] = SRC
+    assert len({c["question"] for c in cases}) == len(cases) == 40
+    return cases
+
+
+def behaviours(cases: list[dict[str, Any]]) -> dict[str, str]:
+    k = {"vela": 0, "lumen": 0, "atlas": 0}
+    cyc = {"vela": VELA_CYCLE, "lumen": LUMEN_CYCLE, "atlas": ATLAS_CYCLE}
+    out = {}
+    for c in cases:
+        g = c["group"]
+        out[c["id"]] = cyc[g][k[g] % len(cyc[g])]
+        k[g] += 1
+    return out
+
+
+def script_for(c: dict[str, Any], beh: str) -> tuple[list[list[dict]], dict[str, str]]:
+    cid = c["id"]
+    n = 0
+
+    def U(name: str, args: dict) -> dict:
+        nonlocal n
+        n += 1
+        return tool_use(cid, n, name, args)
+
+    modes: list[str] = []
+    note = upstream = ""
+    if c["group"] == "vela":
+        first = [
+            T("I'll check the vela-v2's AV1 decoders" + (" and the clip." if c["clip"] else "."))
+        ]
+        if c["clip"]:
+            first.append(U("ffprobe", {"file": CLIP}))
+        first.append(U("codec_caps", {"device": "vela-v2", "mime": "video/av01"}))
+        second = [U("search_kb", {"query": KB_QUERY})]
+        clip_src = " [tool:ffprobe]" if c["clip"] else ""
+        if beh.startswith("guess"):
+            j = h(cid, "guess")
+            cause, nxt = GUESS[j % 3], GUESS_NEXT[j % 3]
+            if beh == "guess_cite":
+                src = "[tool:codec_caps]" + clip_src + " [kb:av1-decoding]"
+                modes = ["unknown-device-guess", "fabricated-evidence"]
+                note = (
+                    "codec_caps found no vela-v2 profile, yet the answer states its AV1 decoder specs "
+                    "as fact and cites [tool:codec_caps], which failed"
+                )
+            else:
+                src = "[kb:av1-decoding]" + clip_src
+                modes = ["unknown-device-guess"]
+                note = (
+                    "no vela-v2 profile exists (codec_caps failed); the answer invents a hardware AV1 "
+                    "decoder for it and builds the diagnosis on that"
+                )
+            upstream = "chat:answer"
+        else:
+            cause = HONEST + (HONEST_CLIP if c["clip"] else "")
+            nxt, src = HONEST_NEXT, "[kb:av1-decoding]" + clip_src
+        return [first, second, answer(cause, nxt, src)], ref_row(cid, modes, note, upstream)
+    sc = S["av1-lumen" if c["group"] == "lumen" else "av1-atlas"]
+    turns = [
+        ([T(sc["pre"])] if k == 0 else []) + [U(name, a) for name, a in t]
+        for k, t in enumerate(sc["turns"])
+    ]
+    if beh == "ignored":
+        wrong, why = sc["ignored"][h(cid, "ignored") % len(sc["ignored"])]
+        final = answer(wrong, sc["next"], sc["src"])
+        modes, note, upstream = (
+            ["ignored-tool-output"],
+            f"answer contradicts the tool output: {why}",
+            "chat:answer",
+        )
+    else:
+        final = answer(sc["cause"], sc["next"], sc["src"])
+    return [*turns, final], ref_row(cid, modes, note, upstream)
+
+
+def ref_row(cid: str, modes: list[str], note: str, upstream: str) -> dict[str, str]:
+    return {
+        "case_id": cid,
+        "verdict": "fail" if modes else "pass",
+        "note": note,
+        "first_upstream": upstream,
+        "modes": ";".join(modes),
+        "annotator": REF,
+    }
+
+
+def write_drift() -> dict[str, str]:
+    cases = drift_cases()
+    behs = behaviours(cases)
+    with lab09.drift_cases_path().open("w", encoding="utf-8") as fh:
+        for c in cases:
+            row = {k: c[k] for k in ("id", "question", "device", "topic", "source")}
+            fh.write(json.dumps(row, sort_keys=True) + "\n")
+    scripts, refs = {}, []
+    for c in cases:
+        scripts[c["id"]], ref = script_for(c, behs[c["id"]])
+        refs.append(ref)
+    clock = FakeClock()
+    llm = LLM(
+        namespace=lab09.PROD_NAMESPACE,
+        mode="record",
+        client=ScriptedClient(scripts, {c["question"]: c["id"] for c in cases}, clock),
+        source=SRC,
+        clock=clock,
+    )
+    if llm.store.path.exists():
+        llm.store.path.unlink()
+    for c in cases:
+        res = run_agent(c["question"], llm=llm, tracer=Tracer(), case_id=c["id"])
+        assert res.stop_reason == "end_turn", (c["id"], res.stop_reason)
+    write_labels(lab09.reference_path(), refs)
+    lab09.drift_cases.cache_clear()
+    print(f"drift traces: {len(cases)} ({sum(r['verdict'] == 'fail' for r in refs)} failing)")
+    return behs
+
+
+def write_labels(path: Path, rows: list[dict[str, str]]) -> None:
+    with path.open("w", newline="", encoding="utf-8") as fh:
+        w = csv.DictWriter(fh, [f for f in FIELDS if f not in ("trace_id", "annotated_at")])
+        w.writeheader()
+        w.writerows(rows)
+
+
+# --- 2. Traffic -------------------------------------------------------------------------------------
+
+DAY_VOLUME = [118, 124, 121, 126, 119, 72, 64]  # Mon..Sun
+HOUR_WEIGHT = [1, 1, 1, 1, 1, 1, 1, 2, 4, 8, 9, 9, 8, 8, 9, 9, 8, 7, 5, 4, 3, 3, 2, 1]
+SNAP_OLD, SNAP_NEW = "claude-sonnet-5-5-20261001", "claude-sonnet-5-5-20261116"
+N_USERS = 180
+
+
+def rollout_share(t: datetime) -> float:
+    """Share of requests from app 4.2: staged rollout, 15% at Thursday 10:00 to 90% by Saturday."""
+    pts = [
+        (lab09.ROLLOUT, 0.15),
+        (lab09.ROLLOUT + timedelta(hours=8), 0.40),
+        (lab09.ROLLOUT + timedelta(hours=23), 0.70),
+        (lab09.ROLLOUT + timedelta(hours=38), 0.90),
+    ]
+    if t < pts[0][0]:
+        return 0.0
+    for (t0, s0), (t1, s1) in zip(pts, pts[1:], strict=False):
+        if t < t1:
+            return s0 + (s1 - s0) * (t - t0) / (t1 - t0)
+    return pts[-1][1]
+
+
+def feedback(
+    rng: random.Random, failed: bool, guess: bool, slow: bool, rater: float
+) -> dict[str, Any]:
+    """Explicit and implicit feedback, with the biases the module discusses:
+    - only some users rate at all (rater propensity 0, 1, or 3)
+    - wrong answers get more thumbs-down, but slow right answers get them too
+    - confident wrong answers (the vela-v2 guesses) get thumbs-up as often as right ones
+    - copying the answer is only weakly related to whether it was right
+    """
+    p_down = rater * ((0.10 if failed else 0.012) + (0.06 if slow else 0.0))
+    p_up = rater * (0.05 if (not failed or guess) else 0.015)
+    u = rng.random()
+    thumb = "down" if u < p_down else "up" if u < p_down + p_up else None
+    copied = rng.random() < (0.30 if (not failed or guess) else 0.22)
+    return {"thumb": thumb, "copied": copied}
+
+
+def write_traffic(behs: dict[str, str]) -> int:
+    rng = random.Random(9)
+    src = lab09.source_traces()
+    truth = lab09.truth()
+    pool = sorted(c for c in src if c.startswith("m3t"))
+    weights = [1.0 if truth[c].failed else 2.5 for c in pool]
+    vela = sorted(c for c in behs if c <= "m9p24")
+    other = sorted(c for c in behs if c > "m9p24")
+    dur = {c: lab09.root_of(t)["duration_ms"] for c, t in src.items()}
+    users = [f"u{i:03d}" for i in range(1, N_USERS + 1)]
+    rater = {u: rng.choices([0.0, 1.0, 3.0], [0.5, 0.35, 0.15])[0] for u in users}
+    rows: list[dict[str, Any]] = []
+    for d, vol in enumerate(DAY_VOLUME):
+        day = lab09.WEEK_START + timedelta(days=d)
+        for _ in range(vol):
+            hour = rng.choices(range(24), HOUR_WEIGHT)[0]
+            t = day + timedelta(hours=hour, seconds=rng.randrange(3600))
+            user = rng.choice(users)
+            on42 = rng.random() < rollout_share(t)
+            if on42 and rng.random() < 0.7:
+                case = rng.choice(vela) if rng.random() < 0.5 else rng.choice(other)
+            else:
+                case = rng.choices(pool, weights)[0]
+            rows.append({"ts": t, "user": user, "case": case, "on42": on42, "retry_of": None})
+    rows.sort(key=lambda r: r["ts"])
+    out: list[dict[str, Any]] = []
+    for r in rows:
+        out.append(r)
+        failed = truth[r["case"]].failed
+        slow_draw = rng.random() < 0.04
+        r["latency"] = (
+            dur[r["case"]] * rng.lognormvariate(0, 0.2) * (rng.uniform(3, 5) if slow_draw else 1)
+        )
+        r["slow_hint"] = slow_draw
+        p_retry = (0.10 if failed else 0.025) + (0.05 if slow_draw else 0)
+        if rng.random() < p_retry:
+            t2 = r["ts"] + timedelta(seconds=rng.randrange(60, 300))
+            out.append(
+                {
+                    **r,
+                    "ts": t2,
+                    "retry_of": r,
+                    "latency": r["latency"] * rng.uniform(0.9, 1.1),
+                    "slow_hint": False,
+                }
+            )
+    out.sort(key=lambda r: r["ts"])
+    for i, r in enumerate(out, 1):
+        r["id"] = f"r{i:04d}"
+    lines = []
+    for r in out:
+        failed = truth[r["case"]].failed
+        guess = behs.get(r["case"], "").startswith("guess")
+        rec = {
+            "id": r["id"],
+            "ts": r["ts"].isoformat(),
+            "user": r["user"],
+            "app_version": "4.2.0" if r["on42"] else "4.1.3",
+            "model": SNAP_OLD if r["ts"] < lab09.SNAPSHOT_CHANGE else SNAP_NEW,
+            "sim_source": r["case"],
+            "latency_ms": round(r["latency"], 1),
+            "feedback": feedback(rng, failed, guess, r["slow_hint"], rater[r["user"]]),
+            "retry_of": r["retry_of"]["id"] if r["retry_of"] else None,
+        }
+        lines.append(json.dumps(rec, sort_keys=True))
+    lab09.traffic_path().write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return len(out)
+
+
+# --- 3. Judge verdicts on the drift traces -------------------------------------------------------------
+
+
+def write_judges() -> int:
+    spec = lab05.load_spec(lab09.ONLINE_JUDGE)
+    examples = lab05.items()
+    base = LLM(namespace=lab05.JUDGE_NAMESPACE)
+    table: dict[str, str] = {}
+    todo = []
+    for cid, t in lab09.source_traces().items():
+        item = lab05.item_from_trace(t)
+        if not lab05.applies(spec, item):
+            continue
+        req = build_judge_request(spec, item, examples)
+        if base.store.has(req):
+            continue
+        assert cid.startswith("m9p"), f"module 3 trace {cid} has no recorded judge verdict"
+        modes = list(lab09.truth()[cid].modes)
+        ok, critique = judge_errs(spec.key, cid, modes, item, None)
+        if "unknown-device-guess" in modes and ok and lab09.stable_fraction(cid, "judge-new") < 0.3:
+            ok = False
+            critique = (
+                "The answer states decoder details for the vela-v2 that no tool returned (codec_caps "
+                "failed). The claim is unsupported by the tool output."
+            )
+        table[req["messages"][0]["content"]] = json.dumps(
+            {"critique": critique, "verdict": "PASS" if ok else "FAIL"}
+        )
+        todo.append(req)
+    clock = FakeClock()
+    llm = LLM(
+        namespace=lab09.JUDGE_NAMESPACE,
+        mode="record",
+        client=VerdictClient(table, clock),
+        source=SRC,
+        clock=clock,
+    )
+    if llm.store.path.exists():
+        llm.store.path.unlink()
+    for req in todo:
+        llm.create(**req)
+    return len(todo)
+
+
+# --- 4. Two annotators -------------------------------------------------------------------------------------
+
+
+def annotator(who: str, items: list[str]) -> list[dict[str, str]]:
+    """Annotator A follows the reference closely; B is more lenient. Both use taxonomy v2.
+
+    A: misses vague-next-step on 1 in 2 cases (calls them pass) and adds a stray
+       redundant-steps tag now and then.
+    B: does not know the device tables, so passes 1 in 2 unknown-device guesses that cite only
+       the knowledge base; misses fabricated-evidence on 1 in 3; fails 1 in 8 passing traces for a
+       "next step too long" reason that is not in the taxonomy (coded as vague-next-step).
+    """
+    rows = []
+    for rid in items:
+        ref = lab09.label_of(rid)
+        modes = list(ref.modes)
+        note = ref.note
+        u = lab09.stable_fraction(rid, f"annotator-{who}")
+        if who == "a":
+            if "vague-next-step" in modes and u < 0.5:
+                modes.remove("vague-next-step")
+            elif not modes and u > 0.95:
+                modes, note = ["redundant-steps"], "two similar search_kb calls"
+        else:
+            if modes == ["unknown-device-guess"] and u < 0.5:
+                modes, note = [], "plausible answer; cites the KB"
+            if "fabricated-evidence" in modes and len(modes) > 1 and u > 0.67:
+                modes.remove("fabricated-evidence")
+            if not ref.modes and u > 0.875:
+                modes, note = ["vague-next-step"], "next step too long to act on"
+        rows.append(
+            {
+                "case_id": rid,
+                "verdict": "fail" if modes else "pass",
+                "note": note,
+                "first_upstream": ref.first_upstream if modes else "",
+                "modes": ";".join(modes),
+                "annotator": f"annotator {who.upper()} (synthetic-authored)",
+            }
+        )
+    return rows
+
+
+def write_annotators() -> int:
+    items = [it.request_id for it in lab09.queue(limit=40)]
+    for who in ("a", "b"):
+        write_labels(lab09.annotator_path(who), annotator(who, items))
+    return len(items)
+
+
+def clear_caches() -> None:
+    for name in dir(lab09):
+        fn = getattr(lab09, name)
+        if callable(fn) and hasattr(fn, "cache_clear"):
+            fn.cache_clear()
+
+
+if __name__ == "__main__":
+    behs = write_drift()
+    clear_caches()
+    n = write_traffic(behs)
+    clear_caches()
+    print(f"traffic: {n} requests")
+    print(f"judge verdicts: {write_judges()} recorded")
+    print(f"annotators: {write_annotators()} queue items labelled twice")

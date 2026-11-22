@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block body %}
+<section class="card">
+  <form method="get" action="/agreement" class="row">
+    <label>Compare</label>
+    <select name="a">{% for n in names %}<option {% if n == a %}selected{% endif %}>{{ n }}</option>{% endfor %}</select>
+    <span>with</span>
+    <select name="b">{% for n in names %}<option {% if n == b %}selected{% endif %}>{{ n }}</option>{% endfor %}</select>
+    <button type="submit">Compare</button>
+  </form>
+</section>
+{% if rep %}
+<section class="card">
+  <p><b>{{ rep.common | length }}</b> traces labelled by both. Pass/fail agreement <b>{{ "%.2f" | format(rep.observed) }}</b>,
+  Cohen's kappa <b>{{ "%.2f" | format(rep.kappa) }}</b>.</p>
+  <p class="muted">Kappa discounts the agreement two people would reach by chance with their own pass rates. Read it per failure mode too: a rare mode can have high raw agreement and a low kappa.</p>
+  <table class="mini">
+    <tr><th>failure mode</th><th>kappa</th><th>both</th><th>only {{ a }}</th><th>only {{ b }}</th></tr>
+    {% for m, v in rep.per_mode.items() %}
+    <tr><td>{{ m }}</td><td>{% if v[0] == v[0] %}{{ "%.2f" | format(v[0]) }}{% else %}n/a{% endif %}</td><td>{{ v[1] }}</td><td>{{ v[2] }}</td><td>{{ v[3] }}</td></tr>
+    {% endfor %}
+  </table>
+</section>
+<section class="card">
+  <h3>Different verdicts ({{ diffs | length }})</h3>
+  <table class="mini">
+    <tr><th>case</th><th>{{ a }}</th><th>{{ b }}</th></tr>
+    {% for cid, x, y, pos in diffs %}
+    <tr><td>{% if pos is not none and annotator %}<a href="/review/{{ pos }}">{{ cid }}</a>{% else %}{{ cid }}{% endif %}</td>
+      <td><span class="tag {{ x.verdict }}">{{ x.verdict }}</span> {{ x.modes | join(", ") }}<br><span class="muted">{{ x.note }}</span></td>
+      <td><span class="tag {{ y.verdict }}">{{ y.verdict }}</span> {{ y.modes | join(", ") }}<br><span class="muted">{{ y.note }}</span></td></tr>
+    {% endfor %}
+  </table>
+</section>
+{% else %}
+<p class="muted">Agreement needs two annotators who labelled some of the same traces.</p>
+{% endif %}
+{% endblock %}

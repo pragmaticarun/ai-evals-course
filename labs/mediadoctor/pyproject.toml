@@ -1,6 +1,6 @@
 [project]
 name = "mediadoctor"
-version = "0.8.0"
+version = "0.9.0"
 description = "MediaDoctor: the course's running agent for Android and multimedia debugging questions."
 requires-python = ">=3.14,<3.16"
 license = "MIT"
@@ -17,6 +17,7 @@ mediadoctor-lab05 = "mediadoctor.lab05:main"
 mediadoctor-lab06 = "mediadoctor.lab06:main"
 mediadoctor-lab07 = "mediadoctor.lab07:main"
 mediadoctor-lab08 = "mediadoctor.lab08:main"
+mediadoctor-lab09 = "mediadoctor.lab09:main"
 
 [tool.uv.sources]
 evalkit = { workspace = true }

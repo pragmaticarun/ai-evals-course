@@ -25,6 +25,11 @@ LIBS = [
     ("mkdocs-material", "Theme for the fallback build; in maintenance mode until 2027-05-05"),
     ("pymdown-extensions", "Markdown extensions (admonitions, details, tabs)"),
     ("hatchling", "Build backend for the lab packages"),
+    ("fastapi", "Web framework for the annotation app (module 9)"),
+    ("jinja2", "Templates for the annotation app"),
+    ("python-multipart", "Form parsing for the annotation app"),
+    ("uvicorn", "Local server for the annotation app"),
+    ("httpx", "HTTP client behind FastAPI's TestClient (tests only)"),
 ]
 
 ACTIONS = [
