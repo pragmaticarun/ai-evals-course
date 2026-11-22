@@ -61,7 +61,12 @@ nav:
           - Lab: modules/01-why-evals/lab.md
           - Exercises: modules/01-why-evals/exercises.md
           - Quiz: modules/01-why-evals/quiz.md
-      - "2. A measurable agent with tracing": modules/02-agent-with-tracing/index.md
+      - "2. A measurable agent with tracing":
+          - modules/02-agent-with-tracing/index.md
+          - Lab: modules/02-agent-with-tracing/lab.md
+          - Exercises: modules/02-agent-with-tracing/exercises.md
+          - Quiz: modules/02-agent-with-tracing/quiz.md
+          - Tracing backends: modules/02-agent-with-tracing/backends.md
       - "3. Error analysis": modules/03-error-analysis/index.md
       - "4. Synthetic data": modules/04-synthetic-data/index.md
       - "5. Evaluators and judge validation": modules/05-evaluators-and-judges/index.md
@@ -74,6 +79,7 @@ nav:
       - "12. Capstone eval report": modules/12-capstone/index.md
   - Cheat sheets:
       - The eval loop: cheatsheets/eval-loop.md
+      - Tracing an agent: cheatsheets/tracing.md
   - Templates:
       - Failure taxonomy sheet: eval-templates/failure-taxonomy.md
       - Judge prompt: eval-templates/judge-prompt.md

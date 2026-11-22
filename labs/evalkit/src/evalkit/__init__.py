@@ -5,12 +5,17 @@ Module 1 ships:
   - evalkit.fixtures  SHA-256 keyed JSONL fixture store
   - evalkit.config    model roles from config/models.toml
   - evalkit.checks    tiny code-based check runner and pass-rate report
+
+Module 2 adds:
+  - evalkit.trace     OpenTelemetry-shaped tracer, JSONL export, OTLP/JSON conversion
+  - evalkit.viewer    tool-agnostic trace viewer (also the `evalkit view` command)
 """
 
 from evalkit.checks import Check, CheckResult, run_checks, summarize
-from evalkit.config import ModelRole, load_models, repo_root
+from evalkit.config import ModelRole, Price, load_models, load_prices, repo_root
 from evalkit.fixtures import FixtureMissingError, FixtureStore, request_key
 from evalkit.llm import LLM, Mode, text_of
+from evalkit.trace import Tracer, VirtualClock, WallClock, load_jsonl, to_otlp_json
 
 __all__ = [
     "LLM",
@@ -20,6 +25,13 @@ __all__ = [
     "FixtureStore",
     "Mode",
     "ModelRole",
+    "Price",
+    "Tracer",
+    "VirtualClock",
+    "WallClock",
+    "load_jsonl",
+    "load_prices",
+    "to_otlp_json",
     "load_models",
     "repo_root",
     "request_key",

@@ -1,0 +1,9 @@
+11-21 09:15:02.551  9402  9402 I LivePlayer: onPause: app moved to background, playback paused
+11-21 09:26:40.017  9402  9402 I LivePlayer: onResume: resuming live playback
+11-21 09:26:40.233  9402  9455 I HlsPlaylistTracker: playlist refreshed: media sequence 18422..18427 (window 30s)
+11-21 09:26:40.240  9402  9402 E ExoPlayerImplInternal: Playback error
+11-21 09:26:40.240  9402  9402 E ExoPlayerImplInternal:   androidx.media3.exoplayer.ExoPlaybackException: Source error
+11-21 09:26:40.240  9402  9402 E ExoPlayerImplInternal:       at androidx.media3.exoplayer.ExoPlayerImplInternal.handleIoException(ExoPlayerImplInternal.java)
+11-21 09:26:40.240  9402  9402 E ExoPlayerImplInternal:   Caused by: androidx.media3.exoplayer.source.BehindLiveWindowException
+11-21 09:26:40.241  9402  9402 E LivePlayer: onPlayerError code=1002 (ERROR_CODE_BEHIND_LIVE_WINDOW)
+11-21 09:26:40.242  9402  9402 I LivePlayer: showing error screen; no retry configured

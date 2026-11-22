@@ -45,7 +45,13 @@ def test_solution_snippet_runs(code):
     exec(compile(code, "<snippet>", "exec"), {"__name__": "__snippet__"})
 
 
-def test_solutions_are_collapsed():
-    text = (DOCS / "modules/01-why-evals/exercises.md").read_text()
+@pytest.mark.parametrize("module", ["01-why-evals", "02-agent-with-tracing"])
+def test_solutions_are_collapsed(module):
+    text = (DOCS / "modules" / module / "exercises.md").read_text()
     assert text.count('??? success "Solution"') == 5
     assert "!!! success" not in text
+
+
+def test_quiz_answers_are_collapsed():
+    text = (DOCS / "modules/02-agent-with-tracing/quiz.md").read_text()
+    assert text.count('??? question "Answer"') == 8

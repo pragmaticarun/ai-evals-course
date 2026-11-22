@@ -34,7 +34,7 @@ class Doc:
 class KnowledgeBase:
     docs: dict[str, Doc]
 
-    def search(self, query: str, k: int = 2) -> list[Doc]:
+    def search_scored(self, query: str, k: int = 2) -> list[tuple[Doc, int]]:
         q = set(tokens(query))
         scored = []
         for doc in self.docs.values():
@@ -43,7 +43,10 @@ class KnowledgeBase:
             score = 3 * title_hits + body_hits
             scored.append((score, doc.id, doc))
         scored.sort(key=lambda s: (-s[0], s[1]))  # deterministic tie-break on id
-        return [d for score, _, d in scored[:k] if score > 0]
+        return [(d, score) for score, _, d in scored[:k] if score > 0]
+
+    def search(self, query: str, k: int = 2) -> list[Doc]:
+        return [d for d, _ in self.search_scored(query, k)]
 
 
 def load_kb(directory: Path | None = None) -> KnowledgeBase:

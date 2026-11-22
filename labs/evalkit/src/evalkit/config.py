@@ -1,4 +1,4 @@
-"""Load model roles from config/models.toml."""
+"""Load model roles and prices from config/models.toml."""
 
 from __future__ import annotations
 
@@ -6,6 +6,7 @@ import os
 import tomllib
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 
 def repo_root(start: Path | None = None) -> Path:
@@ -34,13 +35,33 @@ class ModelRole:
     max_tokens: int
 
 
-def load_models(path: Path | None = None) -> dict[str, ModelRole]:
+@dataclass(frozen=True)
+class Price:
+    input_per_mtok: float
+    output_per_mtok: float
+
+    def cost_usd(self, input_tokens: int, output_tokens: int) -> float:
+        return (input_tokens * self.input_per_mtok + output_tokens * self.output_per_mtok) / 1e6
+
+
+def _load(path: Path | None) -> dict[str, Any]:
     path = path or repo_root() / "config" / "models.toml"
     with path.open("rb") as fh:
-        raw = tomllib.load(fh)
-    roles = {}
-    for name, cfg in raw.items():
-        roles[name] = ModelRole(
-            name=name, model=str(cfg["model"]), max_tokens=int(cfg["max_tokens"])
-        )
-    return roles
+        return tomllib.load(fh)
+
+
+def load_models(path: Path | None = None) -> dict[str, ModelRole]:
+    raw = _load(path)
+    return {
+        name: ModelRole(name=name, model=str(cfg["model"]), max_tokens=int(cfg["max_tokens"]))
+        for name, cfg in raw.items()
+        if name != "pricing"
+    }
+
+
+def load_prices(path: Path | None = None) -> dict[str, Price]:
+    raw = _load(path).get("pricing", {})
+    return {
+        model: Price(float(p["input_per_mtok"]), float(p["output_per_mtok"]))
+        for model, p in raw.items()
+    }

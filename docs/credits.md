@@ -13,7 +13,23 @@ anyone serious about evals should read them directly and consider their course.
 | Layering evaluators from cheap assertions up to human and model review | Module 1 | [Your AI Product Needs Evals](https://hamel.dev/blog/posts/evals/), Hamel Husain |
 | Looking at your data first; error analysis before metrics; custom data viewers | Modules 1, 3, 9 | [A Field Guide to Rapidly Improving AI Products](https://hamel.dev/blog/posts/field-guide/), Hamel Husain |
 | Binary pass/fail judges aligned with a domain expert | Modules 1, 5 | [Using LLM-as-a-Judge For Evaluation](https://hamel.dev/blog/posts/llm-judge/), Hamel Husain |
+| Instrument first; build simple custom viewers for traces | Module 2 | [A Field Guide to Rapidly Improving AI Products](https://hamel.dev/blog/posts/field-guide/), Hamel Husain |
 | Validating evaluators against human labels; criteria drift | Modules 5, 6 | Shreya Shankar et al., [Who Validates the Validators? Aligning LLM-Assisted Evaluation of LLM Outputs with Human Preferences](https://arxiv.org/abs/2404.12272) (arXiv 2404.12272) |
+
+## Module 2 references
+
+| Topic | Source |
+|---|---|
+| Tool use with Claude (the agent loop) | [Anthropic: tool use overview](https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/overview) |
+| Span and attribute names (`gen_ai.*`) | [OpenTelemetry semantic conventions for generative AI](https://github.com/open-telemetry/semantic-conventions-genai) (status: development) |
+| OTLP/JSON encoding | [OpenTelemetry protocol specification](https://opentelemetry.io/docs/specs/otlp/) |
+| OpenInference attributes | [OpenInference](https://github.com/Arize-ai/openinference) (Arize) |
+| Phoenix ingestion | [Phoenix: exporter and OTLP](https://arize.com/docs/phoenix/tracing/concepts-tracing/otel-openinference/exporter) |
+| Langfuse ingestion | [Langfuse: OpenTelemetry](https://langfuse.com/integrations/native/opentelemetry) |
+| Braintrust ingestion | [Braintrust: send OpenTelemetry traces](https://docs.braintrust.dev/integrations/sdk-integrations/opentelemetry/send-traces-and-logs) |
+| Sample clips | Generated with [FFmpeg](https://ffmpeg.org/) test sources (`scripts/make_media.sh`); probed with ffprobe |
+
+The two devices in `data/devices/` and the logs in `data/logs/` are fictional and written for this course.
 
 This course is independent and is not affiliated with or endorsed by Hamel Husain, Shreya Shankar, Parlance Labs,
 Maven, or Anthropic.
@@ -21,6 +37,6 @@ Maven, or Anthropic.
 ## Tools
 
 [uv](https://docs.astral.sh/uv/), [Zensical](https://zensical.org/) and
-[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/), [pytest](https://pytest.org/),
+[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/), [pytest](https://pytest.org/), [FFmpeg](https://ffmpeg.org/),
 [Ruff](https://docs.astral.sh/ruff/), [gitleaks](https://github.com/gitleaks/gitleaks), and the
 [Anthropic Python SDK](https://github.com/anthropics/anthropic-sdk-python).

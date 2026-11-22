@@ -1,0 +1,17 @@
+11-20 14:02:11.104  8123  8123 I ThumbGrid: bind position=0 uri=content://media/external/video/media/301
+11-20 14:02:11.118  8123  8190 I CCodec  : allocate(c2.lumen.avc.decoder)
+11-20 14:02:11.161  8123  8123 I ThumbGrid: bind position=1 uri=content://media/external/video/media/302
+11-20 14:02:11.170  8123  8191 I CCodec  : allocate(c2.lumen.avc.decoder)
+11-20 14:02:11.204  8123  8123 I ThumbGrid: bind position=2 uri=content://media/external/video/media/303
+11-20 14:02:11.219  8123  8192 I CCodec  : allocate(c2.lumen.avc.decoder)
+11-20 14:02:11.251  8123  8123 I ThumbGrid: bind position=3 uri=content://media/external/video/media/304
+11-20 14:02:11.262  8123  8193 I CCodec  : allocate(c2.lumen.avc.decoder)
+11-20 14:02:11.298  8123  8123 I ThumbGrid: bind position=4 uri=content://media/external/video/media/305
+11-20 14:02:11.305  8123  8194 I CCodec  : allocate(c2.lumen.avc.decoder)
+11-20 14:02:11.309  8123  8194 E CCodec  : Failed to create component: c2.lumen.avc.decoder (NO_MEMORY: max instances reached)
+11-20 14:02:11.310  8123  8194 E MediaCodec: Codec reported err 0xfffffff4/NO_MEMORY, actionCode 0, while in state 1/ALLOCATING
+11-20 14:02:11.312  8123  8123 E ThumbGrid: decoder init failed for position=4
+11-20 14:02:11.312  8123  8123 E ThumbGrid: android.media.MediaCodec$CodecException: Failed to initialize c2.lumen.avc.decoder, error 0xfffffff4
+11-20 14:02:11.340  8123  8123 I ThumbGrid: bind position=5 uri=content://media/external/video/media/306
+11-20 14:02:11.351  8123  8195 E CCodec  : Failed to create component: c2.lumen.avc.decoder (NO_MEMORY: max instances reached)
+11-20 14:02:11.390  8123  8123 W ThumbGrid: recycled position=0 but decoder not released

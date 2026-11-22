@@ -1,0 +1,14 @@
+{
+  "device": "atlas-a1",
+  "description": "Fictional 2025 flagship phone",
+  "android_api_level": 36,
+  "display": {"hdr_types": ["HDR10", "HLG", "HDR10+"], "max_luminance_nits": 1600},
+  "widevine_security_level": "L1",
+  "decoders": [
+    {"name": "c2.atlas.av1.decoder", "mime": "video/av01", "hardware": true, "profiles": ["Main", "Main10"], "max_width": 3840, "max_height": 2160, "max_fps_at_max_size": 60},
+    {"name": "c2.android.av1.decoder", "mime": "video/av01", "hardware": false, "profiles": ["Main"], "max_width": 3840, "max_height": 2160, "max_fps_at_max_size": 20},
+    {"name": "c2.atlas.hevc.decoder", "mime": "video/hevc", "hardware": true, "profiles": ["Main", "Main10", "Main10HDR10"], "max_width": 3840, "max_height": 2160, "max_fps_at_max_size": 60},
+    {"name": "c2.atlas.avc.decoder", "mime": "video/avc", "hardware": true, "profiles": ["Baseline", "Main", "High"], "max_width": 3840, "max_height": 2160, "max_fps_at_max_size": 60}
+  ],
+  "max_concurrent_hw_video_decoders": 16
+}

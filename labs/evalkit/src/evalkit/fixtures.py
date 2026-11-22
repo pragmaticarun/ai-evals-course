@@ -3,7 +3,8 @@
 Each line of fixtures/recorded/<namespace>.jsonl is one JSON object:
 
     {"request_sha256": "<sha256 hex>", "request": {...}, "response": {...},
-     "recorded_at": "2026-11-23T01:30:00+05:30", "source": "live" | "synthetic-authored"}
+     "recorded_at": "2026-11-23T01:30:00+05:30", "source": "live" | "synthetic-authored",
+     "latency_ms": 1234.5}            # optional; wall time of the original call
 
 The key is the SHA-256 of the canonical JSON of the request (sorted keys, no
 whitespace, UTF-8), prefixed with a schema version. Any change to the model ID,
@@ -73,16 +74,25 @@ class FixtureStore:
         return self._cache
 
     def get(self, request: dict[str, Any]) -> dict[str, Any]:
+        return self.get_record(request)["response"]
+
+    def get_record(self, request: dict[str, Any]) -> dict[str, Any]:
         key = request_key(request)
         rec = self._load().get(key)
         if rec is None:
             raise FixtureMissingError(key, self.namespace, self.path)
-        return rec["response"]
+        return rec
 
     def has(self, request: dict[str, Any]) -> bool:
         return request_key(request) in self._load()
 
-    def put(self, request: dict[str, Any], response: dict[str, Any], source: str = "live") -> str:
+    def put(
+        self,
+        request: dict[str, Any],
+        response: dict[str, Any],
+        source: str = "live",
+        latency_ms: float | None = None,
+    ) -> str:
         key = request_key(request)
         rec = {
             "request_sha256": key,
@@ -91,6 +101,8 @@ class FixtureStore:
             "recorded_at": datetime.now().astimezone().isoformat(timespec="seconds"),
             "source": source,
         }
+        if latency_ms is not None:
+            rec["latency_ms"] = round(float(latency_ms), 1)
         self.directory.mkdir(parents=True, exist_ok=True)
         records = self._load()
         records[key] = rec

@@ -87,12 +87,28 @@ def main(checked_on: str | None = None, extra: dict[str, str] | None = None) -> 
     ]
     import tomllib
 
-    for role, cfg in tomllib.loads(models).items():
-        lines.append(f"| {role} | `{cfg['model']}` |")
+    parsed = tomllib.loads(models)
+    for role, cfg in parsed.items():
+        if role != "pricing":
+            lines.append(f"| {role} | `{cfg['model']}` |")
+    lines += ["", "| Model | Input $/MTok | Output $/MTok |", "|---|---|---|"]
+    for model, price in parsed.get("pricing", {}).items():
+        lines.append(
+            f"| `{model}` | {price['input_per_mtok']:.2f} | {price['output_per_mtok']:.2f} |"
+        )
     lines += [
         "",
-        "Model IDs were checked against Anthropic's models overview "
-        "(https://docs.anthropic.com/en/docs/about-claude/models/overview) on the date above.",
+        "Model IDs and prices (used for `evalkit.cost.usd` on trace spans) were checked against Anthropic's models overview "
+        "(https://docs.anthropic.com/en/docs/about-claude/models/overview) and pricing page "
+        "(https://docs.anthropic.com/en/docs/about-claude/pricing) on the date above.",
+        "",
+        "## Specifications (module 2)",
+        "",
+        "| Spec | Status when checked |",
+        "|---|---|",
+        "| OpenTelemetry GenAI semantic conventions "
+        "(https://github.com/open-telemetry/semantic-conventions-genai) | Development (names may change) |",
+        "| OTLP/JSON (https://opentelemetry.io/docs/specs/otlp/) | Stable |",
         "",
         "## GitHub Actions (major versions pinned in workflows)",
         "",
@@ -116,4 +132,8 @@ if __name__ == "__main__":
         out = _cmd(tool, *args)
         if out != "not found":
             extras[f"{tool} (local check)"] = out.splitlines()[0]
+    out = _cmd("ffmpeg", "-version")
+    if out != "not found":
+        ver = out.splitlines()[0].split()[2]
+        extras["FFmpeg / ffprobe (sample clips and probe cache; optional)"] = ver
     main(extra=extras)

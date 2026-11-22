@@ -18,3 +18,15 @@ max_tokens = 512
 # Synthetic query generation (module 4). Bulk work; run it through the Message Batches API.
 model = "claude-haiku-5-5"
 max_tokens = 512
+
+# Prices in USD per million tokens, used for the cost attributes on traces (module 2 onward).
+# Checked against https://docs.anthropic.com/en/docs/about-claude/models/overview on 2026-11-23.
+# Haiku 5.5 is listed as "from" $0.10 / $0.50; we use those base prices.
+# Batch API requests are 50% off and prompt-cache reads are cheaper; module 11 models those.
+[pricing.claude-sonnet-5-5]
+input_per_mtok = 2.00
+output_per_mtok = 10.00
+
+[pricing.claude-haiku-5-5]
+input_per_mtok = 0.10
+output_per_mtok = 0.50

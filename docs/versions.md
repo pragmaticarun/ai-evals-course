@@ -13,6 +13,7 @@ Exact transitive versions are pinned in `uv.lock`. Regenerate this page with `uv
 | OS used for the check | Linux x86_64 |
 | gitleaks (local check) | 8.30.1 |
 | actionlint (local check) | 1.7.12 |
+| FFmpeg / ffprobe (sample clips and probe cache; optional) | 7.1.5-0+deb13u1 |
 
 ## Python libraries
 
@@ -35,7 +36,19 @@ Exact transitive versions are pinned in `uv.lock`. Regenerate this page with `uv
 | judge | `claude-haiku-5-5` |
 | synth | `claude-haiku-5-5` |
 
-Model IDs were checked against Anthropic's models overview (https://docs.anthropic.com/en/docs/about-claude/models/overview) on the date above.
+| Model | Input $/MTok | Output $/MTok |
+|---|---|---|
+| `claude-sonnet-5-5` | 2.00 | 10.00 |
+| `claude-haiku-5-5` | 0.10 | 0.50 |
+
+Model IDs and prices (used for `evalkit.cost.usd` on trace spans) were checked against Anthropic's models overview (https://docs.anthropic.com/en/docs/about-claude/models/overview) and pricing page (https://docs.anthropic.com/en/docs/about-claude/pricing) on the date above.
+
+## Specifications (module 2)
+
+| Spec | Status when checked |
+|---|---|
+| OpenTelemetry GenAI semantic conventions (https://github.com/open-telemetry/semantic-conventions-genai) | Development (names may change) |
+| OTLP/JSON (https://opentelemetry.io/docs/specs/otlp/) | Stable |
 
 ## GitHub Actions (major versions pinned in workflows)
 

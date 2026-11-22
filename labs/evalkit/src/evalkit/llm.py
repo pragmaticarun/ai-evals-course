@@ -15,6 +15,8 @@ so replayed and live responses look identical to the code that consumes them.
 from __future__ import annotations
 
 import os
+import time
+from collections.abc import Callable
 from enum import StrEnum
 from pathlib import Path
 from typing import Any, Protocol
@@ -62,11 +64,18 @@ class LLM:
         mode: Mode | str | None = None,
         fixtures_dir: Path | None = None,
         client: MessagesClient | None = None,
+        source: str = "live",
+        clock: Callable[[], float] = time.perf_counter,
     ):
         self.mode = Mode(mode or os.environ.get("EVALS_LLM_MODE", Mode.REPLAY))
         self.store = FixtureStore(fixtures_dir or repo_root() / "fixtures" / "recorded", namespace)
         self._client = client
+        self.source = source  # provenance label written to fixtures in record mode
+        self._clock = clock  # seconds; injectable so synthetic recordings get stable latencies
         self.calls = 0  # number of real API calls made by this instance
+        # Facts about the most recent create() call, read by the tracer (module 2).
+        self.last_latency_ms: float | None = None
+        self.last_replayed: bool = False
 
     @property
     def client(self) -> MessagesClient:
@@ -77,11 +86,17 @@ class LLM:
     def create(self, **request: Any) -> dict[str, Any]:
         """Same arguments as `anthropic.Anthropic().messages.create(...)`."""
         if self.mode is Mode.REPLAY:
-            return self.store.get(request)
+            rec = self.store.get_record(request)
+            self.last_latency_ms = rec.get("latency_ms")  # the original call's latency, if known
+            self.last_replayed = True
+            return rec["response"]
+        start = self._clock()
         response = _to_dict(self.client.messages.create(**request))
+        self.last_latency_ms = (self._clock() - start) * 1000.0
+        self.last_replayed = False
         self.calls += 1
         if self.mode is Mode.RECORD:
-            self.store.put(request, response, source="live")
+            self.store.put(request, response, source=self.source, latency_ms=self.last_latency_ms)
         return response
 
 

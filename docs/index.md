@@ -14,7 +14,7 @@ those failures with evaluators you can trust, and improve it with evidence.
 | # | Module | Hours | Status |
 |---|---|---|---|
 | 1 | [Why evals](modules/01-why-evals/index.md) | 4 | Available |
-| 2 | [A measurable agent with tracing](modules/02-agent-with-tracing/index.md) | 8 | Planned |
+| 2 | [A measurable agent with tracing](modules/02-agent-with-tracing/index.md) | 8 | Available |
 | 3 | [Error analysis](modules/03-error-analysis/index.md) | 7 | Planned |
 | 4 | [Synthetic data](modules/04-synthetic-data/index.md) | 6 | Planned |
 | 5 | [Evaluators and judge validation](modules/05-evaluators-and-judges/index.md) | 9 | Planned |
@@ -36,4 +36,5 @@ Examples lean on Android media and multimedia, but each one is explained as it c
 The structure of this course is inspired by Hamel Husain and Shreya Shankar's work on AI evals, including their
 Maven course and public writing. All text, code, and data here are original. See [Credits](credits.md).
 
-Start with [Setup](setup.md), then [Module 1](modules/01-why-evals/index.md).
+Start with [Setup](setup.md), then [Module 1](modules/01-why-evals/index.md) and
+[Module 2](modules/02-agent-with-tracing/index.md).

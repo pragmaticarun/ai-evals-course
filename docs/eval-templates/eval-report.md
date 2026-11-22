@@ -9,6 +9,9 @@ Used in the module 12 capstone. Aim for two pages that a product owner can act o
 5. **Failure taxonomy**: top modes with counts and severity, before and after.
 6. **Evaluators**: each check and judge, with what it detects and its validation (TPR and TNR for judges).
 7. **Results**: table per failure mode (baseline vs candidate, with CIs), the per-case diff, latency and cost per successful task.
+   Report cost and latency from traces (median and p90 per trace, plus the most expensive traces by id), and the
+   trace-check pass rates (for example evidence is real, step budget) next to the answer-quality numbers.
 8. **Risks and caveats**: sample size, judge error, distribution shift, anything you did not test.
 9. **Recommendation and next steps**.
-10. **Appendix**: commands to reproduce (`git sha`, `uv run ...`), and links to traces.
+10. **Appendix**: commands to reproduce (`git sha`, `uv run ...`), the trace file (JSONL) or backend project, and
+    trace ids for every example quoted in the report.

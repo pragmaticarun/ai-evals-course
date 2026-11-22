@@ -1,0 +1,8 @@
+{"id": "m2q01", "question": "Our 4K60 AV1 trailer (av1_2160p60.mkv) stutters badly on the lumen-l3. Why, and what should we do?", "expected_tools": ["ffprobe", "codec_caps"]}
+{"id": "m2q02", "question": "hdr10_hevc_1080p.mp4 shows a black screen or washed-out colours on the lumen-l3. What is going on?", "expected_tools": ["ffprobe", "codec_caps", "search_kb"]}
+{"id": "m2q03", "question": "progressive_late_moov.mp4 takes about 10 seconds to start over HTTP but plays fine once it starts. Why?", "expected_tools": ["ffprobe"]}
+{"id": "m2q04", "question": "Our thumbnail grid crashes on the lumen-l3 while scrolling. The logcat is in thumbs_codec_exhaustion.txt. What's wrong?", "expected_tools": ["logcat_grep", "codec_caps"]}
+{"id": "m2q05", "question": "In av_offset_300ms.mp4 the audio is ahead of the picture by about a third of a second. Where does that come from?", "expected_tools": ["ffprobe"]}
+{"id": "m2q06", "question": "After the app comes back from the background our live stream shows an error screen. The log is live_resume.txt.", "expected_tools": ["logcat_grep", "search_kb"]}
+{"id": "m2q07", "question": "Will the atlas-a1 decode av1_2160p60.mkv in hardware?", "expected_tools": ["codec_caps", "ffprobe"]}
+{"id": "m2q08", "question": "Our podcast app keeps playing during phone calls. How do we fix it?", "expected_tools": ["search_kb"]}

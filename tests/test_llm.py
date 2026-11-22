@@ -72,3 +72,31 @@ def test_text_of_ignores_non_text_blocks():
         ]
     }
     assert text_of(resp) == "ab"
+
+
+def test_record_stores_latency_and_replay_returns_it(tmp_path):
+    t = {"now": 0.0}
+
+    def clock():
+        return t["now"]
+
+    class SlowClient(FakeClient):
+        def _create(self, **request):
+            t["now"] += 1.25
+            return RESP
+
+    rec = LLM(
+        "ns",
+        mode="record",
+        fixtures_dir=tmp_path,
+        client=SlowClient(),
+        clock=clock,
+        source="synthetic-authored",
+    )
+    rec.create(**REQ)
+    assert rec.last_latency_ms == 1250.0 and rec.last_replayed is False
+    line = (tmp_path / "ns.jsonl").read_text()
+    assert '"latency_ms":1250.0' in line and '"source":"synthetic-authored"' in line
+    rep = LLM("ns", mode="replay", fixtures_dir=tmp_path)
+    rep.create(**REQ)
+    assert rep.last_latency_ms == 1250.0 and rep.last_replayed is True
