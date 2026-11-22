@@ -25,6 +25,13 @@ Module 7 adds:
   - evalkit.trajectory  tool recall/precision, order, step efficiency, first failure,
                         transition-failure matrices
   - images in requests  fixture keys hash base64 payloads instead of storing them
+
+Module 8 adds:
+  - evalkit.gate     regression gates from paired outcomes (McNemar + Holm, minimum effect, warn
+                     margin), flips, and cost and time budgets
+  - evalkit.golden   golden-dataset manifests (file hashes, split digests, versions), the held-out
+                     guard, and held-out rotation
+  - evalkit.hygiene  cross-split near-duplicates, n-gram contamination, stale labels
 """
 
 from evalkit.checks import Check, CheckResult, run_checks, summarize

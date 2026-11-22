@@ -1,0 +1,6 @@
+case_id,source,decision,reason
+m4q075,judge false-premise@v1,accept,"Shares a user's framing sentence with example m4q019 (same clip, different question). Dev split, used for iterating; no action."
+m4q067,judge false-premise@v1,watch,"Held-out case shares a phrasing with example m4q090 (same clip). The judge's held-out accuracy on it may be inflated; choose examples from another clip at the next judge revision."
+m4q104,judge false-premise@v1,watch,"Held-out case repeats a sentence from example m4q019 (same clip). As for m4q067."
+m4q141,judge false-premise@v1,watch,"Held-out case states the same false premise as example m4q090 ('both streams in the file start at zero'). As for m4q067."
+m4q141,judge tool-grounding@v2,watch,"Shares 'av_offset_300ms.mp4 ... what do I tell them' with example m4q012 (same clip). As for m4q067."

@@ -1,0 +1,8 @@
+# What MediaDoctor ships. A pull request that changes behaviour changes this file (or the prompt, model,
+# or tools it points to), and the eval gate compares it with the baseline committed on the base branch.
+# Module 8: .github/workflows/eval-gate.yml, `uv run mediadoctor-lab08 gate`.
+
+[agent]
+# A key of mediadoctor.toolagent.AGENT_PROMPTS. The model comes from config/models.toml [agent] and
+# the tools from mediadoctor.tools; any change to either changes the request keys (a replay miss).
+prompt = "v1"

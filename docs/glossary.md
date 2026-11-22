@@ -17,6 +17,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Axial coding** [3]
 : The second pass of error analysis: grouping open-coding notes into a small set of named failure modes, each with a definition someone else could apply.
 
+**Baseline run** [8]
+: A saved run of the configuration that currently ships: every case's outcome per metric, plus the configuration's fingerprint. The gate compares candidates with the baseline committed on the base branch.
+
 **Benevolent dictator** [3]
 : The single domain expert who owns pass/fail verdicts and failure-mode definitions, taking input from others but deciding (term used by Hamel Husain).
 
@@ -35,6 +38,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Chunking** [7]
 : Splitting documents into the passages a retriever indexes, for example fixed-size word windows or one chunk per section. Where boundaries fall decides what can be retrieved together.
 
+**CI budget (eval budget)** [8]
+: Limits on what an eval job may cost: replay time per job, and the money and wall time a live re-record of a tier may take. Checked in CI so the suite stays cheap enough to keep running.
+
 **Citation correctness** [7]
 : A code check on RAG answers: every cited id was in the retrieved context (valid), and at least one cited passage is relevant to the question (supports).
 
@@ -49,6 +55,12 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Compounding failure** [3]
 : An early mistake in a multi-step run that causes later symptoms, such as a bad tool argument followed by an answer citing the failed tool. Label the first one.
+
+**Config fingerprint** [8]
+: A short hash of everything about the agent's requests except the conversation (model, limits, system prompt, tool definitions). If it changes, every recorded request misses.
+
+**Contamination** [8]
+: Eval-case text appearing in something tuned against it (a prompt, a judge's few-shot examples, a knowledge base, or a model's training data), which inflates the score on that case. Found here with shared 8-word runs.
 
 **Context retention** [7]
 : In a conversation, using what the user already said. A turn that asks again for a fact the user gave earlier fails it.
@@ -86,6 +98,12 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Eval** [1]
 : Any repeatable procedure that measures some aspect of a system's output quality over a set of cases.
 
+**Eval gate (regression gate)** [8]
+: A CI check that blocks a merge when a change makes a metric worse beyond chance. Here: paired McNemar tests with a Holm adjustment, a minimum effect, and a warn margin, not a fixed threshold.
+
+**Experiment comparison report** [8]
+: A Markdown diff of two runs: what was compared, a per-metric table with paired intervals, the flipped cases to read first, and cost and time. Posted as a CI job summary and uploaded as an artifact.
+
 **Fabricated evidence** [2]
 : An answer that cites a tool result, log line, or document the trace shows it never obtained. Detectable with a code check over the trace.
 
@@ -116,6 +134,12 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Flaky query** [6]
 : A query that passes in some runs and fails in others.
 
+**Golden dataset** [8]
+: The fixed cases, labels, and evaluator configs a gate measures against. Versioned, and changed only on purpose.
+
+**Golden manifest** [8]
+: A file listing the golden dataset's version, the SHA-256 of each file it consists of, and a digest of each split's case ids. CI fails when the files and the manifest disagree.
+
 **Ground truth / label** [1]
 : A human judgment of whether an output is acceptable, made by someone who knows the domain.
 
@@ -125,11 +149,17 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Hard negative** [7]
 : A passage or example that looks relevant (shared words or topic) but is not. Retrieval and judge test sets need them to avoid overstating quality.
 
+**Held-out rotation** [8]
+: Replacing held-out cases with fresh, never-used ones after a set number of looks or a period of time; the old held-out cases join the gate set.
+
 **Held-out split (test split)** [4]
 : The part of a dataset kept for occasional reporting and never used for tuning or read while improving the system.
 
 **Holm-Bonferroni adjustment** [6]
 : A step-down correction of p-values for multiple tests that controls the chance of any false positive; less blunt than plain Bonferroni.
+
+**Job summary (GitHub Actions)** [8]
+: Markdown a workflow step appends to the file named by `$GITHUB_STEP_SUMMARY`; GitHub shows it on the run's summary page.
 
 **Judge leakage** [5]
 : Evaluation data reaching the judge prompt: few-shot examples from dev or test, or the expected answer, human verdict, or reviewer note for a case.
@@ -143,6 +173,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **LLM-as-judge (model judge)** [1, 5]
 : An LLM prompted to grade another model's output against a specific criterion. Trust it only after validating it against labels.
 
+**Margin (gate)** [8]
+: The smallest drop you would care about. The gate warns when its interval cannot rule out a drop of that size, even if nothing is significant.
+
 **McNemar's test** [6]
 : A paired test that uses only discordant queries (passed by one variant, failed by the other) and asks whether they split more unevenly than a fair coin. The course uses the exact version.
 
@@ -154,6 +187,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Multiple comparisons** [6]
 : Running many tests (slices, failure modes, metrics) inflates the chance that at least one looks significant by luck.
+
+**Must-pass case** [8]
+: A case that encodes a past incident and is asserted exactly, outside the statistics: any failure blocks.
 
 **nDCG@k** [7]
 : Normalised discounted cumulative gain: graded relevance summed with a log2 rank discount over the top k, divided by the same sum for the ideal ranking. 1.0 is a perfect order.
@@ -206,8 +242,14 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Precision@k** [7]
 : The share of the top k results that are relevant. Divides by k, so returning fewer results is not rewarded.
 
+**Preflight (replay)** [8]
+: Checking that the first request of every case is recorded before running a replayed suite. Catches prompt, model, and tool changes at once; changed tool results surface only in later turns.
+
 **Priority (failure mode)** [3]
 : A ranking score for failure modes; in this course, traces affected times severity, with fixability breaking ties.
+
+**Re-record** [8]
+: Running the model again in record mode to replace or add fixtures. Done deliberately, for a behaviour change or to check drift, followed by reading and labelling the new outputs; never to make CI pass.
 
 **Recall@k** [7]
 : The share of a query's relevant items that appear in the top k results.
@@ -220,6 +262,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Relevance set** [7]
 : Queries paired with labels saying which passages answer each one (optionally graded). The test set for retrieval.
+
+**Replay miss** [8]
+: A request with no recorded response. In CI it means the change altered the requests and has to be recorded before it can be evaluated.
 
 **Retrieval failure vs generation failure** [7]
 : Attribution of a failed RAG answer: the answering passage never reached the model (retrieval), or it did and the model still answered wrongly or unfaithfully (generation).
@@ -260,11 +305,17 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Span** [2]
 : One timed unit of work inside a trace (a model call, a tool call, a retrieval), with a name, start and end time, status, and attributes.
 
+**Stale label** [8]
+: A label whose output has changed since it was given, for example after a re-record. Found by storing a digest of each labelled output.
+
 **Step efficiency** [7]
 : Minimal number of steps for a task divided by the steps a run took (at most 1.0). Shows wasted calls, including in runs that passed.
 
 **Stratified sampling** [4]
 : Sampling so that each value of a chosen dimension gets a similar count, instead of leaving small slices to chance.
+
+**Suite tier** [8]
+: A part of the eval suite with its own trigger and budget: a fast tier of code checks on every change, a slower judge tier on a schedule or on request.
 
 **Synthetic data** [4]
 : Test inputs written by a model or by templates rather than by real users. Useful for coverage before launch and for rare cases; not evidence of how often anything happens.

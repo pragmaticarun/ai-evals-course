@@ -30,8 +30,32 @@ anyone serious about evals should read them directly and consider their course.
 | Whole-conversation pass/fail first, then the first upstream failure; reduce to a single-turn test; simulated users and N−1 testing | Module 7 | [AI Evals FAQ: How do I debug multi-turn conversation traces?](https://hamel.dev/blog/posts/evals-faq/how-do-i-debug-multi-turn-conversation-traces.html), Hamel Husain and Shreya Shankar |
 | Outcome first, then the steps of an agent's trajectory | Module 7 | [AI Evals FAQ: How do I evaluate agentic workflows?](https://hamel.dev/blog/posts/evals-faq/how-do-i-evaluate-agentic-workflows.html), Hamel Husain and Shreya Shankar |
 | Transition-failure matrices (last successful state vs first failure); outcome and process metrics by workflow stage | Module 7 | [AI Evals FAQ: How do I evaluate complex multi-step workflows?](https://hamel.dev/blog/posts/evals-faq/how-do-i-evaluate-complex-multi-step-workflows.html), Hamel Husain and Shreya Shankar |
+| CI evals are small, purpose-built sets (core features, past bugs, edge cases) that favour deterministic checks over judges; production monitoring feeds new cases back into CI | Module 8 | [AI Evals FAQ: How are evaluations used differently in CI/CD vs. monitoring production?](https://hamel.dev/blog/posts/evals-faq/how-are-evaluations-used-differently-in-cicd-vs-monitoring-production.html), Hamel Husain and Shreya Shankar |
+| Gold datasets go stale and need refreshing through error analysis; weigh each eval's cost against its signal | Module 8 | [AI Evals FAQ: What should I do when my "gold" eval dataset becomes stale?](https://hamel.dev/blog/posts/evals-faq/what-should-i-do-when-my-gold-eval-dataset-becomes-stale.html), Hamel Husain and Shreya Shankar |
+| Train, dev, and test sets for evaluators; repeated use of dev results overfits even without copying examples; a test set kept for a final check | Modules 5, 8 | [AI Evals FAQ: How do I know if I can trust my automated eval?](https://hamel.dev/blog/posts/evals-faq/how-do-i-know-if-i-can-trust-my-automated-eval.html), Hamel Husain and Shreya Shankar |
+| Cheap assertions on every code change, more expensive evaluations on a slower cadence | Modules 1, 8 | [Your AI Product Needs Evals](https://hamel.dev/blog/posts/evals/), Hamel Husain |
 | Instrument first; build simple custom viewers for traces | Module 2 | [A Field Guide to Rapidly Improving AI Products](https://hamel.dev/blog/posts/field-guide/), Hamel Husain |
 | Validating evaluators against human labels; criteria drift | Modules 5, 6 | Shreya Shankar et al., [Who Validates the Validators? Aligning LLM-Assisted Evaluation of LLM Outputs with Human Preferences](https://arxiv.org/abs/2404.12272) (arXiv 2404.12272) |
+
+## Module 8 references
+
+| Topic | Source |
+|---|---|
+| Job summaries (`$GITHUB_STEP_SUMMARY`) | [GitHub Docs: Workflow commands, adding a job summary](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-commands#adding-a-job-summary) |
+| Workflow triggers (pull requests, labels, schedules, manual runs) | [GitHub Docs: Events that trigger workflows](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows) |
+| Cancelling superseded runs | [GitHub Docs: Control the concurrency of workflows and jobs](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency) |
+| Marking and selecting tests | [pytest: Working with custom markers](https://docs.pytest.org/en/stable/example/markers.html) |
+| Record and replay of HTTP interactions (the "cassette" pattern) | [VCR.py documentation](https://vcrpy.readthedocs.io/en/latest/) |
+| Ruling out a drop larger than a margin | [Equivalence test](https://en.wikipedia.org/wiki/Equivalence_test) (and non-inferiority testing) |
+| Version numbers | [Semantic Versioning 2.0.0](https://semver.org/) |
+| Reusing a holdout set adaptively | Dwork et al., [Generalization in Adaptive Data Analysis and Holdout Reuse](https://arxiv.org/abs/1506.02629) (arXiv 1506.02629) |
+| How much test-set reuse hurts in practice | Recht et al., [Do ImageNet Classifiers Generalize to ImageNet?](https://arxiv.org/abs/1902.10811) (arXiv 1902.10811) |
+| Leakage in ML evaluation | Kapoor and Narayanan, [Leakage and the Reproducibility Crisis in ML-based Science](https://arxiv.org/abs/2207.07048) (arXiv 2207.07048) |
+| Benchmark contamination in LLMs | Sainz et al., [NLP Evaluation in trouble: On the Need to Measure LLM Data Contamination for each Benchmark](https://arxiv.org/abs/2310.18018) (arXiv 2310.18018) |
+
+The gate rule, the golden manifest, the hygiene checks, and the workflow were written for this course. The 54 new
+judge verdicts on prompt v2's answers are synthetic-authored (`scripts/author_module08_fixtures.py`); every other
+output the gate replays comes from modules 5 and 6.
 
 ## Module 7 references
 

@@ -8,7 +8,7 @@ Exact transitive versions are pinned in `uv.lock`. Regenerate this page with `uv
 | Tool | Version |
 |---|---|
 | Python | 3.14.10 (`.python-version`: 3.14) |
-| uv | 0.13.8 (x86_64-unknown-linux-gnu) |
+| uv | 0.13.9 (x86_64-unknown-linux-gnu) |
 | git | 2.47.3 |
 | OS used for the check | Linux x86_64 |
 | gitleaks (local check) | 8.30.1 |

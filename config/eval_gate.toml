@@ -1,0 +1,28 @@
+# The eval gate's rules and budgets (module 8). Read by `mediadoctor-lab08` and the evals/ pytest suite.
+
+[golden]
+manifest = "data/golden/manifest.json"
+baseline = "evals/baseline.json"
+
+[rule]
+alpha = 0.05       # two-sided level for "worse, and not by chance" (McNemar, Holm-adjusted per tier)
+margin = 0.05      # the smallest drop we care about: WARN when the interval cannot rule it out
+min_effect = 0.02  # significant drops smaller than this do not block
+draws = 2000
+seed = 8
+
+[tiers.code]
+# Deterministic code checks on replayed agent runs. Every pull request and every push to main.
+splits = ["train", "dev"]
+checks = ["format", "citations", "investigated"]
+
+[tiers.judges]
+# LLM judges on the same replayed runs. Nightly, by hand, or on a PR with the `run-judges` label.
+splits = ["dev"]
+judges = ["false-premise", "tool-grounding", "next-step"]
+
+[budget]
+replay_seconds = 120  # the eval step of one CI job, in replay mode
+live_usd = 2.00       # re-recording one tier live
+live_minutes = 30     # wall time of that re-record at `concurrency` parallel calls
+concurrency = 4

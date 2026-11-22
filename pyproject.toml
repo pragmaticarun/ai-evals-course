@@ -37,7 +37,10 @@ mediadoctor = { workspace = true }
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers"
-markers = ["live: calls the real Anthropic API (skipped unless EVALS_LLM_MODE=live)"]
+markers = [
+    "live: calls the real Anthropic API (skipped unless EVALS_LLM_MODE=live)",
+    "judges: the slow, judge-based eval tier in evals/ (nightly or with the run-judges label)",
+]
 
 [tool.ruff]
 line-length = 100

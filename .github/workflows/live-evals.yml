@@ -40,7 +40,7 @@ jobs:
           LAB_COMMAND: ${{ inputs.command }}
         run: |
           case "$LAB_COMMAND" in
-            mediadoctor-lab01\ *) ;;
+            mediadoctor-lab0[1-8]\ *) ;;
             *) echo "Only mediadoctor-lab* commands are allowed"; exit 1 ;;
           esac
           # shellcheck disable=SC2086

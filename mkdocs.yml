@@ -92,7 +92,11 @@ nav:
           - Lab: modules/07-architectures/lab.md
           - Exercises: modules/07-architectures/exercises.md
           - Quiz: modules/07-architectures/quiz.md
-      - "8. CI/CD for agents": modules/08-ci-cd/index.md
+      - "8. CI/CD for agents":
+          - modules/08-ci-cd/index.md
+          - Lab: modules/08-ci-cd/lab.md
+          - Exercises: modules/08-ci-cd/exercises.md
+          - Quiz: modules/08-ci-cd/quiz.md
       - "9. Monitoring and annotation": modules/09-monitoring-and-annotation/index.md
       - "10. Red-teaming and safety": modules/10-red-teaming/index.md
       - "11. Improving with evidence": modules/11-improving-with-evidence/index.md
@@ -105,6 +109,7 @@ nav:
       - Judges and validation: cheatsheets/judges.md
       - Statistics for metrics: cheatsheets/stats.md
       - Evaluating architectures: cheatsheets/architectures.md
+      - CI/CD for evals: cheatsheets/ci-cd.md
   - Templates:
       - Failure taxonomy sheet: eval-templates/failure-taxonomy.md
       - Dimensions sheet: eval-templates/dimensions-sheet.md

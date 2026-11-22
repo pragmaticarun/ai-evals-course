@@ -1,0 +1,102 @@
+name: eval-gate
+
+# Module 8: the eval suite as a merge gate. Replay mode only: no API key, no network calls to Claude.
+#   code tier    every pull request and every push to main (seconds)
+#   judge tier   nightly, by hand, or on a pull request labelled `run-judges`
+# Each job compares this commit with the baseline committed on the base branch (evals/baseline.json),
+# writes a Markdown report to the job summary, and uploads it with the run's results as an artifact.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+  push:
+    branches: [main]
+  schedule:
+    - cron: "45 21 * * *"  # 21:45 UTC = 03:15 IST
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # One code-tier run and one judge-tier run per branch; adding a label must not cancel the code tier.
+  group: eval-gate-${{ github.ref }}-${{ (github.event_name == 'schedule' || github.event.action == 'labeled') && 'judges' || 'code' }}
+  cancel-in-progress: true
+
+env:
+  EVALS_LLM_MODE: replay
+
+jobs:
+  code-gate:
+    if: github.event_name != 'schedule' && github.event.action != 'labeled'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0  # the base commit's evals/baseline.json is read with git show
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d  # v10.4.0 (setup-uv publishes no floating major tag)
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - name: Choose the base
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+        run: |
+          base="${PR_BASE:-$PUSH_BEFORE}"
+          if [ -z "$base" ] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+            base=$(git rev-parse HEAD)
+          fi
+          echo "EVAL_GATE_BASE_REF=$base" >> "$GITHUB_ENV"
+          echo "base: $base"
+      - name: Fast eval suite (pytest, code tier)
+        run: uv run pytest evals -m "not judges" -q
+      - name: Gate report (job summary)
+        if: always()
+        run: |
+          mkdir -p runs
+          uv run mediadoctor-lab08 gate --tier code --base-ref "$EVAL_GATE_BASE_REF" \
+            --summary "$GITHUB_STEP_SUMMARY" --out runs/eval-gate-code.md --json runs/head-code.json
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: eval-gate-code-${{ github.run_id }}
+          path: runs/
+          if-no-files-found: ignore
+
+  judge-gate:
+    if: >-
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'run-judges'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d  # v10.4.0 (setup-uv publishes no floating major tag)
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - name: Choose the base
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          base="${PR_BASE:-$(git rev-parse HEAD)}"
+          echo "EVAL_GATE_BASE_REF=$base" >> "$GITHUB_ENV"
+          echo "base: $base"
+      - name: Judge eval suite (pytest, judge tier)
+        run: uv run pytest evals -m judges -q
+      - name: Gate report (job summary)
+        if: always()
+        run: |
+          mkdir -p runs
+          uv run mediadoctor-lab08 gate --tier judges --base-ref "$EVAL_GATE_BASE_REF" \
+            --summary "$GITHUB_STEP_SUMMARY" --out runs/eval-gate-judges.md --json runs/head-judges.json
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: eval-gate-judges-${{ github.run_id }}
+          path: runs/
+          if-no-files-found: ignore

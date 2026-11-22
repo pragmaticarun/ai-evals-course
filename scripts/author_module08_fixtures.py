@@ -1,0 +1,110 @@
+"""Write the module 8 fixtures: judge verdicts on prompt v2's dev-split answers, and the golden files.
+
+No API key was used to write the course.
+
+The eval gate's judge tier runs three judges (false-premise v1, tool-grounding v2, next-step v1) on
+the dev split for the release prompt and the candidate. Prompt v1's answers there are module 5's,
+already judged in fixtures/recorded/mediadoctor-judges.jsonl. Prompt v2's answers (module 6's run 1)
+are identical to v1's on 19 of the 37 dev cases, so those judge requests are already recorded too.
+This script records the other 54 requests (18 cases x 3 judges) into mediadoctor-m8-judges.jsonl.
+
+Each request is the real `build_judge_request` output, answered by a scripted judge whose verdict is
+module 6's reference label for v2 except for module 5's documented, deterministic error patterns
+(`judge_errs` in author_module05_fixtures.py, reused unchanged). Records are tagged
+"source": "synthetic-authored".
+
+It then writes data/golden/label_answers.csv, data/golden/manifest.json, and evals/baseline.json.
+
+Usage:  uv run python scripts/author_module08_fixtures.py
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import sys
+from pathlib import Path
+from types import SimpleNamespace
+from typing import Any
+
+sys.path.insert(0, str(Path(__file__).parent))
+
+from author_module03_fixtures import FakeClock  # noqa: E402
+from author_module05_fixtures import judge_errs  # noqa: E402
+
+from evalkit import LLM  # noqa: E402
+from evalkit.fixtures import canonical_json  # noqa: E402
+from evalkit.golden import write_manifest  # noqa: E402
+from evalkit.judge import build_judge_request  # noqa: E402
+from mediadoctor import lab04, lab05, lab06, lab08  # noqa: E402
+
+SRC = "synthetic-authored"
+CREATED = "2026-11-23 04:00 IST"  # fixed, so the manifest is reproducible
+
+
+class VerdictClient:
+    """Answers each judge request with a precomputed JSON verdict."""
+
+    def __init__(self, table: dict[str, str], clock: FakeClock):
+        self.table, self.clock = table, clock
+        self.messages = SimpleNamespace(create=self._create)
+
+    def _create(self, **req: Any) -> dict[str, Any]:
+        text = self.table[req["messages"][0]["content"]]
+        tin, tout = len(canonical_json(req)) // 4, max(1, len(text) // 4)
+        self.clock.t += (400 + 0.04 * tin + 14 * tout) / 1000.0
+        return {
+            "id": "msg_synthetic_" + hashlib.sha256(text.encode()).hexdigest()[:12],
+            "type": "message",
+            "role": "assistant",
+            "model": req["model"],
+            "content": [{"type": "text", "text": text}],
+            "stop_reason": "end_turn",
+            "usage": {"input_tokens": tin, "output_tokens": tout},
+        }
+
+
+def write_judges() -> int:
+    v2_modes = {cid: sorted(m) for cid, m in lab06.labels()[("v2", 1)].items()}
+    premise = {r["id"]: r.get("premise") for r in lab04.load_dataset()}
+    items = lab06.items("v2", 1)
+    examples = lab05.items()
+    chain = lab08.ReplayChain((lab05.JUDGE_NAMESPACE,), "replay")
+    todo: list[dict[str, Any]] = []
+    table: dict[str, str] = {}
+    for name in lab08.gate_config()["tiers"]["judges"]["judges"]:
+        spec = lab05.load_spec(name)
+        for cid in lab08.ids_in(lab08.tier_splits("judges")):
+            item = items[cid]
+            if not lab05.applies(spec, item):
+                continue
+            req = build_judge_request(spec, item, examples)
+            if chain.has(req):
+                continue  # same answer as v1: module 5 already recorded this request
+            ok, critique = judge_errs(spec.key, cid, v2_modes[cid], item, premise.get(cid))
+            table[req["messages"][0]["content"]] = json.dumps(
+                {"critique": critique, "verdict": "PASS" if ok else "FAIL"}
+            )
+            todo.append(req)
+    clock = FakeClock()
+    llm = LLM(
+        namespace=lab08.JUDGE_NAMESPACE,
+        mode="record",
+        client=VerdictClient(table, clock),
+        source=SRC,
+        clock=clock,
+    )
+    if llm.store.path.exists():
+        llm.store.path.unlink()
+    for req in todo:
+        llm.create(**req)
+    return len(todo)
+
+
+if __name__ == "__main__":
+    n = write_judges()
+    print(f"judge fixtures: {n} records in {lab08.JUDGE_NAMESPACE}")
+    print(f"wrote {lab08.rel(lab08.write_label_answers())}")
+    path = write_manifest(lab08.manifest_path(), lab08.make_manifest(created=CREATED))
+    print(f"wrote {lab08.rel(path)}")
+    print(f"wrote {lab08.rel(lab08.write_baseline())}")

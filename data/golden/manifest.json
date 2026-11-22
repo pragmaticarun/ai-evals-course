@@ -1,0 +1,72 @@
+{
+  "schema": "evalkit-golden/1",
+  "name": "mediadoctor-golden",
+  "version": "1.0.0",
+  "created": "2026-11-23 04:00 IST",
+  "source": "dataset v1 (module 4), reference labels (modules 5 and 6), recorded runs",
+  "notes": "Bump the version when any file changes: major for new cases or splits, minor for relabels or re-recorded runs, patch for fixes that change no outcome.",
+  "files": {
+    "config/judges/false-premise.v1.toml": {
+      "sha256": "43b41da8b4003620a357829397a87135a02c731ad1efe6c12ed7174cf0e1f7d9",
+      "bytes": 1374
+    },
+    "config/judges/next-step.v1.toml": {
+      "sha256": "452435bb5eef0faee05d404eff06ab625879cdd9009922998f8926b12f46e8d1",
+      "bytes": 1502
+    },
+    "config/judges/tool-grounding.v2.toml": {
+      "sha256": "683240a8fd2f495d95a1cf44d8c969dd369cd09c10ef5d81eeb9df183526d918",
+      "bytes": 2509
+    },
+    "data/datasets/module04_v1.jsonl": {
+      "sha256": "80989008024ba825b3aa49390e22a036a8ddf5c1480980430a2de4f7cd5250bc",
+      "bytes": 95578
+    },
+    "data/golden/hygiene_review.csv": {
+      "sha256": "b97e17592f5bced671a74e4d683e479293800d983aba4fb6cd7ef4e1ed00a6cd",
+      "bytes": 834
+    },
+    "data/golden/label_answers.csv": {
+      "sha256": "1a59edf2041b9941f8c5f58dc033111e11fd92e6dc2ff86dd13cc47f15537f27",
+      "bytes": 7424
+    },
+    "data/labels/module05_reference.csv": {
+      "sha256": "7461fdc1aa7c7db7f2d359108431429ab1aafd3f8cb8064bfcbdaf7f08d5ccc6",
+      "bytes": 16664
+    },
+    "data/labels/module06_runs.csv": {
+      "sha256": "57907109ac94db90b070bea76d3630003805e5ea058aa803eae8db0402fad317",
+      "bytes": 44406
+    },
+    "fixtures/recorded/mediadoctor-judges.jsonl": {
+      "sha256": "3ef606b4d8d10f1db054284fcdce6c2fc586f1fb63e99cf8087d497c32ebe837",
+      "bytes": 3703943
+    },
+    "fixtures/recorded/mediadoctor-m5.jsonl": {
+      "sha256": "9369fa42cd74fa80b4532ed59f3a87fe6d1f63b49f145b41919e20e42dd3dc7d",
+      "bytes": 1223555
+    },
+    "fixtures/recorded/mediadoctor-m6.jsonl": {
+      "sha256": "b215b1074b2426f75cfaf9c6e9f20c8c9b2aa583a83d60a6d4306b569a621383",
+      "bytes": 4180981
+    },
+    "fixtures/recorded/mediadoctor-m8-judges.jsonl": {
+      "sha256": "88301623121bb78994647bd1fadd4bea2565b033cdaba5c9f0bf432bab98d7bd",
+      "bytes": 550754
+    }
+  },
+  "splits": {
+    "gate": {
+      "n": 108,
+      "ids_sha256": "3880b683408c82f7d8d6167176d7d3b0d37998e2d78b7143b515e892b0955b06"
+    },
+    "judges": {
+      "n": 37,
+      "ids_sha256": "8c4b95ca1742169f61bd58d29ee90d3b53f646f6e0324c25e84f7a7b9fb759d2"
+    },
+    "holdout": {
+      "n": 29,
+      "ids_sha256": "93d79ccd79273f81ad24aca35296df2f05d6bdc6ef6705b53c0bac9a0bae344a"
+    }
+  }
+}
