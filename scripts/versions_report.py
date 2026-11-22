@@ -29,7 +29,7 @@ LIBS = [
 
 ACTIONS = [
     ("actions/checkout", "v7"),
-    ("astral-sh/setup-uv", "v10"),
+    ("astral-sh/setup-uv", "v10.4.0 (pinned by SHA)"),
     ("actions/configure-pages", "v6"),
     ("actions/upload-pages-artifact", "v5"),
     ("actions/deploy-pages", "v5"),
