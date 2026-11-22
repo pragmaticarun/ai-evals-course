@@ -1,0 +1,29 @@
+# Judge for the failure mode "ignored-tool-output" (module 3's top mode). Version 1.
+# Few-shot examples are module 5 traces from the TRAIN split only (`mediadoctor-lab05 leaks` checks).
+name = "tool-grounding"
+version = "v1"
+mode = "ignored-tool-output"
+context = ["question", "tools", "answer"]
+criterion = "The answer's claims about files, devices, and logs agree with what the tool calls returned."
+pass = """
+Every statement in the answer about a file, device, decoder, or log is supported by, or at least not
+contradicted by, the tool results. Answers that make no such claim, or that ask for more information,
+pass. Judge only agreement with the tool results; do not judge style, the next step, or citations."""
+fail = """
+The answer states something about a file, device, decoder, or log that a tool result contradicts:
+a different number (resolution, frame rate, decoder count, start time), a capability the tool says is
+absent, or a cause the log rules out."""
+
+[[example]]
+case_id = "m4q007"
+verdict = "FAIL"
+critique = """The answer says the lumen-l3 "supports 16 concurrent hardware decoders", but codec_caps
+reports max_concurrent_hw_video_decoders 4 and the log shows NO_MEMORY: max instances reached. The cause
+contradicts the tool output."""
+
+[[example]]
+case_id = "m4q119"
+verdict = "PASS"
+critique = """The answer says the fifth decoder allocation fails with NO_MEMORY and that the lumen-l3
+allows 4 concurrent hardware decoders; the log and codec_caps show exactly that. No claim contradicts
+the tools."""

@@ -1,0 +1,432 @@
+"""Write the module 5 fixtures: 137 labelled agent traces and the judges' outputs on them.
+
+No API key was used to write the course.
+
+1. Agent traces. Every dataset v1 query that matches a module 3 scenario (all three splits) is run
+   through the real `run_agent` loop against a scripted client. Behaviour per query: false-premise
+   queries alternate between adopting and correcting the premise, missing-detail queries between
+   assuming and asking, and clear queries cycle through a correct answer and the module 3 failure
+   patterns (ignored tool output, vague next step, cited-but-never-called tools, wrong API detail,
+   format). This is a fresh run, so individual traces differ from module 4's dev run.
+2. Reference labels (the "domain expert"): data/labels/module05_reference.csv, one row per trace
+   with pass/fail, a note, and failure modes. Synthetic-authored, like module 3's.
+3. Judge outputs. For each judge spec in config/judges/, the real request (`build_judge_request`)
+   is answered by a scripted judge whose verdict is the reference label except for documented,
+   deterministic error patterns (see `judge_errs`). The critiques are templated from the trace.
+   Every fixture record is tagged "source": "synthetic-authored".
+
+Usage:  uv run python scripts/author_module05_fixtures.py
+"""
+
+from __future__ import annotations
+
+import csv
+import hashlib
+import json
+import sys
+from pathlib import Path
+from types import SimpleNamespace
+from typing import Any
+
+sys.path.insert(0, str(Path(__file__).parent))
+
+from author_module03_fixtures import FakeClock, ScriptedClient, T, answer  # noqa: E402
+from author_module04_fixtures import ADOPT, ASK  # noqa: E402
+from module03_scenarios import S  # noqa: E402
+
+from evalkit import LLM, Tracer  # noqa: E402
+from evalkit.judge import Item, JudgeSpec, build_judge_request  # noqa: E402
+from mediadoctor import lab03, lab04, lab05  # noqa: E402
+from mediadoctor.toolagent import run_agent  # noqa: E402
+
+CLEAR_CYCLE = [
+    "good", "ignored", "vague", "good", "cite_uncalled", "vague",
+    "ignored", "vague", "api", "ignored", "format", "vague",
+]  # fmt: skip
+
+MODES = {
+    "ignored": ["ignored-tool-output"],
+    "vague": ["vague-next-step"],
+    "cite_uncalled": ["skipped-investigation", "fabricated-evidence"],
+    "api": ["wrong-api-detail"],
+    "format": ["format-violation"],
+    "assume": ["assumed-unstated-detail"],
+    "good": [],
+    "ask": [],
+    "correct": [],
+}
+
+
+VAGUE_EXTRA = {  # scenarios that module 3 never made vague
+    "live": "Look into how the player handles backgrounding.",
+    "audiofocus": "Check the app's audio settings.",
+    "widevine": "Contact your DRM provider.",
+    "av1-api": "Check the Android documentation.",
+    "hdr-display-api": "Test on more devices.",
+}
+
+
+def vague_of(sid: str) -> str:
+    return S[sid].get("vague") or VAGUE_EXTRA[sid]
+
+
+def fallback(pattern: str, sc: dict[str, Any]) -> str:
+    order = {
+        "ignored": ["ignored", "api", "vague", "good"],
+        "vague": ["vague"],
+        "api": ["api", "vague", "good"],
+    }.get(pattern, [pattern])
+    for p in order:
+        if p in ("good", "cite_uncalled", "format", "vague") or p in sc:
+            return p
+    return "good"
+
+
+def behaviours(rows: list[dict[str, Any]]) -> list[str]:
+    k: dict[tuple[str, str], int] = {}
+    out = []
+    for r in rows:
+        a = r["ambiguity"]
+        i = k.get((r["split"], a), 0)  # counted per split, so every split gets every pattern
+        k[(r["split"], a)] = i + 1
+        if a == "clear":
+            out.append(fallback(CLEAR_CYCLE[i % len(CLEAR_CYCLE)], S[lab04.scenario_for(r)]))
+        elif a == "missing-detail":
+            out.append(("assume", "ask")[i % 2])
+        else:
+            out.append(("adopt", "correct")[i % 2])
+    return out
+
+
+def build(row: dict[str, Any], beh: str, cid: str) -> tuple[list[list[dict]], dict[str, str]]:
+    sid = lab04.scenario_for(row)
+    sc = S[sid]
+    n = 0
+
+    def U(name: str, args: dict) -> dict:
+        nonlocal n
+        n += 1
+        return {"type": "tool_use", "id": f"toolu_{cid}_{n:02d}", "name": name, "input": args}
+
+    tool_turns = [
+        ([T(sc["pre"])] if k == 0 and sc.get("pre") else []) + [U(name, a) for name, a in t]
+        for k, t in enumerate(sc["turns"])
+    ]
+    has_tools = any(name != "search_kb" for t in sc["turns"] for name, _ in t)
+    cause, nxt, src = sc["cause"], sc["next"], sc["src"]
+    modes = list(MODES.get(beh, []))
+    note, upstream = "", ""
+    h = int(hashlib.sha256(cid.encode()).hexdigest(), 16)
+    if beh == "ignored":
+        wrong, why = sc["ignored"][h % len(sc["ignored"])]
+        script = tool_turns + [answer(wrong, nxt, src)]
+        note, upstream = f"answer contradicts the tool output: {why}", "chat:answer"
+    elif beh == "vague":
+        script = tool_turns + [answer(cause, vague_of(sid), src)]
+        note, upstream = f"cause fine, next step '{vague_of(sid)}' is not actionable", "chat:answer"
+    elif beh == "api":
+        api = sc["api"] if isinstance(sc["api"], list) else [sc["api"]]
+        wrong, why = api[h % len(api)]
+        script = tool_turns + [answer(cause, wrong, src)]
+        note, upstream = f"wrong API detail: {why}", "chat:answer"
+    elif beh == "cite_uncalled":
+        script = [answer(cause, nxt, src)]
+        note, upstream = (
+            f"no tool calls, but Sources lists {src}: citations are made up",
+            "chat:plan",
+        )
+    elif beh == "format":
+        script = tool_turns + [answer(cause, nxt, src, sources_line=False)]
+        note, upstream = "no Sources line", "chat:answer"
+    elif beh == "assume":
+        named = sorted(
+            {
+                v
+                for t in sc["turns"]
+                for nm, a in t
+                if nm != "search_kb"
+                for k, v in a.items()
+                if k in ("file", "device", "log")
+            }
+        )
+        script = tool_turns + [answer(cause, nxt, src)]
+        note = f"user never named it; agent assumed {' and '.join(named) or 'the details'} and answered as if confirmed"
+        upstream = "chat:plan"
+    elif beh == "ask":
+        what = ASK.get(row["evidence"], "the details")
+        script = [
+            answer(
+                f"Not enough to tell yet: I need {what} to check this.",
+                f"Send {what} and I will check it before suggesting a fix.",
+                "none",
+            )
+        ]
+    elif beh == "adopt":
+        field, wrong = ADOPT[sid]
+        if field == "cause":
+            cause = wrong
+        else:
+            nxt = wrong
+        script = tool_turns + [answer(cause, nxt, src)]
+        modes = ["accepted-false-premise"]
+        note = f"repeated the user's false premise ('{row['premise']}')"
+        if field == "cause" and has_tools:
+            modes.append("ignored-tool-output")
+            note += " although the tool output contradicts it"
+        upstream = "chat:answer"
+    elif beh == "correct":
+        script = tool_turns + [answer(f"That premise does not hold here. {cause}", nxt, src)]
+    else:
+        script = tool_turns + [answer(cause, nxt, src)]
+    ref = {
+        "case_id": cid,
+        "verdict": "fail" if modes else "pass",
+        "note": note,
+        "first_upstream": upstream,
+        "modes": ";".join(modes),
+        "annotator": "reference (synthetic-authored)",
+    }
+    return script, ref
+
+
+def write_traces() -> dict[str, str]:
+    rows = lab05.label_rows()
+    behs = behaviours(rows)
+    scripts, refs = {}, []
+    for r, b in zip(rows, behs, strict=True):
+        scripts[r["id"]], ref = build(r, b, r["id"])
+        refs.append(ref)
+    clock = FakeClock()
+    llm = LLM(
+        namespace=lab05.AGENT_NAMESPACE,
+        mode="record",
+        client=ScriptedClient(scripts, {r["question"]: r["id"] for r in rows}, clock),
+        source="synthetic-authored",
+        clock=clock,
+    )
+    if llm.store.path.exists():
+        llm.store.path.unlink()
+    for r in rows:
+        res = run_agent(r["question"], llm=llm, tracer=Tracer(), case_id=r["id"])
+        assert res.stop_reason == "end_turn", (r["id"], res.stop_reason)
+    with lab05.labels_path().open("w", newline="", encoding="utf-8") as fh:
+        w = csv.DictWriter(fh, list(refs[0]))
+        w.writeheader()
+        w.writerows(refs)
+    print(
+        f"traces: {len(rows)} ({sum(r['verdict'] == 'fail' for r in refs)} failing), {len(llm.store.records())} records"
+    )
+    return dict(zip([r["id"] for r in rows], behs, strict=True))
+
+
+# --- Judge outputs -----------------------------------------------------------------------------------
+
+
+def _u(*parts: str) -> float:
+    return int(hashlib.sha256(":".join(parts).encode()).hexdigest()[:12], 16) / 16**12
+
+
+def _line(answer_text: str, label: str) -> str:
+    for ln in answer_text.splitlines():
+        if ln.startswith(label):
+            return ln[len(label) :].strip()
+    return ""
+
+
+def _short(text: str, n: int = 110) -> str:
+    return text if len(text) <= n else text[: n - 3].rstrip() + "..."
+
+
+def judge_errs(key: str, cid: str, modes: list[str], item: Item, premise: str | None):
+    """Return (judge_pass, critique) for one judge call: the reference label, except for the
+    documented error patterns of each judge version. All randomness is a hash of (judge, case)."""
+    u = _u(key, cid)
+    cause, nxt = _line(item.answer, "Likely cause:"), _line(item.answer, "Next step:")
+    tools = [t for t in item.tools if t[3]]
+    names = sorted({t[0] for t in tools}) or ["tool"]
+    tool_names = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
+    asks = cause.startswith("Not enough to tell")
+    if key.startswith("tool-grounding"):
+        fail = "ignored-tool-output" in modes
+        snippet = _short(
+            next((t[2] for t in tools if t[0] != "search_kb"), tools[0][2] if tools else ""), 140
+        )
+        if fail:
+            miss = ("accepted-false-premise" in modes) if key.endswith("v1") else False
+            miss = miss or u < (0.15 if key.endswith("v1") else 0.08)
+            if miss:
+                why = (
+                    "It matches what the user reported, and "
+                    if "accepted-false-premise" in modes
+                    else ""
+                )
+                return (
+                    True,
+                    f'{why}I found no statement in the answer ("{_short(cause, 90)}") that the {tool_names} output contradicts.',
+                )
+            return (
+                False,
+                f'The answer says "{_short(cause, 100)}", but {tools[0][0] if tools else "the tool"} returned {snippet}. The claim contradicts the tool output.',
+            )
+        if u < 0.06:
+            return (
+                False,
+                f'The answer says "{_short(cause, 100)}"; I could not find this stated in the {tool_names} output, so it is unsupported.',
+            )
+        return (
+            True,
+            f"The cause agrees with the {tool_names} results; no claim in the answer contradicts them.",
+        )
+    if key.startswith("false-premise"):
+        fail = "accepted-false-premise" in modes
+        if fail:
+            next_type = "ignored-tool-output" not in modes
+            if u < (0.7 if next_type else 0.08):
+                return (
+                    True,
+                    f'The answer does not repeat the user\'s claim in its cause ("{_short(cause, 80)}"); it reasons from the evidence.',
+                )
+            where = "next step" if next_type else "cause"
+            return (
+                False,
+                f'The user states "{premise}". The answer builds its {where} on it ("{_short(cause if not next_type else nxt, 90)}"), but the evidence contradicts the claim.',
+            )
+        if premise:
+            if u < 0.2:
+                return (
+                    False,
+                    f'The user claims "{premise}" and the answer does not reject it clearly before giving its own cause.',
+                )
+            return (
+                True,
+                f'The user claims "{premise}"; the answer says the premise does not hold and reasons from the evidence.',
+            )
+        if u < 0.02:
+            return (
+                False,
+                "The answer accepts the user's framing of the problem without checking it.",
+            )
+        return (
+            True,
+            "The question states no wrong fact as given, so there is nothing to accept or correct.",
+        )
+    if key.startswith("next-step"):
+        fail = "vague-next-step" in modes
+        if fail:
+            if u < 0.12:
+                return True, f'The Next step "{nxt}" gives the engineer a direction to follow.'
+            return (
+                False,
+                f'The Next step is "{nxt}". It names no API, setting, or check; it is generic advice.',
+            )
+        if asks and u < 0.3:
+            return (
+                False,
+                f'The Next step only asks the user for more information ("{_short(nxt, 70)}"); it does not say what to do.',
+            )
+        if not asks and u < 0.04:
+            return (
+                False,
+                f'The Next step ("{_short(nxt, 80)}") lists options but does not say which to do first.',
+            )
+        return True, f'The Next step names a concrete action: "{_short(nxt, 90)}".'
+    raise ValueError(key)
+
+
+def likert(cid: str, modes: list[str], item: Item) -> tuple[int, str]:
+    u = _u("likert", cid)
+    nxt = _line(item.answer, "Next step:")
+    if "vague-next-step" in modes:
+        s = 2 if u < 0.45 else 3 if u < 0.85 else 4
+    elif item.answer.startswith("Likely cause: Not enough"):
+        s = 3 if u < 0.6 else 4
+    else:
+        s = 3 if u < 0.15 else 4 if u < 0.65 else 5
+    words = {
+        2: "barely actionable",
+        3: "partly actionable",
+        4: "actionable",
+        5: "specific and immediately actionable",
+    }
+    return s, f'The next step ("{_short(nxt, 80)}") is {words[s]}.'
+
+
+class DictClient:
+    """Answers each judge request from a table built in advance (keyed by system + user text)."""
+
+    def __init__(self, table: dict[tuple[str, str], str]):
+        self.table = table
+        self.messages = SimpleNamespace(create=self._create)
+
+    def _create(self, **req: Any) -> dict[str, Any]:
+        text = self.table[(req.get("system", ""), req["messages"][0]["content"])]
+        return {
+            "id": "msg_synthetic_" + hashlib.sha256(text.encode()).hexdigest()[:12],
+            "type": "message",
+            "role": "assistant",
+            "model": req["model"],
+            "content": [{"type": "text", "text": text}],
+            "stop_reason": "end_turn",
+            "usage": {
+                "input_tokens": len(json.dumps(req)) // 4,
+                "output_tokens": max(1, len(text) // 4),
+            },
+        }
+
+
+def write_judges() -> None:
+    m5_labels = {cid: a.modes for cid, a in lab05.annotations().items()}
+    m3_labels = {a.case_id: a.modes for a in lab03.load_annotations(lab03.reference_labels_path())}
+    premise = {r["id"]: r.get("premise") for r in lab04.load_dataset()}
+    pools = {**lab05.items(), **lab05.m3_items()}
+    modes_of = {**m5_labels, **m3_labels}
+    table: dict[tuple[str, str], str] = {}
+    plan: list[tuple[JudgeSpec, list[str]]] = []
+    for split in ("dev", "test"):
+        for name, ver in (("tool-grounding", "v2"), ("false-premise", "v1"), ("next-step", "v1")):
+            plan.append((lab05.load_spec(name, ver), lab05.ids_in(split)))
+    plan.append((lab05.load_spec("tool-grounding", "v1"), lab05.ids_in("dev")))
+    plan.append((lab05.load_spec("tool-grounding", "v2"), list(lab05.m3_items())))
+    for spec, ids in plan:
+        for cid in ids:
+            item = pools[cid]
+            if not lab05.applies(spec, item):
+                continue
+            req = build_judge_request(spec, item, lab05.items())
+            ok, critique = judge_errs(spec.key, cid, modes_of[cid], item, premise.get(cid))
+            table[(req["system"], req["messages"][0]["content"])] = json.dumps(
+                {"critique": critique, "verdict": "PASS" if ok else "FAIL"}
+            )
+    for split in ("dev", "test"):
+        for cid in lab05.ids_in(split):
+            req = lab05.likert_request(pools[cid])
+            s, critique = likert(cid, modes_of[cid], pools[cid])
+            table[(req["system"], req["messages"][0]["content"])] = json.dumps(
+                {"critique": critique, "score": s}
+            )
+
+    llm = LLM(
+        namespace=lab05.JUDGE_NAMESPACE,
+        mode="record",
+        client=DictClient(table),
+        source="synthetic-authored",
+    )
+    if llm.store.path.exists():
+        llm.store.path.unlink()
+    for split in ("dev", "test"):
+        for name in lab05.FINAL:
+            lab05.validate(name, None, split, llm=llm)
+        lab05.likert_scores(split, llm=llm)
+    lab05.validate("tool-grounding", "v1", "dev", llm=llm)
+    lab05.estimate(llm=llm)
+    print(f"judge fixtures: {len(llm.store.records())} records ({len(table)} planned)")
+
+
+if __name__ == "__main__":
+    what = sys.argv[1:] or ["traces", "judges"]
+    if "traces" in what:
+        write_traces()
+        lab05.traces.cache_clear()
+        lab05.items.cache_clear()
+    if "judges" in what:
+        write_judges()

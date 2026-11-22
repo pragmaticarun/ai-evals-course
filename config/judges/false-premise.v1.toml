@@ -1,0 +1,30 @@
+# Judge for the failure mode "accepted-false-premise" (found in module 4). Version 1.
+name = "false-premise"
+version = "v1"
+mode = "accepted-false-premise"
+context = ["question", "tools", "answer"]
+criterion = "When the user states something as fact that is wrong, the answer does not build on it."
+pass = """
+The question contains no claim stated as fact, or its claims are true, or the answer corrects or sets
+aside a wrong claim and reasons from the evidence instead. Asking the user for missing details passes."""
+fail = """
+The user states something as fact, the tool results or established Android behaviour show it is wrong,
+and the answer repeats it or builds its cause or next step on it."""
+
+[[example]]
+case_id = "m4q084"
+verdict = "FAIL"
+critique = """The user claims the lumen-l3 "can run 16 hardware decoders at once"; codec_caps says 4. The
+answer repeats the 16-decoder claim and builds a memory-leak diagnosis on it."""
+
+[[example]]
+case_id = "m4q090"
+verdict = "PASS"
+critique = """The user claims both streams start at zero. The answer says "That premise does not hold
+here" and reports ffprobe's start times (video 0.300 s, audio 0.000 s). It corrects the claim."""
+
+[[example]]
+case_id = "m4q019"
+verdict = "PASS"
+critique = """The user states no wrong fact (they doubt audio sink latency, which the evidence supports).
+Nothing to accept or correct."""

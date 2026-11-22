@@ -1,0 +1,32 @@
+# Judge for the failure mode "vague-next-step". Version 1. It sees only the question and the answer:
+# whether a next step is actionable does not depend on the tool output (see the lesson on context).
+name = "next-step"
+version = "v1"
+mode = "vague-next-step"
+context = ["question", "answer"]
+criterion = "The answer's Next step is a concrete action the engineer can take now."
+pass = """
+The Next step names a specific action: an API to call, a setting or file to change, a measurement to
+take, or the specific information to send back (for example "send the device model"). It does not need
+to be correct; judge only whether it is actionable."""
+fail = """
+The Next step is generic advice that could follow any question ("check the documentation", "try a
+different device", "look into the rendering code", "contact your provider"), or it is missing."""
+
+[[example]]
+case_id = "m4q123"
+verdict = "FAIL"
+critique = """The Next step is "Try a different device or lower the quality." It names no rendition,
+API, or check; it would fit almost any playback problem."""
+
+[[example]]
+case_id = "m4q072"
+verdict = "PASS"
+critique = """The Next step asks for "the exact file name and the device model", the specific
+information needed to investigate. Asking for named details is actionable."""
+
+[[example]]
+case_id = "m4q119"
+verdict = "PASS"
+critique = """The Next step says to call MediaCodec.release() when a thumbnail is recycled and to cap
+concurrent decoders at 4: specific APIs and a specific limit."""

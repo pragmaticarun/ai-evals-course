@@ -2,6 +2,9 @@
 
 Seeded in module 1; each later module adds its terms. The module that introduces a term is in brackets.
 
+**Alignment session** [5]
+: A regular review of judge-versus-human disagreements with the domain expert, sorting each into judge wrong, label wrong, or criterion unclear, and logging the decisions.
+
 **Analyze, measure, improve** [1]
 : The eval loop: find and name failures, build evaluators you trust for them, change the system and verify the change. Then repeat.
 
@@ -14,17 +17,26 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Benevolent dictator** [3]
 : The single domain expert who owns pass/fail verdicts and failure-mode definitions, taking input from others but deciding (term used by Hamel Husain).
 
+**Bootstrap (percentile interval)** [5, 6]
+: Resampling the data with replacement many times and recomputing a statistic each time; the middle 95% of the results gives an approximate 95% confidence interval.
+
 **Case / test case** [1]
 : One input to the system (here, a user question) with an id, plus any metadata needed to evaluate it.
 
 **Case set / dataset** [1]
 : A fixed, versioned collection of cases. Comparisons are only meaningful on the same case set.
 
+**Code check (validated)** [5]
+: A deterministic evaluator measured against human labels like a judge; precise, but its definition can still be narrower than the expert's.
+
 **Code check** [1]
 : A deterministic evaluator written as code: an assertion, regex, schema validation, or lookup.
 
 **Compounding failure** [3]
 : An early mistake in a multi-step run that causes later symptoms, such as a bad tool argument followed by an answer citing the failed tool. Label the first one.
+
+**Corrected pass rate (Rogan-Gladen)** [5, 6]
+: A judge-measured pass rate adjusted for the judge's TPR and TNR: (observed + TNR − 1) / (TPR + TNR − 1). Defined only when TPR + TNR > 1.
 
 **Cost per trace** [2]
 : The summed price of a run's model calls (tokens times per-token price). Divide by successful runs to get cost per successful task.
@@ -37,6 +49,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Criteria drift** [3, 5]
 : The way reviewers' idea of a good or bad output changes as they see more outputs; definitions and earlier labels need revisiting.
+
+**Critique (judge)** [5]
+: The short explanation a judge writes before its verdict, quoting the evidence; what you read when the judge and a human disagree.
 
 **Data leakage (split leakage)** [4]
 : Test examples that are copies or near-copies of training or dev examples, so tuning on one inflates scores on the other. Prevented by grouping similar items before splitting.
@@ -62,6 +77,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **False premise** [4]
 : A wrong belief stated as fact in a question ("the lumen-l3 has a hardware AV1 decoder"). Tests whether the system checks claims or repeats them.
 
+**Few-shot example (judge)** [5]
+: A labelled trace with verdict and critique included in a judge prompt; taken from the train split only.
+
 **Finish reason / stop reason** [2]
 : Why the model stopped generating: for Claude, `end_turn` (final answer), `tool_use` (wants a tool), or `max_tokens` (cut off).
 
@@ -76,6 +94,12 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Held-out split (test split)** [4]
 : The part of a dataset kept for occasional reporting and never used for tuning or read while improving the system.
+
+**Judge leakage** [5]
+: Evaluation data reaching the judge prompt: few-shot examples from dev or test, or the expected answer, human verdict, or reviewer note for a case.
+
+**Judge spec** [5]
+: The versioned definition of one judge: criterion, PASS and FAIL definitions, context, few-shot examples, and model. Here a TOML file in config/judges/.
 
 **LLM tells** [4]
 : Phrasing typical of model-written text ("I'm experiencing", "Could you please", "best practices") that makes synthetic queries unlike real ones.
@@ -107,6 +131,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Per-case diff** [1]
 : The list of cases that changed from pass to fail (broken) or fail to pass (fixed) between two runs.
 
+**Position bias** [5]
+: A judge's tendency to prefer the answer in one position when comparing two.
+
 **Priority (failure mode)** [3]
 : A ranking score for failure modes; in this course, traces affected times severity, with fixability breaking ties.
 
@@ -127,6 +154,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Seeded ids** [2]
 : Trace and span ids generated from a fixed seed so replayed traces are identical across runs.
+
+**Self-preference (self-enhancement) bias** [5]
+: A judge's tendency to rate text from its own model or family more highly.
 
 **Semantic conventions** [2]
 : OpenTelemetry's agreed names and meanings for span names and attributes. The GenAI ones (`gen_ai.*`) cover model and tool calls.
@@ -149,17 +179,26 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Theoretical saturation** [3]
 : The point where reading more traces no longer reveals new failure modes or changes definitions; the signal to stop an error-analysis round.
 
+**TNR (true negative rate)** [5]
+: With PASS as positive: the share of human-failed traces the judge fails. Measures whether the judge catches failures.
+
 **Tool call (tool use)** [2]
 : A structured request from the model to run one of the functions you described to it; your code runs it and returns a tool result.
 
 **Tool error recovery** [3]
 : An agent fixing a failed tool call (for example retrying with a valid argument) and continuing; the run can still pass.
 
+**TPR (true positive rate)** [5]
+: With PASS as positive: the share of human-passed traces the judge passes.
+
 **Trace** [1, 2]
 : A structured record of everything one run did: model calls, tool calls, retrieved context, timings, tokens.
 
 **Tuple** [4]
 : One combination of values, one per dimension, describing a single test situation before it is written as a query.
+
+**Verbosity bias** [5]
+: A judge's tendency to prefer longer, more detailed answers regardless of correctness.
 
 **Virtual clock** [2]
 : A clock that advances only by recorded or simulated durations, so replayed traces have stable timestamps.

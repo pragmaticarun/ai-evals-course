@@ -9,6 +9,11 @@ Module 1 ships:
 Module 2 adds:
   - evalkit.trace     OpenTelemetry-shaped tracer, JSONL export, OTLP/JSON conversion
   - evalkit.viewer    tool-agnostic trace viewer (also the `evalkit view` command)
+
+Modules 3 to 5 add:
+  - evalkit.annotate  annotation CSVs, failure-mode ranking, saturation
+  - evalkit.synth     dimensions, tuples, coverage, batching, dedup, splits
+  - evalkit.judge     LLM judge specs and prompts, TPR/TNR, corrected pass rate with bootstrap CI
 """
 
 from evalkit.checks import Check, CheckResult, run_checks, summarize

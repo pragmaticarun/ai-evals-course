@@ -77,7 +77,11 @@ nav:
           - Lab: modules/04-synthetic-data/lab.md
           - Exercises: modules/04-synthetic-data/exercises.md
           - Quiz: modules/04-synthetic-data/quiz.md
-      - "5. Evaluators and judge validation": modules/05-evaluators-and-judges/index.md
+      - "5. Evaluators and judge validation":
+          - modules/05-evaluators-and-judges/index.md
+          - Lab: modules/05-evaluators-and-judges/lab.md
+          - Exercises: modules/05-evaluators-and-judges/exercises.md
+          - Quiz: modules/05-evaluators-and-judges/quiz.md
       - "6. Trustworthy metrics": modules/06-trustworthy-metrics/index.md
       - "7. Architectures": modules/07-architectures/index.md
       - "8. CI/CD for agents": modules/08-ci-cd/index.md
@@ -90,6 +94,7 @@ nav:
       - Tracing an agent: cheatsheets/tracing.md
       - Error analysis: cheatsheets/error-analysis.md
       - Synthetic data: cheatsheets/synthetic-data.md
+      - Judges and validation: cheatsheets/judges.md
   - Templates:
       - Failure taxonomy sheet: eval-templates/failure-taxonomy.md
       - Dimensions sheet: eval-templates/dimensions-sheet.md

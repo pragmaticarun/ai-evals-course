@@ -46,7 +46,14 @@ def test_solution_snippet_runs(code):
 
 
 @pytest.mark.parametrize(
-    "module", ["01-why-evals", "02-agent-with-tracing", "03-error-analysis", "04-synthetic-data"]
+    "module",
+    [
+        "01-why-evals",
+        "02-agent-with-tracing",
+        "03-error-analysis",
+        "04-synthetic-data",
+        "05-evaluators-and-judges",
+    ],
 )
 def test_solutions_are_collapsed(module):
     text = (DOCS / "modules" / module / "exercises.md").read_text()
@@ -56,7 +63,12 @@ def test_solutions_are_collapsed(module):
 
 @pytest.mark.parametrize(
     ("module", "n"),
-    [("02-agent-with-tracing", 8), ("03-error-analysis", 10), ("04-synthetic-data", 8)],
+    [
+        ("02-agent-with-tracing", 8),
+        ("03-error-analysis", 10),
+        ("04-synthetic-data", 8),
+        ("05-evaluators-and-judges", 10),
+    ],
 )
 def test_quiz_answers_are_collapsed(module, n):
     text = (DOCS / "modules" / module / "quiz.md").read_text()

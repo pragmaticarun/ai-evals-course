@@ -17,7 +17,7 @@ those failures with evaluators you can trust, and improve it with evidence.
 | 2 | [A measurable agent with tracing](modules/02-agent-with-tracing/index.md) | 8 | Available |
 | 3 | [Error analysis](modules/03-error-analysis/index.md) | 7 | Available |
 | 4 | [Synthetic data](modules/04-synthetic-data/index.md) | 6 | Available |
-| 5 | [Evaluators and judge validation](modules/05-evaluators-and-judges/index.md) | 9 | Planned |
+| 5 | [Evaluators and judge validation](modules/05-evaluators-and-judges/index.md) | 9 | Available |
 | 6 | [Trustworthy metrics and statistics](modules/06-trustworthy-metrics/index.md) | 6 | Planned |
 | 7 | [Architectures: RAG, multi-turn, multi-agent, multimodal](modules/07-architectures/index.md) | 10 | Planned |
 | 8 | [CI/CD for agents](modules/08-ci-cd/index.md) | 6 | Planned |
@@ -37,5 +37,5 @@ The structure of this course is inspired by Hamel Husain and Shreya Shankar's wo
 Maven course and public writing. All text, code, and data here are original. See [Credits](credits.md).
 
 Start with [Setup](setup.md), then [Module 1](modules/01-why-evals/index.md),
-[Module 2](modules/02-agent-with-tracing/index.md), [Module 3](modules/03-error-analysis/index.md), and
-[Module 4](modules/04-synthetic-data/index.md).
+[Module 2](modules/02-agent-with-tracing/index.md), [Module 3](modules/03-error-analysis/index.md),
+[Module 4](modules/04-synthetic-data/index.md), and [Module 5](modules/05-evaluators-and-judges/index.md).

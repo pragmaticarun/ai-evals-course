@@ -1,0 +1,46 @@
+# Judge for the failure mode "ignored-tool-output" (module 3's top mode). Version 2.
+# Change from v1 (after reading dev disagreements): v1 passed answers that repeated a wrong claim the
+# USER had made, as if agreeing with the user made it true. v2 says so in the FAIL definition and adds
+# two few-shot negatives of exactly that kind.
+# Few-shot examples are module 5 traces from the TRAIN split only (`mediadoctor-lab05 leaks` checks).
+name = "tool-grounding"
+version = "v2"
+mode = "ignored-tool-output"
+context = ["question", "tools", "answer"]
+criterion = "The answer's claims about files, devices, and logs agree with what the tool calls returned."
+pass = """
+Every statement in the answer about a file, device, decoder, or log is supported by, or at least not
+contradicted by, the tool results. Answers that make no such claim, or that ask for more information,
+pass. Judge only agreement with the tool results; do not judge style, the next step, or citations."""
+fail = """
+The answer states something about a file, device, decoder, or log that a tool result contradicts:
+a different number (resolution, frame rate, decoder count, start time), a capability the tool says is
+absent, or a cause the log rules out. This applies even when the user asserted the same claim in the
+question: agreeing with the user does not make a claim true if the tool output contradicts it."""
+
+[[example]]
+case_id = "m4q007"
+verdict = "FAIL"
+critique = """The answer says the lumen-l3 "supports 16 concurrent hardware decoders", but codec_caps
+reports max_concurrent_hw_video_decoders 4 and the log shows NO_MEMORY: max instances reached. The cause
+contradicts the tool output."""
+
+[[example]]
+case_id = "m4q119"
+verdict = "PASS"
+critique = """The answer says the fifth decoder allocation fails with NO_MEMORY and that the lumen-l3
+allows 4 concurrent hardware decoders; the log and codec_caps show exactly that. No claim contradicts
+the tools."""
+
+[[example]]
+case_id = "m4q084"
+verdict = "FAIL"
+critique = """The user says the lumen-l3 "can run 16 hardware decoders at once" and the answer repeats it,
+but codec_caps reports max_concurrent_hw_video_decoders 4 and the log shows max instances reached. The
+user's claim does not override the tool output."""
+
+[[example]]
+case_id = "m4q012"
+verdict = "FAIL"
+critique = """The answer says "Both streams start at 0.000 s", echoing the user, but ffprobe reports the
+video stream's start_time as 0.300000 and the audio's as 0.000000. The cause contradicts the tool output."""

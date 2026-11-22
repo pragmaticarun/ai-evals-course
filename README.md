@@ -18,6 +18,8 @@ uv run mediadoctor-lab03 rank             # module 3: ranked failure modes from 
 uv run mediadoctor-lab03 annotate --labels runs/m3_labels.csv   # label the 100 traces yourself
 uv run mediadoctor-lab04 generate --out runs/m4_v1.jsonl   # module 4: tuples -> synthetic queries -> dataset v1
 uv run mediadoctor-lab04 coverage         # coverage matrix of the frozen dataset
+uv run mediadoctor-lab05 validate --split dev   # module 5: LLM judges vs human labels (TPR/TNR)
+uv run mediadoctor-lab05 estimate         # judge-corrected pass rate with a bootstrap CI
 uv run zensical serve                     # the course site at http://localhost:8000
 ```
 
@@ -29,8 +31,9 @@ environment (or a git-ignored `.env`) and use `EVALS_LLM_MODE=record`. See `docs
 ```text
 config/models.toml        Claude model per role (agent; cheaper judge and synth)
 config/synth/             test dimensions and exclusion rules for synthetic data (module 4)
+config/judges/            versioned LLM judge specs: criterion, PASS/FAIL, context, train-split examples (module 5)
 docs/                     course site (Zensical, Material-compatible mkdocs.yml)
-labs/evalkit/             record/replay LLM wrapper, fixtures, tracer, trace viewer, OTLP export, annotation and taxonomy tools, synthetic data (tuples, batching, dedup, coverage, splits)
+labs/evalkit/             record/replay LLM wrapper, fixtures, tracer, trace viewer, OTLP export, annotation and taxonomy tools, synthetic data (tuples, batching, dedup, coverage, splits), judges (prompts, TPR/TNR, corrected pass rate, bootstrap)
 labs/mediadoctor/         the running agent (module 1 seed; module 2 Claude tool-use agent with 4 tools)
 data/kb/                  knowledge-base notes the agent retrieves from
 data/datasets/            versioned case sets (module03_cases.jsonl: 100-trace error-analysis set; module04_v1.jsonl: synthetic dataset v1 + manifest)
