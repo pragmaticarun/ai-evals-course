@@ -1,0 +1,84 @@
+# Built with Zensical (`uv run zensical build`), which reads this file directly.
+# Kept compatible with Material for MkDocs so `uv run mkdocs build` works as a fallback.
+# No `hooks:` (unsupported by Zensical) and only pymdownx/markdown extensions.
+site_name: AI Evals, Hands-On
+site_description: An original, hands-on course on evaluating LLM agents, built around one running agent.
+site_author: Arunkumar Maniam Rajan
+site_url: https://pragmaticarun.github.io/ai-evals-course/
+repo_url: https://github.com/pragmaticarun/ai-evals-course
+repo_name: pragmaticarun/ai-evals-course
+edit_uri: edit/main/docs/
+copyright: Content CC BY 4.0, code MIT. Copyright 2026 Arunkumar Maniam Rajan.
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+nav:
+  - Home: index.md
+  - Setup: setup.md
+  - Modules:
+      - "1. Why evals":
+          - modules/01-why-evals/index.md
+          - Lab: modules/01-why-evals/lab.md
+          - Exercises: modules/01-why-evals/exercises.md
+          - Quiz: modules/01-why-evals/quiz.md
+      - "2. A measurable agent with tracing": modules/02-agent-with-tracing/index.md
+      - "3. Error analysis": modules/03-error-analysis/index.md
+      - "4. Synthetic data": modules/04-synthetic-data/index.md
+      - "5. Evaluators and judge validation": modules/05-evaluators-and-judges/index.md
+      - "6. Trustworthy metrics": modules/06-trustworthy-metrics/index.md
+      - "7. Architectures": modules/07-architectures/index.md
+      - "8. CI/CD for agents": modules/08-ci-cd/index.md
+      - "9. Monitoring and annotation": modules/09-monitoring-and-annotation/index.md
+      - "10. Red-teaming and safety": modules/10-red-teaming/index.md
+      - "11. Improving with evidence": modules/11-improving-with-evidence/index.md
+      - "12. Capstone eval report": modules/12-capstone/index.md
+  - Cheat sheets:
+      - The eval loop: cheatsheets/eval-loop.md
+  - Templates:
+      - Failure taxonomy sheet: eval-templates/failure-taxonomy.md
+      - Judge prompt: eval-templates/judge-prompt.md
+      - Eval report: eval-templates/eval-report.md
+  - Glossary: glossary.md
+  - Credits: credits.md
+  - Versions checked: versions.md
+  - License: license.md

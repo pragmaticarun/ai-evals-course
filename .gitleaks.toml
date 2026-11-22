@@ -1,0 +1,11 @@
+# gitleaks config: default rules plus an explicit check for Anthropic keys.
+title = "ai-evals-course gitleaks config"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "anthropic-api-key"
+description = "Anthropic API key"
+regex = '''sk-ant-[A-Za-z0-9_\-]{20,}'''
+tags = ["key", "anthropic"]

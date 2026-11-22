@@ -1,0 +1,53 @@
+name: live-evals
+
+# Calls the real Anthropic API. Runs only when started by hand (or on the optional schedule)
+# and only with the ANTHROPIC_API_KEY repository secret. It never commits fixtures: the
+# recorded responses are uploaded as an artifact for you to review and commit yourself.
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: "Lab command to run in live record mode"
+        default: "mediadoctor-lab01 compare v1 v2"
+        required: true
+  # schedule:
+  #   - cron: "30 20 * * 0"   # Sundays 20:30 UTC (Monday 02:00 IST); enable once a budget is set
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live-evals
+  cancel-in-progress: true
+
+jobs:
+  live:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      EVALS_LLM_MODE: record
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - name: Require the secret
+        run: test -n "$ANTHROPIC_API_KEY" || { echo "Set the ANTHROPIC_API_KEY repository secret"; exit 1; }
+      - name: Run live
+        env:
+          LAB_COMMAND: ${{ inputs.command }}
+        run: |
+          case "$LAB_COMMAND" in
+            mediadoctor-lab01\ *) ;;
+            *) echo "Only mediadoctor-lab* commands are allowed"; exit 1 ;;
+          esac
+          # shellcheck disable=SC2086
+          uv run $LAB_COMMAND | tee live-output.txt
+      - uses: actions/upload-artifact@v7
+        with:
+          name: live-fixtures-${{ github.run_id }}
+          path: |
+            fixtures/recorded/
+            live-output.txt

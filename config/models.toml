@@ -1,0 +1,20 @@
+# Model roles for the course. Every Claude call reads its model ID from here, never from code.
+# Changing a model ID changes the request hash, so recorded fixtures must be re-recorded
+# (EVALS_LLM_MODE=record) after you edit this file.
+#
+# IDs checked against https://docs.anthropic.com/en/docs/about-claude/models/overview on 2026-11-23.
+
+[agent]
+# The MediaDoctor agent itself: needs good reasoning and tool use.
+model = "claude-sonnet-5-5"
+max_tokens = 1024
+
+[judge]
+# LLM-as-judge evaluators (module 5 onward): cheaper and faster, binary pass/fail outputs.
+model = "claude-haiku-5-5"
+max_tokens = 512
+
+[synth]
+# Synthetic query generation (module 4). Bulk work; run it through the Message Batches API.
+model = "claude-haiku-5-5"
+max_tokens = 512

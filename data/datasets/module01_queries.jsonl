@@ -1,0 +1,20 @@
+{"id": "q01", "query": "My HDR10 video looks grey and washed out on a Pixel when I play it in a TextureView. Why?", "expected_doc": "hdr-tone-mapping"}
+{"id": "q02", "query": "HLG clips from our camera look too dark on older phones. What should I check?", "expected_doc": "hdr-tone-mapping"}
+{"id": "q03", "query": "MediaCodec.configure throws CodecException for a 4K HEVC Main10 stream on a budget device. What's going on?", "expected_doc": "mediacodec-errors"}
+{"id": "q04", "query": "We get CodecException after opening six video thumbnails at once in a RecyclerView. Any idea?", "expected_doc": "mediacodec-errors"}
+{"id": "q05", "query": "Can I assume hardware AV1 decoding on every phone running Android 10 or newer?", "expected_doc": "av1-decoding"}
+{"id": "q06", "query": "How do I detect at runtime whether AV1 will decode in hardware on a device?", "expected_doc": "av1-decoding"}
+{"id": "q07", "query": "Our live HLS stream crashes with BehindLiveWindowException after the app comes back from background. How do I recover?", "expected_doc": "behind-live-window"}
+{"id": "q08", "query": "What does ERROR_CODE_BEHIND_LIVE_WINDOW mean in Media3?", "expected_doc": "behind-live-window"}
+{"id": "q09", "query": "Our podcast app keeps playing during phone calls. How do I fix it?", "expected_doc": "audio-focus"}
+{"id": "q10", "query": "Music from my app does not pause when headphones are unplugged.", "expected_doc": "audio-focus"}
+{"id": "q11", "query": "Users say navigation prompts are drowned out by our video playback. What should change?", "expected_doc": "audio-focus"}
+{"id": "q12", "query": "Audio is about 300 ms ahead of video for every file recorded on one phone model. Where do I start?", "expected_doc": "av-sync"}
+{"id": "q13", "query": "A/V sync slowly drifts over a 20 minute screen recording. Why?", "expected_doc": "av-sync"}
+{"id": "q14", "query": "Our custom renderer drifts out of lip sync; we time video from bytes written to AudioTrack.", "expected_doc": "av-sync"}
+{"id": "q15", "query": "Why does our DRM content play only in SD on some devices?", "expected_doc": "widevine-levels"}
+{"id": "q16", "query": "How can I check the Widevine security level from app code?", "expected_doc": "widevine-levels"}
+{"id": "q17", "query": "HD keys suddenly fail on a tester's phone after they unlocked the bootloader.", "expected_doc": "widevine-levels"}
+{"id": "q18", "query": "A 2 GB MP4 takes 15 seconds to start playing over HTTP, but small files start instantly.", "expected_doc": "mp4-faststart"}
+{"id": "q19", "query": "How can I tell if the moov atom is at the end of an MP4 file?", "expected_doc": "mp4-faststart"}
+{"id": "q20", "query": "Should I use faststart MP4 or fragmented MP4 for adaptive streaming?", "expected_doc": "mp4-faststart"}

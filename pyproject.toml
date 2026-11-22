@@ -1,0 +1,51 @@
+[project]
+name = "ai-evals-course"
+version = "0.1.0"
+description = "A hands-on, original course on evaluating LLM agents, built around one running agent (MediaDoctor)."
+readme = "README.md"
+requires-python = ">=3.14,<3.16"
+license = "MIT"
+authors = [{ name = "Arunkumar Maniam Rajan" }]
+dependencies = [
+    "evalkit",
+    "mediadoctor",
+]
+
+[dependency-groups]
+dev = [
+    "pytest==9.2.0",
+    "ruff==0.17.6",
+]
+docs = [
+    "zensical==0.1.3",
+    # Fallback builder. Material for MkDocs is in maintenance mode (critical fixes until 2027-05-05).
+    "mkdocs==1.6.1",
+    "mkdocs-material==9.8.2",
+    "pymdown-extensions==13.1.2",
+]
+
+[tool.uv]
+default-groups = ["dev", "docs"]
+
+[tool.uv.workspace]
+members = ["labs/evalkit", "labs/mediadoctor"]
+
+[tool.uv.sources]
+evalkit = { workspace = true }
+mediadoctor = { workspace = true }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = ["live: calls the real Anthropic API (skipped unless EVALS_LLM_MODE=live)"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]  # line length is handled by `ruff format`; long strings in data scripts are fine
+
+[tool.ruff.lint.isort]
+known-first-party = ["evalkit", "mediadoctor"]
