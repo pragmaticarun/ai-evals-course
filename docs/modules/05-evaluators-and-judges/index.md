@@ -220,6 +220,35 @@ The same idea is implemented, with a clear write-up, in the open-source
 [judgy](https://github.com/ai-evals-course/judgy) package from Hamel Husain and Shreya Shankar's course; see
 [Credits](../../credits.md).
 
+### A better use of the same labels: prediction-powered inference
+
+The correction above learns the judge's error rates on one labelled set and applies them to different traffic. Its
+interval explodes when few labelled traces fail, and it silently assumes the error rates transfer. A newer method,
+**prediction-powered inference** (PPI; Angelopoulos et al., [arXiv 2301.09633](https://arxiv.org/abs/2301.09633)),
+spends the same labelling budget differently: a person labels a small **random sample of the traffic itself**, the
+judge scores everything, and the judge's mean on the unlabelled part is corrected by the average human-minus-judge
+difference on the labelled part. **PPI++** ([arXiv 2311.01453](https://arxiv.org/abs/2311.01453)) adds a weight λ
+that the data chooses: a judge that agrees with people pulls the interval in, a useless one is weighted toward 0,
+where the estimate is simply the human labels' mean. It is never worse than ignoring the judge.
+
+`evalkit.stats.ppi_mean` implements both. The lab compares them on module 3's 89 judged traces, with 25 of them
+labelled (picked by a stable hash, so a random sample):
+
+```text
+$ uv run mediadoctor-lab05 ppi
+tool-grounding on the 89 module 3 traces with tool output; true pass rate 0.876, judge's raw pass rate 0.820
+  human labels only                    0.920 [0.750, 0.978]  width 0.227
+  Rogan-Gladen (test-split TPR/TNR)    0.840 [0.236, 1.000]  width 0.764
+  PPI                                  0.837 [0.710, 0.963]  width 0.253  (lambda 1.00)
+  PPI++                                0.891 [0.806, 0.975]  width 0.169  (lambda 0.35)
+```
+
+Three readings. PPI++ gives the narrowest interval, and it contains the true rate. Plain PPI is *wider* than the
+labels alone, because this judge (TNR 0.60) adds noise along with information; that is the case PPI++'s λ exists
+for. And Rogan-Gladen's interval is four times wider than PPI++'s from the same 25 labels, because it has to estimate
+TNR from five failures. Use PPI++ when you can label a random sample of the traffic you are measuring; keep the
+Rogan-Gladen correction for when the labels come from somewhere else, and say so. Try `--labels 50`.
+
 ## Aligning with the domain expert
 
 Validation numbers say how often the judge disagrees with the labels. Alignment is what you do with each
@@ -254,6 +283,29 @@ In practice:
   least the dev and test splits.
 - **Re-check old labels after big changes.** A judge that "got worse" may be agreeing with your new criterion and
   disagreeing with your old labels.
+
+## Beyond one binary judge
+
+The single-criterion binary judge is the default because it is the easiest to validate. Four newer patterns build
+on it, and each still gets the TPR and TNR treatment above:
+
+- **A panel of judges.** Several smaller judges from *different model families*, combined by majority vote, can
+  agree with people more often than one large judge, at lower cost, and dilute any one model's self-preference
+  (Verga et al., [Replacing Judges with Juries](https://arxiv.org/abs/2404.18796)). Validate the panel's vote, not
+  each member; and report how often members disagree, because a split vote is a trace worth reading.
+- **Rubrics with per-item criteria.** For long answers, write a checklist per case ("names the decoder instance
+  limit", "does not suggest disabling DRM"), each criterion binary, and grade each one. This is how
+  [HealthBench](https://arxiv.org/abs/2505.08775) grades: thousands of expert-written, case-specific criteria. It is
+  module 5's method at a finer grain, so the same rules apply: definitions with borderline cases, validation per
+  criterion, and no rolled-up score that hides which criterion failed.
+- **A judge that thinks.** Turning thinking on (or effort up) for the judge model often helps on criteria that need
+  checking several claims against evidence, and costs latency and tokens on every call. It is a new judge version:
+  re-validate it. Keep the critique field either way, because it is what you read in alignment sessions.
+- **A judge with tools (agent-as-a-judge).** For agents that change things, a judge that can inspect the
+  environment (read the produced file, query the ticket tracker, rerun a test) checks outcomes a transcript cannot
+  show (Zhuge et al., [Agent-as-a-Judge](https://arxiv.org/abs/2410.10934)). It is a more complex evaluator with
+  more ways to fail, so it needs more labelled cases, not fewer. Module 7 covers grading the final state directly
+  in code, which is cheaper wherever it is possible.
 
 ## Judge pitfalls
 

@@ -197,6 +197,19 @@ the exact tests give p above 0.05, and after adjusting for eight slices, p is 0.
 Rules: choose slices and failure modes before you look; adjust for the number you test; and treat a slice that
 stands out after the fact as a hypothesis for the next, larger eval, not a finding.
 
+**Looking more than once is a comparison too.** Checking a running experiment every day and stopping when p dips
+below 0.05 inflates the false-alarm rate the same way slicing does, because each look is another test. Either fix
+n in advance (Step 3) and look once, or use a method built for repeated looks: alpha spending, or *always-valid*
+intervals that stay correct however often you check (Johari et al.,
+[Always Valid Inference](https://arxiv.org/abs/1512.04922)). Module 9's CUSUM is the monitoring-side version of the
+same idea: its threshold `h` is set for a stream you watch continuously.
+
+**Small slices: shrink toward the whole.** A 6-query slice at 6/6 is not evidence of perfection; its Wilson
+interval is [0.61, 1.00]. When you must rank many small slices, a simple Bayesian fix helps: give each slice a
+beta prior centred on the overall rate, worth a few queries (a beta-binomial model), so small slices are pulled toward
+the average and large ones barely move. It ranks slices more sensibly than raw rates, but it is still not a
+substitute for a pre-registered comparison with enough queries.
+
 ## Step 7: repeated runs: pass@k and pass^k
 
 With k runs per query there are two different questions, and two estimators:

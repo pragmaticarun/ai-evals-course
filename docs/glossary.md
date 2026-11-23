@@ -5,6 +5,12 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Ablation** [11]
 : Removing or adding one component at a time to see how much each contributes, when several changes were made together.
 
+**Adaptive red-teaming** [10]
+: An attacker model in a loop that proposes an attack, reads the target's response, and refines it (PAIR, TAP); its success rate depends on the attacker's budget, so report it per budget.
+
+**Agent-as-a-judge** [5]
+: A judge that can use tools to inspect the environment an agent changed (a file, a ticket, a test run), for outcomes a transcript alone cannot show.
+
 **Alignment session** [5]
 : A regular review of judge-versus-human disagreements with the domain expert, sorting each into judge wrong, label wrong, or criterion unclear, and logging the decisions.
 
@@ -149,6 +155,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Drift (input, output, system)** [9]
 : A change in production: in what users send (input), in what the agent produces or how it scores (output and metric), or in the model, prompt, or tools behind it (system).
 
+**Effort (output_config.effort)** [11]
+: A request setting (low to max) that controls how much a Claude model thinks and how many tokens it spends; set it explicitly, because defaults differ by model, and test it as a lever before switching to a cheaper model.
+
 **Egress check** [10]
 : A check on data leaving the system through a tool (URLs, ticket bodies) for secrets or canaries. A plain-text check misses encoded secrets (base64, hex), so it is one layer, not a guarantee; an allowlist of destinations is the stronger control.
 
@@ -202,6 +211,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Few-shot example (prompt)** [11]
 : A worked input and output placed in the agent's prompt to show the behaviour wanted. Chosen from failures, outside the eval set, and checked for near-duplicates of eval questions.
+
+**Final-state grading** [7]
+: Checking an acting agent by asserting, in code, on the state of a sandboxed environment after the run (the ticket exists, the config has this value, nothing else changed).
 
 **Finish reason / stop reason** [2]
 : Why the model stopped generating: for Claude, `end_turn` (final answer), `tool_use` (wants a tool), or `max_tokens` (cut off).
@@ -272,6 +284,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Judge leakage** [5]
 : Evaluation data reaching the judge prompt: few-shot examples from dev or test, or the expected answer, human verdict, or reviewer note for a case.
 
+**Judge panel (jury)** [5]
+: Several judges, ideally from different model families, combined by vote; validated on the vote, with split votes read as traces worth reviewing.
+
 **Judge spec** [5]
 : The versioned definition of one judge: criterion, PASS and FAIL definitions, context, few-shot examples, and model. Here a TOML file in config/judges/.
 
@@ -332,6 +347,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **OTLP** [2]
 : The OpenTelemetry protocol for sending traces, metrics, and logs to a backend, over HTTP or gRPC, encoded as protobuf or JSON.
 
+**Over-refusal** [10]
+: Benign requests refused or blocked because they look risky, by a guardrail or by the model; reported next to attack success rate, and a regression when it rises.
+
 **p50 / p95 latency** [11]
 : The median and 95th percentile of task latency: what a typical user waits, and what one user in twenty waits or longer. The p95 of n tasks rests on about n/20 of them, so it needs an interval.
 
@@ -379,6 +397,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Precision@k** [7]
 : The share of the top k results that are relevant. Divides by k, so returning fewer results is not rewarded.
+
+**Prediction-powered inference (PPI, PPI++)** [5]
+: Estimating a rate from a small human-labelled random sample of the traffic plus judge verdicts on all of it: the judge's mean, corrected by the average human-minus-judge difference. PPI++ weights the judge by how much it helps, so it is never worse than the labels alone.
 
 **Preflight (replay)** [8]
 : Checking that the first request of every case is recorded before running a replayed suite. Catches prompt, model, and tool changes at once; changed tool results surface only in later turns.
@@ -491,6 +512,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Theoretical saturation** [3]
 : The point where reading more traces no longer reveals new failure modes or changes definitions; the signal to stop an error-analysis round.
 
+**Thinking (extended, adaptive)** [2, 11]
+: Reasoning tokens a model writes before or between its visible output. On Sonnet 5.5 and Haiku 5.5 it is on unless a request turns it off, it counts toward max_tokens, and it is billed as output; the course sets it per model in config/models.toml.
+
 **Timeout (task)** [11]
 : The longest a task may run before the user is assumed to have given up; a task that exceeds it counts as a failure regardless of its answer.
 
@@ -502,6 +526,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Tool error recovery** [3]
 : An agent fixing a failed tool call (for example retrying with a valid argument) and continuing; the run can still pass.
+
+**Tool poisoning** [10]
+: Instructions hidden in a tool's description, which the model reads on every request, by a malicious or compromised third-party tool server (for example an MCP server).
 
 **TPR (true positive rate)** [5]
 : With PASS as positive: the share of human-passed traces the judge passes.

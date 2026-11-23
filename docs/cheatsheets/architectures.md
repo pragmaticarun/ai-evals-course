@@ -69,6 +69,15 @@ f = first_failure(states, lambda i, s: oks[i])  # ("handoff", "codec_caps") or N
 print(format_matrix(*transition_matrix(failures)))
 ```
 
+## Beyond keyword retrieval, and acting agents
+
+- Dense, hybrid (rank fusion), reranked (measure recall@k before the reranker, nDCG after), contextual chunks:
+  each is one more configuration on the same relevance set, with its cost and latency.
+- Model-drafted relevance labels: a person accepts or corrects; validate the drafter's TPR/TNR first.
+- Agents that act: sandbox with a known start state; assert on the final state in code; pass^k on actions;
+  checkpoints for long runs.
+- Simulated users: compare with real sessions on the same scenarios before trusting them; until then, an upper bound.
+
 ## Multimodal
 
 - Images as `image` content blocks next to the text; a vision judge per artifact (binary), or an answer about the

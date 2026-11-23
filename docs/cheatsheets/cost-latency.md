@@ -88,6 +88,14 @@ often are not.
 - Held-out results start trailing dev (the dev set is used up): refresh it from production.
 - The taxonomy changed after a big win: redo error analysis before the next round.
 
+## Thinking and effort
+
+- Set `thinking` and `effort` per model (`config/models.toml`, `[generation.<model>]`); defaults differ and
+  thinking counts toward `max_tokens`.
+- Test the same model at a different effort before a cascade: one cache, no router. Thinking on: raise
+  `max_tokens`, re-record, and report p95 and cost per success.
+- A pre-registered rule names its test; below about 10 changed tasks, require the exact McNemar p as well.
+
 ## Communicating
 
 | Document | Reader | Contents |

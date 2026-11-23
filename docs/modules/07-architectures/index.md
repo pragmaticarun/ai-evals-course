@@ -116,6 +116,26 @@ gap; query rewriting, synonyms, or embedding search might, and the relevance set
 Chunk size is a design choice to test, not a default. [Husain and Shankar's FAQ on chunk sizes](https://hamel.dev/blog/posts/evals-faq/how-do-i-choose-the-right-chunk-size-for-my-document-processing-tasks.html)
 makes the point that the right size depends on the task; the relevance set is how you measure it.
 
+**Beyond keyword search.** Production RAG systems rarely stop at BM25, and each step up is one more configuration
+for the same relevance set:
+
+- **dense retrieval**: embed queries and chunks, rank by similarity
+  ([Karpukhin et al., DPR](https://arxiv.org/abs/2004.04906)); it closes vocabulary gaps like "cloud gaming", and
+  can miss exact identifiers such as `c2.android.av1.decoder` that BM25 finds;
+- **hybrid**: run both and merge the rankings (for example reciprocal rank fusion), usually better than either;
+- **reranking**: retrieve 20 to 50 candidates cheaply, then reorder them with a model that reads query and passage
+  together ([Nogueira and Cho](https://arxiv.org/abs/1901.04085)); measure recall@k *before* the reranker, since it
+  cannot rank what was never retrieved, and nDCG after;
+- **contextual chunks**: prepend a model-written sentence of document context to every chunk before indexing it
+  ([Anthropic: contextual retrieval](https://www.anthropic.com/research/contextual-retrieval)), the general form of
+  this lab's "prefix the section title".
+
+Each adds cost per query and latency, so report them next to recall, as module 11 does. And **relevance labels
+themselves can be drafted by a model**: have a judge propose which sections answer each query, then have a person
+accept or correct them. Validate the drafter like any judge (its TPR and TNR on a sample a person labelled from
+scratch) before you let it label the rest; a drafter that misses relevant sections makes every retriever's recall
+look higher than it is.
+
 ### Step 4: evaluate generation
 
 Retrieval metrics say whether the right passages reached the model. Generation evals say what it did with them.
@@ -262,6 +282,18 @@ A run of a tool-using agent is a trajectory: the ordered steps it took. Evaluate
 Scored this way, module 5's traces (the 100 outside the missing-detail slice, where the right move is to ask) show the pattern that makes process metrics useful but
 not sufficient: every run that skipped an expected tool failed (4 of 4), but runs that called every expected tool
 still failed 65% of the time, on the answer. Process metrics locate problems; the outcome decides.
+
+**Agents that change things: grade the final state.** MediaDoctor mostly answers questions, so its outcome is an
+answer. Agents that act (file a ticket, edit a config, book a refund, drive a browser) have a better outcome to
+check: the state of the world afterwards. Run them in a sandbox seeded with a known state, and assert on the state in
+code after the run: the ticket exists with these fields, the config file parses and has this value, nothing else
+changed. This is how current agent benchmarks such as [τ²-bench](https://arxiv.org/abs/2506.07982) grade, with a
+simulated user on one side and a database whose final state is compared with the expected one. State checks are
+cheaper and more exact than any judge, they catch the agent that *says* it did the task without doing it, and they
+make pass^k (module 6) meaningful for actions: did the agent reach the right state every time? Module 10's action
+tools are a small version of this: the red-team success checks read what the tools really did, not what the answer
+claims. For long-horizon or computer-use agents, add checkpoints (intermediate states the run must pass through)
+so a failure can be located the way the transition-failure matrix below locates it.
 
 ### Step 10: a planner, specialists, and handoffs
 

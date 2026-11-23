@@ -169,6 +169,74 @@ def bootstrap_corrected(
     return Estimate(p_obs, point, lo, hi, len(unlabelled), len(labelled), len(samples))
 
 
+# --- Prediction-powered inference (PPI, PPI++) ----------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class PPIEstimate:
+    estimate: float
+    low: float
+    high: float
+    lam: float  # 1.0 is plain PPI; PPI++ tunes it (0 ignores the judge entirely)
+    n_labelled: int
+    n_unlabelled: int
+
+    def __str__(self) -> str:
+        kind = "PPI" if self.lam == 1.0 else f"PPI++ (lambda {self.lam:.2f})"
+        return (
+            f"{kind}: {self.estimate:.3f} [{self.low:.3f}, {self.high:.3f}] "
+            f"from {self.n_labelled} human labels and {self.n_unlabelled} judge-only verdicts"
+        )
+
+
+def _mean(xs: list[float]) -> float:
+    return sum(xs) / len(xs)
+
+
+def _var(xs: list[float]) -> float:
+    m = _mean(xs)
+    return sum((x - m) ** 2 for x in xs) / (len(xs) - 1) if len(xs) > 1 else 0.0
+
+
+def ppi_mean(
+    labelled: list[tuple[bool, bool]],
+    unlabelled: list[bool],
+    level: float = 0.95,
+    tune: bool = True,
+) -> PPIEstimate:
+    """Prediction-powered estimate of a pass rate (Angelopoulos et al., 2023; PPI++ 2024).
+
+    `labelled` is (human_pass, judge_pass) on a small set that a person labelled, drawn at random
+    from the SAME traffic as `unlabelled`, the judge's verdicts on everything else. The judge's mean
+    on the large set is corrected by the average human-minus-judge difference on the small one:
+
+        estimate = mean(human_lab) + lam * (mean(judge_unl) - mean(judge_lab))
+
+    With lam = 1 this is plain PPI. With `tune`, lam is chosen to minimise the variance (PPI++), so
+    a judge that agrees with people narrows the interval and a useless one is down-weighted toward 0,
+    where the estimate is just the human labels' mean: never worse than ignoring the judge. The
+    interval is the normal approximation, clipped to [0, 1]. Unlike the Rogan-Gladen correction it
+    needs no TPR + TNR > 1, and it stays well behaved with few labelled failures.
+    """
+    n, big_n = len(labelled), len(unlabelled)
+    h = [float(a) for a, _ in labelled]
+    f_lab = [float(b) for _, b in labelled]
+    f_unl = [float(b) for b in unlabelled]
+    lam = 1.0
+    if tune:
+        mh, mf = _mean(h), _mean(f_lab)
+        cov = sum((a - mh) * (b - mf) for a, b in zip(h, f_lab, strict=True)) / max(n - 1, 1)
+        var_f = (_var(f_lab) * (n - 1) + _var(f_unl) * (big_n - 1)) / max(n + big_n - 2, 1)
+        lam = 0.0 if var_f == 0 else min(1.0, max(0.0, cov / ((1 + n / big_n) * var_f)))
+    est = _mean(h) + lam * (_mean(f_unl) - _mean(f_lab))
+    resid = [a - lam * b for a, b in zip(h, f_lab, strict=True)]
+    se = math.sqrt(_var(resid) / n + lam**2 * _var(f_unl) / big_n)
+    z = NormalDist().inv_cdf(0.5 + level / 2)
+    return PPIEstimate(
+        min(1.0, max(0.0, est)), max(0.0, est - z * se), min(1.0, est + z * se), lam, n, big_n
+    )
+
+
 # --- Paired comparisons -------------------------------------------------------------------------------
 
 

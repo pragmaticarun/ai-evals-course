@@ -58,6 +58,13 @@ Both use the same evaluators, at different volumes. A rule of thumb that the lab
 - **People on a smaller, targeted sample.** The annotation queue. Human labels are the only ones that can find a
   failure mode nobody has named yet.
 
+**Online experiments.** When a change is safe to expose to some users, an A/B test answers what offline evals
+cannot: what real users do with it. Randomise by user, not by request (so one person does not see both versions),
+decide the primary metric and the guardrails before starting, use the paired and multiple-comparison discipline of
+module 6, and do not stop early because a daily p-value looked good (module 6, "Looking more than once"). Kohavi,
+Tang, and Xu's [Trustworthy Online Controlled Experiments](https://experimentguide.com/) is the reference. The
+offline gate (module 8) still runs first: an online test is for changes that passed it, not a replacement.
+
 Things you did not change also change in production: the provider updates a model snapshot, an app release changes
 what users ask, a new phone appears. Online evals are how you find out. Hamel Husain and Shreya Shankar's FAQ answer on
 [how evaluations differ between CI and production](https://hamel.dev/blog/posts/evals-faq/how-are-evaluations-used-differently-in-cicd-vs-monitoring-production.html)
@@ -214,6 +221,13 @@ side: `evidence_fail` went from 1/125 to 3/115 (p = 0.27). The test cannot see a
 there was none (the simulation makes the snapshot change harmless), but you cannot know that from 240 requests. Treat
 a snapshot change like a release you did not make: re-run the offline gate from module 8 against the new snapshot,
 where the paired comparison has the power that a before/after comparison of different traffic lacks.
+
+**Discovering what you did not name.** A rule-based tagger can only find the topics it has rules for; the
+`vela-v2` shows up because the device extractor reports any name it does not know. For questions no rule anticipates,
+cluster the traffic: embed each question (or have a model write a one-line summary of it first, which also strips
+personal details), cluster the embeddings, and read a few examples from each cluster, newest and fastest-growing
+first. Anthropic's [Clio](https://arxiv.org/abs/2412.13678) describes this at scale, with privacy protections built
+in. A new cluster is a candidate topic for the tagger, the golden set, and error analysis, never a metric by itself.
 
 **Segments find the cause.** Split the metrics after the rollout by app version: version 4.1.3 has 0% evidence
 failures and 8.9% tool errors; 4.2.0 has 16.1% and 40.8%. The drift is not "the model got worse"; it is "4.2 users ask

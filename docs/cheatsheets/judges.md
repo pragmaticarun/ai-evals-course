@@ -70,9 +70,18 @@ Bootstrap: resample the labelled test pairs **and** the judged traffic; percenti
 | criteria drift | expect it; version specs and labels together |
 | overfitting dev | few dev failures fit easily; confirm on test once |
 
+## Newer patterns
+
+- **PPI++** (`stats.ppi_mean`): label a random sample of the traffic you measure; correct the judge's mean by the
+  human-minus-judge gap. Never worse than the labels alone; much narrower than Rogan-Gladen with few failures.
+- **Panel of judges** from different model families, majority vote; validate the vote, read split votes.
+- **Rubrics**: per-case binary criteria for long answers; validate per criterion; no rolled-up score.
+- **Thinking judge** or **agent-as-a-judge** (with tools): new judge versions; re-validate, need more labels.
+
 ## Commands
 
 ```bash
+uv run mediadoctor-lab05 ppi [--labels 50]           # human labels vs Rogan-Gladen vs PPI / PPI++
 uv run mediadoctor-lab05 checks
 uv run mediadoctor-lab05 show tool-grounding
 uv run mediadoctor-lab05 leaks

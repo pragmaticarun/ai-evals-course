@@ -75,6 +75,13 @@ Temperature cannot remove run-to-run variance (and current Claude models accept 
 Does the metric separate passing from failing traces in your labels? Chance that a random PASS outscores a random
 FAIL: 0.5 = useless. In the lab: helpfulness 1-10 → 0.42; word-overlap F1 → 0.47.
 
+## Repeated looks and small slices
+
+- Checking a running experiment until p < 0.05 is many tests: fix n and look once, or use always-valid
+  (sequential) intervals. CUSUM is the monitoring version.
+- Ranking many small slices: shrink toward the overall rate (beta-binomial prior worth a few queries); still a
+  hypothesis, not a finding.
+
 ## Commands
 
 ```bash

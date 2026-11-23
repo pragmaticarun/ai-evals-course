@@ -111,3 +111,34 @@ def test_minimum_detectable_difference_inverts_sample_size():
     d = stats.mdd_paired(469, 0.15)
     assert 0.049 < d < 0.051
     assert math.isnan(stats.mdd_paired(5, 0.1))
+
+
+def test_ppi_with_a_perfect_judge_is_the_judges_mean_and_narrow():
+    from evalkit.stats import ppi_mean
+
+    labelled = [(i % 4 != 0, i % 4 != 0) for i in range(40)]  # judge == human
+    unlabelled = [i % 4 != 0 for i in range(400)]
+    e = ppi_mean(labelled, unlabelled, tune=False)
+    assert abs(e.estimate - 0.75) < 1e-9 and e.high - e.low < 0.1
+
+
+def test_ppi_plus_plus_ignores_a_useless_judge():
+    from evalkit.stats import ppi_mean, wilson_interval
+
+    labelled = [(i % 2 == 0, True) for i in range(40)]  # the judge passes everything
+    e = ppi_mean(labelled, [True] * 400)
+    assert e.lam == 0.0 and abs(e.estimate - 0.5) < 1e-9
+    lo, hi = wilson_interval(20, 40)
+    assert abs((e.high - e.low) - (hi - lo)) < 0.05  # about as wide as the labels alone
+
+
+def test_ppi_comparison_matches_module_6():
+    from mediadoctor import lab05
+
+    res = lab05.ppi_comparison()
+    pp = res["PPI++"]
+    assert res["n"] == 89 and round(res["truth"], 3) == 0.876
+    assert (
+        round(pp.estimate, 3) == 0.891 and round(pp.low, 3) == 0.806 and round(pp.high, 3) == 0.975
+    )
+    assert pp.low < res["truth"] < pp.high
