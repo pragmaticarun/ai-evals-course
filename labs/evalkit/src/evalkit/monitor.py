@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import hashlib
 import math
+import random
 from collections import Counter
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
@@ -121,6 +122,33 @@ def weighted_rate(values: Mapping[str, bool], probs: Mapping[str, float]) -> flo
     num = sum(float(v) / probs[k] for k, v in values.items())
     den = sum(1.0 / probs[k] for k in values)
     return num / den if den else float("nan")
+
+
+def weighted_rate_ci(
+    values: Mapping[str, bool],
+    probs: Mapping[str, float],
+    n_boot: int = 2000,
+    level: float = 0.95,
+    seed: int = 0,
+) -> tuple[float, float]:
+    """Percentile bootstrap interval for `weighted_rate`: resample the picks with replacement,
+    keeping each pick's weight, and recompute the Hajek estimate. The Wilson interval does not
+    apply to a weighted rate; this one does, and it is seeded so a report does not change."""
+    keys = list(values)
+    if not keys:
+        return (float("nan"), float("nan"))
+    rng = random.Random(seed)
+    v = [float(values[k]) for k in keys]
+    w = [1.0 / probs[k] for k in keys]
+    stats = []
+    for _ in range(n_boot):
+        idx = [rng.randrange(len(keys)) for _ in keys]
+        den = sum(w[i] for i in idx)
+        stats.append(sum(v[i] * w[i] for i in idx) / den)
+    stats.sort()
+    lo = stats[int((1 - level) / 2 * n_boot)]
+    hi = stats[min(n_boot - 1, int((1 + level) / 2 * n_boot))]
+    return (lo, hi)
 
 
 # --- Drift --------------------------------------------------------------------------------------

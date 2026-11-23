@@ -154,3 +154,23 @@ def test_kappa_report_per_mode_and_disagreements():
     assert rep.per_mode["m1"][1:] == (2, 0, 0)
     assert rep.per_mode["m2"][1:] == (0, 1, 1)
     assert rep.per_mode["m1"][0] == pytest.approx(1.0)
+
+
+def test_weighted_rate_ci_brackets_the_estimate_and_is_seeded():
+    from evalkit.monitor import weighted_rate, weighted_rate_ci
+
+    values = {f"k{i}": i % 3 == 0 for i in range(60)}
+    probs = {k: (1.0 if v else 0.2) for k, v in values.items()}  # failures over-sampled
+    lo, hi = weighted_rate_ci(values, probs)
+    assert lo < weighted_rate(values, probs) < hi
+    assert (lo, hi) == weighted_rate_ci(values, probs)  # same seed, same interval
+
+
+def test_queue_estimate_has_an_interval_that_contains_the_truth():
+    from mediadoctor import lab09
+
+    est, ci = lab09.queue_bias(), lab09.queue_bias_intervals()
+    lo, hi = ci["queue, weighted by 1/p"]
+    assert lo < est["queue, weighted by 1/p"] < hi
+    assert lo < est["week (truth)"] < hi
+    assert round(lo, 3) == 0.270 and round(hi, 3) == 0.475  # quoted in module 9, Step 3

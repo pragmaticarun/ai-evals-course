@@ -619,11 +619,19 @@ def weakest_step(d: Decision) -> str:
     if not steps:
         return "- No kept change moved any task's outcome."
     n, p = min(steps, key=lambda np_: np_[1].a_only + np_[1].b_only)
-    return (
-        f"- The thinnest step is {X.variants()[n].label}: it rests on {p.a_only + p.b_only} tasks "
+    changed = p.a_only + p.b_only
+    line = (
+        f"- The thinnest step is {X.variants()[n].label}: it rests on {changed} tasks "
         f"that changed outcome ({p.b_only} fixed, {p.a_only} broken; exact McNemar "
         f"p={p.p_value:.2f}). Read it as likely, not proven."
     )
+    if changed < 10 and p.p_value >= 0.05:
+        line += (
+            " It passed the pre-registered bootstrap rule, but with fewer than 10 changed tasks module 6 "
+            "trusts the exact test, which does not reach 0.05: under amendment 1 of the pre-registration "
+            "it would not be kept. Ship it with that caveat stated, or confirm it on more tasks first."
+        )
+    return line
 
 
 def memo_markdown(today: str | None = None) -> str:

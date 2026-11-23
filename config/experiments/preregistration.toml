@@ -28,3 +28,17 @@ rule = """Each experiment in config/experiments/log.toml adds its one change to 
 only if it passes its own pre-registered rule (and every guardrail), and only if its parent was
 kept. Recommend the kept configuration with the highest dev success (ties: lower cost per successful
 task). Then confirm it once on the held-out split before changing config/release.toml."""
+
+# --- Amendment 1, 2026-11-23, written AFTER the results above were seen -------------------------
+# The superiority rule names the paired bootstrap interval. Module 6 says that with fewer than about
+# 10 discordant tasks the bootstrap interval comes out too narrow and the exact McNemar test should
+# decide. E5 (retry) rests on 5 discordant tasks: the bootstrap interval is above zero, the exact
+# McNemar p is 0.06. Changing the rule now, after seeing that, would be the forking-paths problem this
+# file exists to prevent, so the study keeps its registered decision, and the memo and the eval
+# report say that E5 passes only under the original rule. From the next study on, the rule below
+# applies.
+[[amendment]]
+date = "2026-11-23"
+applies_to = "studies registered after this date"
+rule = """Superiority: the paired 95% bootstrap interval for the difference is above zero AND, when fewer
+than 10 tasks changed outcome, the exact McNemar p is below 0.05."""

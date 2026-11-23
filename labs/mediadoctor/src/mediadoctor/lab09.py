@@ -60,8 +60,9 @@ from evalkit.monitor import (
     stable_fraction,
     two_proportion_z,
     weighted_rate,
+    weighted_rate_ci,
 )
-from evalkit.stats import bootstrap_corrected
+from evalkit.stats import bootstrap_corrected, wilson_interval
 from evalkit.synth import jaccard, shingles
 from evalkit.trace import VIRTUAL_EPOCH_NS, SeededIds, VirtualClock
 from evalkit.viewer import root_of
@@ -827,6 +828,19 @@ def queue_bias() -> dict[str, float]:
         "random part only": sum(label_of(k).failed for k in rnd) / len(rnd),
         "queue size": float(len(picks)),
         "random part size": float(len(rnd)),
+    }
+
+
+def queue_bias_intervals() -> dict[str, tuple[float, float]]:
+    """95% intervals for queue_bias(): bootstrap for the weighted rate, Wilson for the random part."""
+    picks = picks_for_estimate()
+    vals = {p.key: label_of(p.key).failed for p in picks}
+    probs = {p.key: p.prob for p in picks}
+    rnd = [p.key for p in picks if "random" in p.reasons]
+    k = sum(label_of(key).failed for key in rnd)
+    return {
+        "queue, weighted by 1/p": weighted_rate_ci(vals, probs),
+        "random part only": wilson_interval(k, len(rnd)),
     }
 
 

@@ -266,8 +266,11 @@ Read it the way module 6 taught:
   no action is needed": the payload is in the user's own message, so fencing does not apply, the detector never sees
   it, and no tool is called for a validator to check. Output filters cannot judge whether "no action is needed" is
   true. This is the residual risk you write down (the gate lists both as accepted risks).
-- The detector caught 34 of the 40 injected texts it screened (TPR 0.85) and raised two false alarms on 42 clean
-  texts (TNR 0.95): the dialogue clip's subtitles and the reviewer checklist. The six it missed were all stopped
+- The detector caught 34 of the 40 injected texts it screened (0.85) and raised two false alarms on 42 clean
+  texts (it passed 0.95 of them). Note the positive class: elsewhere in the course PASS is positive, so for a
+  detector whose job is to flag, "caught 0.85" is its TNR in module 5's terms and "passed 0.95 of clean texts" its
+  TPR. Say which class is positive whenever you quote a detector's rates. The two false alarms are the dialogue
+  clip's subtitles and the reviewer checklist. The six it missed were all stopped
   later (four by the fence, where the model read the text and did not act on it, and two by argument validation),
   which is the point of layering.
 

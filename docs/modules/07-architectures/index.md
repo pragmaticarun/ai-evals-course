@@ -100,6 +100,13 @@ lands on the diagnostics section instead of a window that starts mid-sentence. B
 everywhere ("decoder", "Android") and stemming matches "decoders" to "decoder". The paired difference on the same
 48 queries, fixed+keyword to section+bm25, is **+0.17 recall@5 [+0.09, +0.25]**.
 
+Read that number with module 6's and module 8's rules, because it breaks two of them. It compares the best of four
+configurations with the worst, chosen after looking (four configurations make six possible pairs), and it is
+measured on the same 48 queries that picked the winner, so it is optimistic. Here the interval is far from zero and
+both design choices have a mechanism you can read in the `misses`, so the conclusion "section + BM25 is better" is
+safe. The *size*, 17 points, is not established. For a decision that rests on the size, split the relevance set
+before comparing (choose on one part, report on the other), or adjust for the comparisons you made (Holm, module 6).
+
 Read the topic columns with module 6 in mind. Codec queries went from 0.51 to 0.62, but that difference is measured
 on 14 queries and its interval is [−0.04, +0.29]. The overall gain is real; the codec gain is not established. The
 `misses` command shows why codec stays hard: "frames out immediately for cloud gaming" shares no words with the
@@ -229,7 +236,14 @@ A simulated user is a model too, and it fails. Two planted faults in the lab:
   wrong answer follows from that.
 
 Code checks on the simulator's turns (did it answer what was asked, did it add facts) flag both. Count simulator
-faults as eval-harness bugs, exclude or fix those sessions, and report how many you dropped. An alternative that
+faults as eval-harness bugs, exclude or fix those sessions, and report how many you dropped.
+
+Those checks catch a simulator that breaks its rules; they do not show that it talks like your users. A simulator
+that is too cooperative (answers every question fully, never gets annoyed, never pastes the wrong log) makes every
+agent look better than it will be. Once real conversations exist, compare the two: sample real and simulated
+sessions on the same scenarios, have a reviewer who does not know which is which label them, and check that the
+agent's pass rate and the turn-level failure counts are similar on both. Until then, treat simulated session
+results as an upper bound and say so. An alternative that
 avoids simulation is **N−1 testing**: replay the first N−1 turns of a real conversation and evaluate only the next
 turn; it is less flexible but uses real user language (both approaches are described in the FAQ above).
 

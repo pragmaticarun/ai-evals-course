@@ -192,17 +192,20 @@ beside you:
 
 - **Decision requested** is one paragraph: replace `v1` with `retry`, and fund the follow-ups, starting with the
   4.2.0 regression.
-- **Summary** has exactly three bullets, each with intervals: better answers (+0.231 [+0.157, +0.315] on 108 dev
-  queries, 25 fixed and 0 broken; held out 0.966 against 0.828), cheaper per success ($0.00428 against $0.00880,
-  −51%), and what the change does not fix (the 4.2.0 evidence failures at 16.1%, and audio focus at 8 of 12).
+- **Summary** has exactly three bullets, each with intervals: better answers, led by the held-out look (0.966
+  against 0.828, +0.138 [+0.000, +0.310] on 29 queries never used to choose) and then the dev chain (+0.231
+  [+0.157, +0.315] on 108 queries, 25 fixed and 0 broken), labelled optimistic because every step was chosen on
+  those queries; cheaper per success ($0.00428 against $0.00880, −51%); and what the change does not fix (the 4.2.0
+  evidence failures at 16.1%, and audio focus at 8 of 12).
 - **Failure taxonomy** shows module 3's ranked modes and then before and after for the four modes module 11
   labelled: accepted false premises fell from 17 to 5 of 108, the largest and most certain change.
 - **Evaluators** puts seven evaluators in one table, including the self-check judge inside the retry step (TPR 0.99,
   TNR 0.88) and module 10's injection detector.
 - **Results** includes the slice deep-dive: every configuration on audio focus, the modes, the four survivors by
   id, and what 12 queries can detect.
-- **Risks** lists eight, including the two that would change the decision if they were wrong: synthetic data, and
-  the latency headroom (p95 10.4 s against a 12 s guardrail).
+- **Risks** lists nine, including the three that would change the decision if they were wrong: synthetic data, the
+  latency headroom (p95 10.4 s against a 12 s guardrail), and the last step's test (`retry` passes the registered
+  bootstrap rule but not the exact test, p = 0.06; module 11 explains the amendment).
 
 Then read it as a reviewer. [Exercise 2](exercises.md) asks for its three weakest claims; find them before you look.
 
@@ -229,7 +232,7 @@ The capstone runs the whole loop and turns it into a decision. `mediadoctor-caps
 earlier modules in seconds; `slices` finds where the candidate is weakest; `report` writes an eval report that
 follows the template, with real numbers from every module's artifacts and a slice deep-dive; `check` reviews it
 against the template; and `--release` spends the one held-out look. On MediaDoctor the evidence supports shipping
-`retry` (+23 points, −51% cost per success), names what it does not fix (a production regression on app 4.2.0, one
+`retry` (+14 points on the held-out split, with an interval that reaches zero; +23 on the dev queries it was chosen on; −51% cost per success), names what it does not fix (a production regression on app 4.2.0, one
 remaining injection vector, and audio-focus questions with no evidence to ground on), and says what each slice is
 too small to show. That last part is the difference between a report that sells and one that informs.
 

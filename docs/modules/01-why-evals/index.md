@@ -148,9 +148,12 @@ Three more lessons are hiding in the same run:
    every Android 10+ device. The knowledge base says the opposite: Android 10 added a *software* decoder, and hardware support
    depends on the SoC. Code checks verify shape, not truth. You only catch this by reading outputs, and later with a
    validated judge (module 5).
-3. **20 cases is a small sample.** A one-case difference (16 vs 15) is well within noise. Here we know the diff is
-   real because we can point to the three specific regressions, which is the more useful view anyway. Module 6
-   covers when an aggregate difference means something.
+3. **20 cases is a small sample.** A one-case difference (16 vs 15) is well within noise. The per-case diff is
+   the more useful view, because it names three answers to read, but it does not make the difference real: each
+   case ran once, and module 6 shows that about half of a set of queries can flip between two runs of the *same*
+   prompt. What the diff tells you is where to look. Reading q03, q09, and q14 shows the same cause in all three
+   (the length instruction pushed out the `Sources:` line), which is evidence about the prompt; the count is not.
+   Module 6 covers when an aggregate difference means something, and how to measure run-to-run flips.
 
 !!! info "About the recorded responses"
     The module 1 fixtures were authored by hand in the exact Messages API response format, so that the lab runs with no
