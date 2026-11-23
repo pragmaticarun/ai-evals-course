@@ -43,6 +43,12 @@ Every Claude call in the course goes through `evalkit.LLM`, whose mode comes fro
 | `record` | Calls the Anthropic API and saves each response under its request key. | `ANTHROPIC_API_KEY` | re-recording a lab; the manual `live-evals.yml` workflow |
 | `live` | Calls the API and saves nothing. | `ANTHROPIC_API_KEY` | trying a prompt without saving anything |
 
+Record and live mode call **`claude-haiku-4-5` only** (`[live]` in `config/models.toml`): every request is sent to it
+whatever its role, and any other model (Opus, Fable, Sonnet, Haiku 5.5) is refused before the request leaves the
+machine. Replay is unaffected. Recordings are keyed with Haiku 4.5; replay your own with `EVALS_REPLAY_LIVE_MODEL=1`.
+Live runs therefore compare prompts and strategies, not models, and prompt caching will not cache (Haiku 4.5 needs a
+4,096-token prefix).
+
 Put the key in your shell or a git-ignored `.env`, never in a committed file (CI runs gitleaks). Record into a
 directory under `runs/` (git-ignored) rather than over the course fixtures, because the tests pin the synthetic
 numbers. Most labs end with an optional section showing how, and module 12's

@@ -185,7 +185,9 @@ class _FakeBatchClient:
             }
 
 
-def test_create_many_batch_records_then_replays(tmp_path):
+def test_create_many_batch_records_then_replays(tmp_path, monkeypatch):
+    # Recordings are keyed with the [live] model; replaying them needs the switch.
+    monkeypatch.setenv("EVALS_REPLAY_LIVE_MODEL", "1")
     reqs = {
         f"r{i}": {
             "model": "m",

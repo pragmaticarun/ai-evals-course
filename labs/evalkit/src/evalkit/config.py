@@ -88,7 +88,7 @@ def load_models(path: Path | None = None) -> dict[str, ModelRole]:
     return {
         name: ModelRole(name=name, model=str(cfg["model"]), max_tokens=int(cfg["max_tokens"]))
         for name, cfg in raw.items()
-        if name not in ("pricing", "generation")
+        if name not in ("pricing", "generation", "live")
     }
 
 
@@ -111,6 +111,59 @@ def generation_params(model: str, path: Path | None = None) -> dict[str, Any]:
     if "effort" in cfg:
         params["output_config"] = {"effort": str(cfg["effort"])}
     return params
+
+
+class ModelNotAllowedError(RuntimeError):
+    """A record or live request named a model that `[live].allowed_models` does not list."""
+
+
+@dataclass(frozen=True)
+class LiveModel:
+    model: str
+    allowed: tuple[str, ...]
+
+
+def load_live(path: Path | None = None) -> LiveModel | None:
+    """`[live]` in config/models.toml: the one model record and live modes may call, if set."""
+    raw = _load(path).get("live")
+    if not raw:
+        return None
+    model = str(raw["model"])
+    allowed = tuple(str(m) for m in raw.get("allowed_models", [model]))
+    if model not in allowed:
+        raise ValueError(f"[live] model {model!r} is not in its own allowed_models {list(allowed)}")
+    return LiveModel(model, allowed)
+
+
+def to_live_model(request: dict[str, Any], path: Path | None = None) -> dict[str, Any]:
+    """The request record and live modes send: `[live].model` swapped in, with that model's own
+    generation settings (the role model's thinking and effort do not carry over), and refused
+    unless the result names an allowed model. Without a `[live]` table, the request is unchanged
+    apart from the allow check, which then does not apply."""
+    live = load_live(path)
+    if live is None:
+        return apply_generation(request, path)
+    out = {k: v for k, v in request.items() if k not in ("thinking",)}
+    oc = {k: v for k, v in (out.pop("output_config", None) or {}).items() if k != "effort"}
+    if oc:
+        out["output_config"] = oc
+    out["model"] = live.model
+    out = apply_generation(out, path)
+    check_live_model(out, live)
+    return out
+
+
+def check_live_model(request: dict[str, Any], live: LiveModel | None = None) -> None:
+    """Raise ModelNotAllowedError unless the request's model is in `[live].allowed_models`."""
+    live = live or load_live()
+    if live is None:
+        return
+    model = str(request.get("model", ""))
+    if model not in live.allowed:
+        raise ModelNotAllowedError(
+            f"refusing to call {model!r}: record and live modes may only call {list(live.allowed)} "
+            "([live] in config/models.toml)"
+        )
 
 
 def apply_generation(request: dict[str, Any], path: Path | None = None) -> dict[str, Any]:

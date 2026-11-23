@@ -27,5 +27,10 @@ uv run zensical serve        # browse this site locally at http://localhost:8000
 To use record or live mode, export `ANTHROPIC_API_KEY` in your shell or copy `.env.example` to `.env`
 (git-ignored) and fill it in. Never commit a key; CI runs a gitleaks scan on every push.
 
+Record and live mode call one model only: `[live].model` in `config/models.toml`, set to `claude-haiku-4-5`. Every
+request is sent to it whatever its role, with that model's own settings, and any other model is refused before the
+request is sent. Recordings are keyed with that model, so replay them with `EVALS_REPLAY_LIVE_MODEL=1`. Module 12's
+[Make it your own](modules/12-capstone/extensions.md) lists what that changes.
+
 Model choices live in `config/models.toml`: a stronger model for the agent and a cheaper one for judges and
 synthetic data.

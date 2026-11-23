@@ -793,7 +793,9 @@ def run_guarded(
                         "gen_ai.response.finish_reasons": [str(resp.get("stop_reason"))],
                         "gen_ai.usage.input_tokens": tin,
                         "gen_ai.usage.output_tokens": tout,
-                        "evalkit.cost.usd": round(price.cost_usd(tin, tout), 6) if price else 0.0,
+                        "evalkit.cost.usd": round(p.cost_usd(tin, tout), 6)
+                        if (p := load_prices().get(str(resp.get("model")), price))
+                        else 0.0,
                         "evalkit.replayed": llm.last_replayed,
                     }
                 )

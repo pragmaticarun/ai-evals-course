@@ -264,7 +264,8 @@ def _chat(tracer: Tracer, llm: LLM, request: dict[str, Any], step: int, usage: U
     ) as sp:  # fmt: skip
         resp = llm.create(**request)
         tracer.clock.advance(llm.last_latency_ms or 0.0)
-        u = call_usage(model, resp.get("usage", {}))
+        answered = str(resp.get("model"))  # in record and live mode, `[live].model`
+        u = call_usage(answered if answered in load_prices() else model, resp.get("usage", {}))
         sp.set_attributes(
             {
                 "gen_ai.response.id": resp.get("id"),

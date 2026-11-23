@@ -21,7 +21,7 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any, Protocol
 
-from evalkit.config import apply_generation, repo_root
+from evalkit.config import apply_generation, check_live_model, repo_root, to_live_model
 from evalkit.fixtures import FixtureStore
 
 
@@ -35,6 +35,11 @@ class MessagesClient(Protocol):
     """Anything with `.messages.create(**params)` returning a pydantic model or dict."""
 
     messages: Any
+
+
+def replay_live_model() -> bool:
+    """EVALS_REPLAY_LIVE_MODEL=1: replay your own recordings, which were keyed with `[live].model`."""
+    return os.environ.get("EVALS_REPLAY_LIVE_MODEL", "") not in ("", "0", "false", "no")
 
 
 def _default_client() -> MessagesClient:
@@ -93,12 +98,17 @@ class LLM:
         The model's generation settings from config/models.toml (thinking, effort) are filled in
         first, so the request that is keyed, recorded, and sent is the one the model really gets.
         """
-        request = apply_generation(request)
+        if self.mode is Mode.REPLAY and not replay_live_model():
+            request = apply_generation(request)
+        else:
+            # Record and live call only the `[live]` model, never the role's (config/models.toml).
+            request = to_live_model(request)
         if self.mode is Mode.REPLAY:
             rec = self.store.get_record(request, self.trial)
             self.last_latency_ms = rec.get("latency_ms")  # the original call's latency, if known
             self.last_replayed = True
             return rec["response"]
+        check_live_model(request)  # last check before anything leaves the machine
         start = self._clock()
         response = _to_dict(self.client.messages.create(**request))
         self.last_latency_ms = (self._clock() - start) * 1000.0

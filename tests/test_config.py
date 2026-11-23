@@ -71,3 +71,66 @@ def test_every_fixture_is_keyed_with_the_current_generation_settings():
             assert rec["request_sha256"] == request_key(rec["request"], rec.get("trial", 0)), (
                 path.name
             )
+
+
+# --- Record and live modes: only the [live] model -------------------------------------------------
+
+import pytest  # noqa: E402
+
+from evalkit.config import ModelNotAllowedError, check_live_model, load_live, to_live_model  # noqa: E402
+
+
+def test_live_model_is_haiku_4_and_nothing_bigger_is_allowed():
+    live = load_live()
+    assert live is not None and live.model == "claude-haiku-4-5"
+    for m in live.allowed:
+        assert m.startswith("claude-haiku-4"), m
+        assert not any(w in m for w in ("opus", "sonnet", "fable", "mythos"))
+
+
+def test_to_live_model_swaps_the_model_and_its_settings():
+    req = {"model": "claude-sonnet-5-5", "max_tokens": 1024, "messages": [],
+           "thinking": {"type": "between_tools"}, "output_config": {"effort": "medium"}}  # fmt: skip
+    out = to_live_model(req)
+    assert out["model"] == "claude-haiku-4-5"
+    assert "thinking" not in out and "output_config" not in out  # Haiku 4.5: no effort parameter
+    assert req["model"] == "claude-sonnet-5-5"  # a copy
+    kept = to_live_model(
+        {**req, "output_config": {"effort": "low", "format": {"type": "json_schema"}}}
+    )
+    assert kept["output_config"] == {"format": {"type": "json_schema"}}
+
+
+@pytest.mark.parametrize(
+    "model", ["claude-opus-5-5", "claude-sonnet-5-5", "claude-fable-5-2", "claude-haiku-5-5"]
+)
+def test_check_live_model_refuses_anything_else(model):
+    with pytest.raises(ModelNotAllowedError):
+        check_live_model({"model": model})
+
+
+def test_record_and_live_send_only_haiku_4(monkeypatch, tmp_path):
+    from evalkit import LLM
+    from evalkit.synth import create_many
+
+    sent = []
+
+    class Client:
+        class messages:  # noqa: N801
+            @staticmethod
+            def create(**req):
+                sent.append(req["model"])
+                return {"content": [{"type": "text", "text": "ok"}], "stop_reason": "end_turn",
+                        "usage": {"input_tokens": 1, "output_tokens": 1}, "model": req["model"]}  # fmt: skip
+
+    for mode in ("live", "record"):
+        llm = LLM("t", mode=mode, client=Client(), fixtures_dir=tmp_path)
+        for model in ("claude-sonnet-5-5", "claude-haiku-5-5", "claude-opus-5-5"):
+            llm.create(model=model, max_tokens=5, messages=[{"role": "user", "content": "hi"}])
+        create_many(llm, {"a": {"model": "claude-sonnet-5-5", "max_tokens": 5, "messages": []}},
+                    use_batch=False)  # fmt: skip
+    assert sent and set(sent) == {"claude-haiku-4-5"}
+    rec = next(iter(LLM("t", mode="replay", fixtures_dir=tmp_path).store.records()))
+    assert (
+        rec["request"]["model"] == "claude-haiku-4-5"
+    )  # recordings are keyed with the model called

@@ -30,7 +30,9 @@ def test_replay_never_calls_client(tmp_path):
     assert fake.seen == [] and llm.calls == 0
 
 
-def test_record_then_replay(tmp_path):
+def test_record_then_replay(tmp_path, monkeypatch):
+    # Recordings are keyed with the [live] model; replaying them needs the switch.
+    monkeypatch.setenv("EVALS_REPLAY_LIVE_MODEL", "1")
     fake = FakeClient()
     rec = LLM("ns", mode="record", fixtures_dir=tmp_path, client=fake)
     assert text_of(rec.create(**REQ)) == "hello"
@@ -74,7 +76,9 @@ def test_text_of_ignores_non_text_blocks():
     assert text_of(resp) == "ab"
 
 
-def test_record_stores_latency_and_replay_returns_it(tmp_path):
+def test_record_stores_latency_and_replay_returns_it(tmp_path, monkeypatch):
+    # Recordings are keyed with the [live] model; replaying them needs the switch.
+    monkeypatch.setenv("EVALS_REPLAY_LIVE_MODEL", "1")
     t = {"now": 0.0}
 
     def clock():
@@ -102,8 +106,10 @@ def test_record_stores_latency_and_replay_returns_it(tmp_path):
     assert rep.last_latency_ms == 1250.0 and rep.last_replayed is True
 
 
-def test_trials_record_and_replay_separately(tmp_path):
+def test_trials_record_and_replay_separately(tmp_path, monkeypatch):
     """Module 6: the same request recorded as trials 0 and 1 replays two different answers."""
+    # Recordings are keyed with the [live] model; replaying them needs the switch.
+    monkeypatch.setenv("EVALS_REPLAY_LIVE_MODEL", "1")
     answers = iter(["first", "second"])
 
     class Varying:
