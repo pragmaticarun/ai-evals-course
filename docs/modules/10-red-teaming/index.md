@@ -158,7 +158,7 @@ Three tool-level bugs are planted, each a classic you have probably fixed in C++
 
 - **Argument injection** ([CWE-88](https://cwe.mitre.org/data/definitions/88.html)): v0's `transcode` takes a free
   `extra_args` string and pastes it into `sh -c 'ffmpeg ...'`. A `;` ends the `ffmpeg` command and starts another.
-- **Path traversal** ([OWASP](https://owasp.org/www-community/attacks/Path_Traversal)): `read_file` normalises the
+- **Path traversal** ([OWASP](https://community.owasp.org/attacks/Path_Traversal)): `read_file` normalises the
   path but never checks that it stays inside `workspace/`, so `../secrets/service.env` works.
 - **Exfiltration through arguments**: `fetch_url` accepts any URL, and a query string is a perfectly good way to
   send a secret to a server the attacker reads. `file_ticket` publishes whatever the body says.

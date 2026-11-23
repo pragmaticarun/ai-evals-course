@@ -88,7 +88,7 @@ do the input tokens grow?
     m2q08 takes about 30% of the cost. Input tokens grow from 590 to 2,494 because every call resends the system
     prompt, the tool schemas, and the whole conversation so far, including every tool result. Cost per step therefore
     rises with each step, and total cost grows faster than linearly with the number of steps. Prompt caching
-    ([Anthropic docs](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching)) reduces the price of the
+    ([Anthropic docs](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)) reduces the price of the
     repeated prefix; module 11 measures that.
 
 ## Exercise 4: Fix m2q03, but where?

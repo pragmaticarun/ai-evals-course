@@ -45,7 +45,7 @@ MediaDoctor now has four tools, all deterministic, all reading local data:
 | `logcat_grep` | Regex search over a captured logcat | `data/logs/` |
 
 The loop is the standard one from Anthropic's
-[tool use documentation](https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/overview):
+[tool use documentation](https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview):
 
 ```text
 messages = [user question]
