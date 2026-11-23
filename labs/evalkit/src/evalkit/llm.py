@@ -21,7 +21,7 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any, Protocol
 
-from evalkit.config import repo_root
+from evalkit.config import apply_generation, repo_root
 from evalkit.fixtures import FixtureStore
 
 
@@ -88,7 +88,12 @@ class LLM:
         return self._client
 
     def create(self, **request: Any) -> dict[str, Any]:
-        """Same arguments as `anthropic.Anthropic().messages.create(...)`."""
+        """Same arguments as `anthropic.Anthropic().messages.create(...)`.
+
+        The model's generation settings from config/models.toml (thinking, effort) are filled in
+        first, so the request that is keyed, recorded, and sent is the one the model really gets.
+        """
+        request = apply_generation(request)
         if self.mode is Mode.REPLAY:
             rec = self.store.get_record(request, self.trial)
             self.last_latency_ms = rec.get("latency_ms")  # the original call's latency, if known
@@ -114,3 +119,19 @@ def text_of(response: dict[str, Any]) -> str:
     """Concatenate the text blocks of a Messages API response."""
     parts = [b.get("text", "") for b in response.get("content", []) if b.get("type") == "text"]
     return "".join(parts)
+
+
+# Stop reasons that end a turn without a complete answer. An agent loop that treats every
+# non-tool_use stop as "the answer" would grade a truncated reply, a policy decline, or a paused
+# server-tool turn as if it were finished, so the loops mark these as errors on the trace.
+INCOMPLETE_STOPS = {
+    "max_tokens": "the reply hit max_tokens and is truncated (thinking counts toward it)",
+    "refusal": "the model declined (see stop_details.category)",
+    "pause_turn": "a server-tool turn paused and was not resumed",
+    "model_context_window_exceeded": "the conversation no longer fits the context window",
+}
+
+
+def incomplete_stop(stop_reason: str | None) -> str | None:
+    """A message if `stop_reason` ends the turn without a complete answer, else None."""
+    return INCOMPLETE_STOPS.get(str(stop_reason))

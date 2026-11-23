@@ -19,6 +19,29 @@ max_tokens = 512
 model = "claude-haiku-5-5"
 max_tokens = 512
 
+# Generation settings per model, filled into every request by evalkit.LLM (unless a request sets
+# them itself), so they are part of each fixture's key, its stored request, and the config
+# fingerprint the eval gate compares. Checked against Anthropic's model documentation on 2026-11-23:
+#
+# - Sonnet 5.5 and Haiku 5.5 run adaptive thinking when a request leaves `thinking` out, and thinking
+#   tokens count toward max_tokens (and are billed as output). Leaving it implicit is how an agent
+#   with max_tokens = 1024 starts ending turns at stop_reason "max_tokens" with no answer.
+# - The course turns thinking off explicitly: Sonnet 5.5 rejects {type = "disabled"} and takes
+#   {type = "between_tools"} (no extended thinking; short progress notes between tool calls come back
+#   as thinking blocks); Haiku 5.5 takes {type = "disabled"} at effort high or below.
+# - Effort is set explicitly because the defaults differ (Sonnet 5.5: high; Haiku 5.5: medium).
+#   Medium is the starting point for multistep tool use, low for short classification-style calls.
+#
+# To try thinking on, set thinking = {type = "adaptive"}, raise max_tokens in the role above to leave
+# room for it (several thousand tokens), and re-record: it is a new configuration (module 11).
+[generation.claude-sonnet-5-5]
+thinking = {type = "between_tools"}
+effort = "medium"
+
+[generation.claude-haiku-5-5]
+thinking = {type = "disabled"}
+effort = "low"
+
 # Prices in USD per million tokens, used for the cost attributes on traces (module 2 onward).
 # Checked against https://platform.claude.com/docs/en/about-claude/models/overview on 2026-11-23.
 # Haiku 5.5 is listed as "from" $0.10 / $0.50; we use those base prices.

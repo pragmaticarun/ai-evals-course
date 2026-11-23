@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 import tomllib
 from dataclasses import dataclass
+from functools import cache
 from pathlib import Path
 from typing import Any
 
@@ -87,8 +88,46 @@ def load_models(path: Path | None = None) -> dict[str, ModelRole]:
     return {
         name: ModelRole(name=name, model=str(cfg["model"]), max_tokens=int(cfg["max_tokens"]))
         for name, cfg in raw.items()
-        if name != "pricing"
+        if name not in ("pricing", "generation")
     }
+
+
+def load_generation(path: Path | None = None) -> dict[str, dict[str, Any]]:
+    """Per-model request settings from `[generation.<model>]`: `thinking` and `effort`."""
+    return _generation_cached(str(path) if path else "")
+
+
+@cache
+def _generation_cached(path: str) -> dict[str, dict[str, Any]]:
+    return dict(_load(Path(path) if path else None).get("generation", {}))
+
+
+def generation_params(model: str, path: Path | None = None) -> dict[str, Any]:
+    """The request fields `[generation.<model>]` adds: `thinking`, and `output_config.effort`."""
+    cfg = load_generation(path).get(model, {})
+    params: dict[str, Any] = {}
+    if "thinking" in cfg:
+        params["thinking"] = dict(cfg["thinking"])
+    if "effort" in cfg:
+        params["output_config"] = {"effort": str(cfg["effort"])}
+    return params
+
+
+def apply_generation(request: dict[str, Any], path: Path | None = None) -> dict[str, Any]:
+    """A copy of `request` with the model's generation settings filled in where it sets none.
+
+    A request that sets `thinking` keeps it; one that sets `output_config` keeps its other fields
+    and gains `effort` only if it has none.
+    """
+    params = generation_params(str(request.get("model", "")), path)
+    out = dict(request)
+    if "thinking" in params and "thinking" not in out:
+        out["thinking"] = params["thinking"]
+    if "output_config" in params:
+        oc = dict(out.get("output_config") or {})
+        oc.setdefault("effort", params["output_config"]["effort"])
+        out["output_config"] = oc
+    return out
 
 
 def load_prices(path: Path | None = None) -> dict[str, Price]:

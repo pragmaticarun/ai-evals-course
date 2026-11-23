@@ -25,6 +25,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from evalkit.config import apply_generation
 from evalkit.llm import LLM, Mode, _to_dict
 
 Tuple = dict[str, str]
@@ -259,6 +260,7 @@ def create_many(
     """
     if llm.mode is Mode.REPLAY or not use_batch:
         return {cid: llm.create(**req) for cid, req in requests.items()}
+    requests = {cid: apply_generation(req) for cid, req in requests.items()}  # as LLM.create does
     client = llm.client
     batch = client.messages.batches.create(
         requests=[{"custom_id": cid, "params": req} for cid, req in requests.items()]

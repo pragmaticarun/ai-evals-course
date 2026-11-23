@@ -24,6 +24,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from evalkit import LLM, Tracer, load_models, load_prices, text_of
+from evalkit.llm import incomplete_stop
 from mediadoctor.tools import SIMULATED_TOOL_MS, TOOLS, ToolError, run_tool
 
 AGENT_TOOLS_NAMESPACE = "mediadoctor-agent"
@@ -203,6 +204,8 @@ def run_agent(
         )
         if stop == "max_steps":
             root.set_error(f"stopped after {max_steps} steps without a final answer", "MaxSteps")
+        elif why := incomplete_stop(stop):
+            root.set_error(why, "IncompleteStop")
         trace_id = root.trace_id
 
     return AgentResult(answer, trace_id, stop, steps, totals["in"], totals["out"], totals["cost"])

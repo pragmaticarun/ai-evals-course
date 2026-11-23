@@ -38,7 +38,7 @@ Approve `retry` as the release configuration in `config/release.toml`, in place 
 | Module 1 smoke set | 20 queries | hand-written | the first baseline and code checks |
 | Module 3 traces | 100 traces | synthetic-authored agent runs, open and axial coded | the failure taxonomy |
 | Module 4 dataset v1 | 182 queries (train 88, dev 45, test 49) | dimension tuples → LLM-written queries, checked and deduplicated | judges, stats, experiments |
-| Golden set | mediadoctor-golden 1.0.0, 12 files | module 8 manifest with hashes and splits | the CI gate |
+| Golden set | mediadoctor-golden 1.0.1, 12 files | module 8 manifest with hashes and splits | the CI gate |
 | Experiment cases | 108 dev + 29 held out | module 5's agent slice of dataset v1 | this decision |
 | Module 7 retrieval set | 48 labelled queries, 57 KB sections | hand-labelled relevance | the architecture-specific eval |
 | Module 9 traffic | 776 requests over 7 days | simulated production with a rollout and a model snapshot change | monitoring |
@@ -275,8 +275,8 @@ Chosen because it is the topic where `retry` does worst on dev (`uv run mediadoc
 ## 10. Appendix
 
 - **Code version:** `git log -1 --format=%H -- docs/capstone/index.md` (the commit that published this page)
-- **Inputs fingerprint:** `789ecc995132ea27` (sha256 of `fixtures/recorded`, `data`, and `config`)
-- **Golden set:** mediadoctor-golden 1.0.0
+- **Inputs fingerprint:** `f8cbb10b016e065f` (sha256 of `fixtures/recorded`, `data`, and `config`)
+- **Golden set:** mediadoctor-golden 1.0.1
 - **Reproduce:**
 
 ```bash

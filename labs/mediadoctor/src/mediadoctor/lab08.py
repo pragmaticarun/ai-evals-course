@@ -46,6 +46,7 @@ from evalkit import (
     request_key,
     text_of,
 )
+from evalkit.config import apply_generation
 from evalkit.fixtures import canonical_json
 from evalkit.gate import (
     ICON,
@@ -82,7 +83,7 @@ JUDGE_NAMESPACES = (JUDGE_NAMESPACE, lab05.JUDGE_NAMESPACE)
 RUN_SCHEMA = "mediadoctor-eval-run/1"
 TIERS = ("code", "judges")
 GOLDEN_NAME = "mediadoctor-golden"
-GOLDEN_VERSION = "1.0.0"
+GOLDEN_VERSION = "1.0.1"
 HOLDOUT_SPLIT = "test"
 
 Trace = list[dict[str, Any]]
@@ -147,8 +148,9 @@ def release_prompt(text: str | None = None) -> str:
 
 
 def fingerprint(prompt: str) -> str:
-    """Everything about the agent's requests except the conversation: model, limits, prompt, tools."""
-    req = build_request([], prompt)
+    """Everything about the agent's requests except the conversation: model, limits, generation
+    settings (thinking, effort), prompt, tools."""
+    req = apply_generation(build_request([], prompt))
     req.pop("messages")
     return hashlib.sha256(canonical_json(req).encode()).hexdigest()[:12]
 

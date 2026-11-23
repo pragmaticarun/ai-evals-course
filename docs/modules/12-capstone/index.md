@@ -55,7 +55,7 @@ uv run mediadoctor-capstone run
  5  judges          ok    tool-grounding TPR 0.90 TNR 0.60 on test (n=25)
  6  statistics      ok    v1->v2 +0.051 [-0.044, +0.146]; 19/37 queries flaky
  7  architecture    ok    best retrieval section+bm25 recall@5 0.81
- 8  CI gate         ok    gate pass; mediadoctor-golden 1.0.0, manifest problems 0
+ 8  CI gate         ok    gate pass; mediadoctor-golden 1.0.1, manifest problems 0
  9  monitoring      FLAG  evidence_fail CUSUM alarm +19.7 h after the rollout
 10  red team        ok    ASR 0.633 -> 0.033 with guardrails v2, benign FPR 0.050
 11  improvement     ok    retry: success 0.898, cost/success $0.00428

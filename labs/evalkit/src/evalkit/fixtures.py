@@ -28,6 +28,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from evalkit.config import apply_generation
+
 KEY_SCHEMA = "evalkit-v1"
 
 
@@ -65,7 +67,9 @@ def compact_request(obj: Any) -> Any:
 
 
 def request_key(request: dict[str, Any], trial: int = 0) -> str:
-    request = compact_request(request)
+    # The key covers the request as sent: with the model's generation settings (thinking, effort)
+    # from config/models.toml filled in, as evalkit.LLM does before every call.
+    request = compact_request(apply_generation(request))
     head = KEY_SCHEMA if trial == 0 else f"{KEY_SCHEMA}\ntrial={trial}"
     payload = head + "\n" + canonical_json(request)
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
@@ -120,7 +124,7 @@ class FixtureStore:
         key = request_key(request, trial)
         rec = {
             "request_sha256": key,
-            "request": compact_request(request),
+            "request": compact_request(apply_generation(request)),
             "response": response,
             "recorded_at": datetime.now().astimezone().isoformat(timespec="seconds"),
             "source": source,

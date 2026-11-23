@@ -123,3 +123,32 @@ def test_trials_record_and_replay_separately(tmp_path):
     assert got == ["first", "second"]
     with pytest.raises(FixtureMissingError):
         LLM("ns", mode="replay", fixtures_dir=tmp_path, trial=2).create(**REQ)
+
+
+def test_incomplete_stops_are_named():
+    from evalkit.llm import incomplete_stop
+
+    for stop in ("max_tokens", "refusal", "pause_turn"):
+        assert incomplete_stop(stop)
+    for stop in ("end_turn", "stop_sequence", "tool_use", None):
+        assert incomplete_stop(stop) is None
+
+
+def test_agent_marks_a_truncated_answer_as_an_error():
+    from evalkit import LLM, Tracer
+    from mediadoctor.toolagent import run_agent
+
+    class Client:
+        class messages:  # noqa: N801
+            @staticmethod
+            def create(**_):
+                return {
+                    "content": [{"type": "text", "text": "Likely cause: the decoder"}],
+                    "stop_reason": "max_tokens",
+                    "usage": {"input_tokens": 10, "output_tokens": 1024},
+                }
+
+    tracer = Tracer()
+    run_agent("why?", LLM(mode="live", client=Client()), tracer, case_id="t1")
+    root = next(s for s in tracer.span_dicts() if s["parent_span_id"] is None)
+    assert root["status"]["code"] == "ERROR" and "max_tokens" in root["status"]["message"]
