@@ -9,7 +9,7 @@ Exact transitive versions are pinned in `uv.lock`. Regenerate this page with `uv
 |---|---|
 | Python | 3.14.10 (`.python-version`: 3.14) |
 | uv | 0.13.9 (x86_64-unknown-linux-gnu) |
-| git | 2.47.3 |
+| git | 2.55.0 |
 | OS used for the check | Linux x86_64 |
 | gitleaks (local check) | 8.30.1 |
 | actionlint (local check) | 1.7.12 |
@@ -19,7 +19,7 @@ Exact transitive versions are pinned in `uv.lock`. Regenerate this page with `uv
 
 | Package | Version | Role |
 |---|---|---|
-| anthropic | 2.12.0 | Anthropic Python SDK (live and record modes) |
+| anthropic | 2.13.0 | Anthropic Python SDK (live and record modes) |
 | pytest | 9.2.0 | Test runner |
 | ruff | 0.17.6 | Linter |
 | zensical | 0.1.3 | Site generator (primary) |

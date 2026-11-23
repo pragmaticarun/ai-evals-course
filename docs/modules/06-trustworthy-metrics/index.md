@@ -45,10 +45,11 @@ dev queries. Its pass rate came out 0.46, 0.49, 0.49, 0.46, and 0.38. Compare ru
 prompts and you get −11 points with a paired interval of [−0.24, 0.00]: an apparent regression between two runs
 of the *same* prompt. 19 of the 37 queries passed in some runs and failed in others.
 
-**Temperature does not make this go away.** Lowering temperature narrows the sampling, but Anthropic's API
-reference has long noted that even temperature 0.0 is not fully deterministic, and it now marks `temperature`
-as deprecated: models released after Claude Opus 4.6 accept only the default 1.0
-([Messages API reference](https://platform.claude.com/docs/en/api/messages)). Part of the variation comes from
+**Temperature does not make this go away, and you can no longer set it.** Lowering temperature narrowed the
+sampling, but Anthropic's API reference long noted that even temperature 0.0 was not fully deterministic. Since
+API version `2026-10-21` (the default in the `anthropic` 2.x SDK this course pins), a Messages request that sends
+`temperature`, `top_p`, or `top_k` returns a 400 error on every model, even at the default value
+([migration guide](https://platform.claude.com/docs/en/api/migration-2026-10-21)). Part of the variation comes from
 the serving stack itself (batching changes floating-point reduction order; see Thinking Machines'
 [Defeating Nondeterminism in LLM Inference](https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/)).
 Evaluate at the settings you ship, and measure the variance instead of hoping it away.
