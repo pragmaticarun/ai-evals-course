@@ -213,7 +213,7 @@ the model drifts toward AV1. Choose them for style.
 ### Batching
 
 Two hundred independent requests do not need to be sent one at a time. The [Message Batches
-API](https://docs.anthropic.com/en/docs/build-with-claude/batch-processing) takes them all in one call, at half the
+API](https://platform.claude.com/docs/en/build-with-claude/batch-processing) takes them all in one call, at half the
 price, and returns results within 24 hours (usually much sooner). `evalkit.synth.create_many` wraps it: in record or
 live mode with `use_batch=True` it creates the batch, polls until it ends, and reads the results by `custom_id`; in
 record mode it saves each result under the same fixture key a single call would use, so replays cannot tell the

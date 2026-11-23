@@ -107,7 +107,7 @@ synthetic-authored (`scripts/author_module11_fixtures.py`); the prompts, tools, 
 | Measuring attacks and benign utility together on tool-using agents | Debenedetti et al., [AgentDojo](https://arxiv.org/abs/2406.13352) (arXiv 2406.13352) |
 | Adversarial technique taxonomy for AI systems | MITRE [ATLAS](https://atlas.mitre.org/) |
 | Generative AI risk management, including information security and confabulation | NIST, [AI 600-1: Generative Artificial Intelligence Profile](https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf) (2024) |
-| Argument injection and path traversal | MITRE [CWE-88](https://cwe.mitre.org/data/definitions/88.html); OWASP, [Path Traversal](https://owasp.org/www-community/attacks/Path_Traversal) |
+| Argument injection and path traversal | MITRE [CWE-88](https://cwe.mitre.org/data/definitions/88.html); OWASP, [Path Traversal](https://community.owasp.org/attacks/Path_Traversal) |
 
 The guarded agent, its tools and guardrails, the success checks, the report, and the red-team gate were written for
 this course. The attack and benign cases, the model's turns, and the detector's verdicts are synthetic-authored
@@ -210,7 +210,7 @@ are synthetic-authored for this course (`scripts/author_module05_fixtures.py`, `
 | Pairwise (all-pairs) testing and covering arrays | [All-pairs testing](https://en.wikipedia.org/wiki/All-pairs_testing) |
 | Shingles and Jaccard similarity for near-duplicates | [w-shingling](https://en.wikipedia.org/wiki/W-shingling), [Jaccard index](https://en.wikipedia.org/wiki/Jaccard_index) |
 | Distinct-n diversity | Li et al., [A Diversity-Promoting Objective Function for Neural Conversation Models](https://arxiv.org/abs/1510.03055) (arXiv 1510.03055) |
-| Message Batches API | [Anthropic: batch processing](https://docs.anthropic.com/en/docs/build-with-claude/batch-processing) |
+| Message Batches API | [Anthropic: batch processing](https://platform.claude.com/docs/en/build-with-claude/batch-processing) |
 
 The dimensions, rules, beta queries, generated queries, dataset v1, the template query writer, and the dev-slice
 traces and reference labels are synthetic-authored for this course (`config/synth/`, `data/synth/`,
@@ -230,7 +230,7 @@ The module 3 traces, scenarios, and reference annotations are synthetic-authored
 
 | Topic | Source |
 |---|---|
-| Tool use with Claude (the agent loop) | [Anthropic: tool use overview](https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/overview) |
+| Tool use with Claude (the agent loop) | [Anthropic: tool use overview](https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview) |
 | Span and attribute names (`gen_ai.*`) | [OpenTelemetry semantic conventions for generative AI](https://github.com/open-telemetry/semantic-conventions-genai) (status: development) |
 | OTLP/JSON encoding | [OpenTelemetry protocol specification](https://opentelemetry.io/docs/specs/otlp/) |
 | OpenInference attributes | [OpenInference](https://github.com/Arize-ai/openinference) (Arize) |
