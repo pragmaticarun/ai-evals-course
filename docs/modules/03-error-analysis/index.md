@@ -310,5 +310,8 @@ keep tool errors that recovered separate from those that did not, and ask of eve
 query would have helped. Rank by frequency and severity, use fixability to find quick wins, and keep reading until
 nothing new appears. One domain expert owns the result.
 
+The [error analysis cheat sheet](../../cheatsheets/error-analysis.md) and the
+[failure taxonomy template](../../eval-templates/failure-taxonomy.md) put this module on one page.
+
 **Next:** the [lab](lab.md). Then module 4 generates more varied test questions, so the next error analysis is not
 limited to what users happened to ask.

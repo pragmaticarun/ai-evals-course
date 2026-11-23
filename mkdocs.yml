@@ -54,6 +54,7 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - Start here: start-here.md
   - Setup: setup.md
   - Modules:
       - "1. Why evals":
@@ -112,8 +113,17 @@ nav:
           - Lab: modules/11-improving-with-evidence/lab.md
           - Exercises: modules/11-improving-with-evidence/exercises.md
           - Quiz: modules/11-improving-with-evidence/quiz.md
-      - "12. Capstone eval report": modules/12-capstone/index.md
+      - "12. Capstone eval report":
+          - modules/12-capstone/index.md
+          - Lab: modules/12-capstone/lab.md
+          - Exercises: modules/12-capstone/exercises.md
+          - Self-assessment: modules/12-capstone/quiz.md
+          - Rubric and checklist: modules/12-capstone/rubric.md
+          - Make it your own: modules/12-capstone/extensions.md
+          - Presenting to stakeholders: modules/12-capstone/presentation.md
+  - Capstone report: capstone/index.md
   - Cheat sheets:
+      - All cheat sheets: cheatsheets/index.md
       - The eval loop: cheatsheets/eval-loop.md
       - Tracing an agent: cheatsheets/tracing.md
       - Error analysis: cheatsheets/error-analysis.md
@@ -125,7 +135,9 @@ nav:
       - Monitoring and annotation: cheatsheets/monitoring.md
       - Red-team checklist: cheatsheets/red-team.md
       - Cost and latency: cheatsheets/cost-latency.md
+      - Writing the eval report: cheatsheets/eval-report.md
   - Templates:
+      - All templates: eval-templates/index.md
       - Failure taxonomy sheet: eval-templates/failure-taxonomy.md
       - Dimensions sheet: eval-templates/dimensions-sheet.md
       - Judge prompt: eval-templates/judge-prompt.md

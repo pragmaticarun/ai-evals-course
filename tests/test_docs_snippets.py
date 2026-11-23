@@ -59,6 +59,7 @@ def test_solution_snippet_runs(code):
         "09-monitoring-and-annotation",
         "10-red-teaming",
         "11-improving-with-evidence",
+        "12-capstone",
     ],
 )
 def test_solutions_are_collapsed(module):
@@ -80,8 +81,56 @@ def test_solutions_are_collapsed(module):
         ("09-monitoring-and-annotation", 8),
         ("10-red-teaming", 8),
         ("11-improving-with-evidence", 8),
+        ("12-capstone", 8),
     ],
 )
 def test_quiz_answers_are_collapsed(module, n):
     text = (DOCS / "modules" / module / "quiz.md").read_text()
     assert text.count('??? question "Answer"') == n
+
+
+@pytest.mark.parametrize("lab", sorted(DOCS.glob("modules/*/lab.md")), ids=lambda p: p.parent.name)
+def test_every_lab_states_what_is_synthetic(lab):
+    text = lab.read_text()
+    head = text.split("\n## ", 1)[0]
+    assert re.search(r'^!!! (info|warning) "[^"]*[Ss]ynthetic', head, re.M), (
+        "synthetic-data notice missing at the top"
+    )
+
+
+def test_home_page_marks_every_module_available_and_states_synthetic_data():
+    text = (DOCS / "index.md").read_text()
+    rows = re.findall(r"^\| (\d+) \| \[.+?\]\((modules/[^)]+)\) \| \d+ \| (\w+) \|$", text, re.M)
+    assert [int(n) for n, _, _ in rows] == list(range(1, 13))
+    assert all(status == "Available" for _, _, status in rows)
+    assert all((DOCS / path).is_file() for _, path, _ in rows)
+    assert re.search(r'^!!! warning "[^"]*synthetic', text, re.M)
+
+
+def test_every_module_has_a_cheat_sheet_and_the_indexes_list_them_all():
+    sheets = {p.name for p in (DOCS / "cheatsheets").glob("*.md")} - {"index.md"}
+    index = (DOCS / "cheatsheets" / "index.md").read_text()
+    assert sheets == set(re.findall(r"\]\(([\w-]+\.md)\)", index))
+    assert len(sheets) == 12
+    templates = {p.name for p in (DOCS / "eval-templates").glob("*.md")} - {"index.md"}
+    tindex = (DOCS / "eval-templates" / "index.md").read_text()
+    assert templates <= set(re.findall(r"\]\(([\w-]+\.md)\)", tindex))
+    nav = set(_nav_targets())
+    assert {f"cheatsheets/{s}" for s in sheets} <= nav
+    assert {f"eval-templates/{t}" for t in templates} <= nav
+
+
+def test_every_module_page_is_in_the_nav():
+    nav = set(_nav_targets())
+    pages = {str(p.relative_to(DOCS)) for p in (DOCS / "modules").rglob("*.md")}
+    assert pages <= nav, sorted(pages - nav)
+
+
+def test_glossary_is_sorted_and_tagged_with_a_module():
+    text = (DOCS / "glossary.md").read_text()
+    entries = re.findall(r"^\*\*(.+?)\*\* \[([\d, ]+)\]$", text, re.M)
+    terms = [t for t, _ in entries]
+    assert terms == sorted(terms, key=str.lower)
+    assert len(terms) == len(re.findall(r"^\*\*", text, re.M))
+    modules = {int(m) for _, ms in entries for m in ms.split(",")}
+    assert modules <= set(range(1, 13)) and 12 in modules

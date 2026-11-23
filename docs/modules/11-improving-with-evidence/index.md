@@ -25,7 +25,7 @@ Artifacts: the **experiment log** (`uv run mediadoctor-lab11 log`), the **accura
 (`uv run mediadoctor-lab11 memo`), the pre-registration (`config/experiments/preregistration.toml`), and the
 [cost and latency cheat sheet](../../cheatsheets/cost-latency.md). Templates: the
 [experiment log](../../eval-templates/experiment-log.md), the [decision memo](../../eval-templates/decision-memo.md),
-and module 8's [eval report](../../eval-templates/eval-report.md).
+and module 12's [eval report](../../eval-templates/eval-report.md).
 
 ## Intuition: pay for answers, not for calls
 
@@ -356,7 +356,7 @@ you are not claiming, and next steps. `uv run mediadoctor-lab11 memo` drafts it 
 the [template](../../eval-templates/decision-memo.md) explains each section. Edit the draft: a generated memo is a
 starting point, and you are the one who signs it.
 
-**The eval report** (module 8's [template](../../eval-templates/eval-report.md)) is the reference behind the memo:
+**The eval report** (module 12's [template](../../eval-templates/eval-report.md)) is the reference behind the memo:
 data, evaluators, full results, risks.
 
 **Honest uncertainty** means every number that drives the decision comes with its interval and its n; the memo says

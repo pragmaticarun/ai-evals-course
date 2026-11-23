@@ -48,6 +48,24 @@ anyone serious about evals should read them directly and consider their course.
 | Using an evaluator in the request path: weigh its latency and cost, and its false positives against its false negatives | Module 11 | [AI Evals FAQ: Can my evaluators also be used to automatically fix or correct outputs in production?](https://hamel.dev/blog/posts/evals-faq/can-my-evaluators-also-be-used-to-automatically-fix-or-correct-outputs-in-production.html), Hamel Husain and Shreya Shankar |
 | Weigh the cost of building something against the value of the failure it addresses | Module 11 | [AI Evals FAQ: Should I build automated evaluators for every failure mode I find?](https://hamel.dev/blog/posts/evals-faq/should-i-build-automated-evaluators-for-every-failure-mode-i-find.html), Hamel Husain and Shreya Shankar |
 | Improving cost and accuracy with evidence as the last stage of the eval loop | Module 11 | Hamel Husain and Shreya Shankar's [Maven course](https://maven.com/parlance-labs/evals) |
+| The whole loop, from error analysis to evidence-based improvement, written up as one project | Module 12 | Hamel Husain and Shreya Shankar's [Maven course](https://maven.com/parlance-labs/evals) |
+| Looking at real examples alongside aggregate scores, and preferring measures specific to your product over generic metrics | Module 12 | [A Field Guide to Rapidly Improving AI Products](https://hamel.dev/blog/posts/field-guide/), Hamel Husain |
+| Report judge-based numbers with the judge's agreement with people, and correct for it | Modules 5, 12 | [AI Evals FAQ: How do I know if I can trust my automated eval?](https://hamel.dev/blog/posts/evals-faq/how-do-i-know-if-i-can-trust-my-automated-eval.html), Hamel Husain and Shreya Shankar |
+
+## Module 12 references
+
+| Topic | Source |
+|---|---|
+| Structured reporting of a model's intended use, evaluation data, metrics, and caveats | Mitchell et al., [Model Cards for Model Reporting](https://arxiv.org/abs/1810.03993) (arXiv 1810.03993) |
+| Documenting how a dataset was built, what it covers, and what it is for | Gebru et al., [Datasheets for Datasets](https://arxiv.org/abs/1803.09010) (arXiv 1803.09010) |
+| Decision first, then the supporting evidence | Barbara Minto, *The Pyramid Principle* (Pearson, 2009); [barbaraminto.com](https://www.barbaraminto.com/) and [Wikipedia: Barbara Minto](https://en.wikipedia.org/wiki/Barbara_Minto) |
+| An upper bound when no failures were observed (15 of 15) | [Wikipedia: Rule of three (statistics)](https://en.wikipedia.org/wiki/Rule_of_three_(statistics)) |
+| Exploratory and confirmatory analysis; labelling which is which | Center for Open Science, [Preregistration](https://www.cos.io/initiatives/prereg) |
+| Controlled experiments and their reporting | Kohavi, Tang, and Xu, [Trustworthy Online Controlled Experiments](https://experimentguide.com/) (Cambridge University Press, 2020) |
+
+The capstone pipeline, the report generator and its self-review check, the reference report, the rubric, the
+checklist, and the presentation outline were written for this course. The reference report's numbers come from the
+earlier modules' synthetic-authored fixtures.
 
 ## Module 11 references
 

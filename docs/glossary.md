@@ -134,6 +134,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Decision rule** [11]
 : The pre-written condition under which an experiment's change is kept, such as a paired CI above zero (superiority) or above minus a margin with lower cost (non-inferiority).
 
+**Decision-first writing** [12]
+: Ordering a report or talk as decision, then evidence, then method (the pyramid principle), so that a reader who stops early still has the point.
+
 **Dimension (test dimension)** [4]
 : One way real inputs differ, such as persona, topic, or expertise, with a few concrete values. Chosen from failure hypotheses.
 
@@ -155,6 +158,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Eval gate (regression gate)** [8]
 : A CI check that blocks a merge when a change makes a metric worse beyond chance. Here: paired McNemar tests with a Holm adjustment, a minimum effect, and a warn margin, not a fixed threshold.
 
+**Eval report** [12]
+: The document that turns an evaluation into a decision: the decision requested, three key numbers with intervals, scope, data, failure taxonomy, validated evaluators, results, risks, a recommendation, and an appendix that reproduces it. Module 12's capstone.
+
 **Exfiltration** [10]
 : Getting private data out of a system to a place the attacker can read: a query string on a fetched URL, a public ticket, an image link in an answer. Requires access to the data, an injection, and an outbound channel (the lethal trifecta).
 
@@ -169,6 +175,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Explicit and implicit feedback** [9]
 : Explicit: ratings users give on purpose (thumbs up or down). Implicit: behaviour that hints at quality (retries, copies, abandonment). Both are sparse or ambiguous and biased; use them to pick traces, not as the metric.
+
+**Exploratory vs confirmatory analysis** [12]
+: Exploratory analysis looks for patterns after seeing the data and produces leads; confirmatory analysis tests a hypothesis with a rule written down first. Reports label which is which.
 
 **Fabricated evidence** [2]
 : An answer that cites a tool result, log line, or document the trace shows it never obtained. Detectable with a code check over the trace.
@@ -227,6 +236,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Hard negative** [7]
 : A passage or example that looks relevant (shared words or topic) but is not. Retrieval and judge test sets need them to avoid overstating quality.
 
+**Held-out look** [12]
+: One read of the held-out split by the configuration chosen on dev, made just before release, through a guard that logs it. Its role is to catch a reversal, not to provide a second estimate of the gain.
+
 **Held-out rotation** [8]
 : Replacing held-out cases with fresh, never-used ones after a set number of looks or a period of time; the old held-out cases join the gate set.
 
@@ -244,6 +256,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Injection detector** [10]
 : A classifier, here a cheap LLM judge, that reads untrusted text before the agent does and flags text that tries to instruct an AI. Validated like any judge (TPR, TNR on labelled texts); its misses must be caught by later layers.
+
+**Inputs fingerprint** [12]
+: A hash over every fixture, label, and config file a report reads, printed in its appendix so that a reader can tell whether a rerun used the same inputs.
 
 **Inter-annotator agreement** [9]
 : How consistently two or more people label the same items, usually reported as Cohen's kappa per label with the counts.
@@ -445,6 +460,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Simulated user** [7]
 : A model that plays the user in multi-turn evals, with a persona, a goal, and facts it reveals only when asked. It must itself be checked for leaked or invented facts.
+
+**Slice (evaluation slice)** [12]
+: A subset of cases that share something (a topic, device family, persona, or language), evaluated on its own to find where a system is weak. Small slices give wide intervals: report what they can detect, and list their failures by id.
 
 **Span** [2]
 : One timed unit of work inside a trace (a model call, a tool call, a retrieval), with a name, start and end time, status, and attributes.

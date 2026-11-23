@@ -1,6 +1,8 @@
 # Template: eval report
 
-Used in the module 12 capstone. Aim for two pages that a product owner can act on.
+Used in the [module 12 capstone](../modules/12-capstone/index.md). Aim for two pages that a product owner can act on.
+`uv run mediadoctor-capstone report` drafts one from MediaDoctor's artifacts, and the
+[reference report](../capstone/index.md) is a fully worked example.
 
 1. **Decision requested**: one sentence. (Ship v3? Switch the judge model? Fund retrieval work?)
 2. **Summary**: three bullets with the key numbers *and* their confidence intervals.

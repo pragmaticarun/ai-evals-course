@@ -3,6 +3,13 @@
 **Time:** about 1.5 hours. **Needs:** Ubuntu (or any Linux/macOS), `git`, and [`uv`](https://docs.astral.sh/uv/).
 **Does not need:** an API key. Everything runs in replay mode from committed fixtures.
 
+!!! info "Synthetic-authored model responses"
+    The recorded model answers this lab replays were written by hand in the exact Messages API format and are
+    labelled `"source": "synthetic-authored"`; the 20 questions and the knowledge base were written for the course.
+    They make no claim about how Claude behaves: the planted failures are there so that the checks have something to
+    find. The checks, the comparison, and the replay machinery are real code. Re-record with your own key
+    (`EVALS_LLM_MODE=record`) to see real answers.
+
 ## 1. Set up
 
 ```bash

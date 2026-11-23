@@ -197,5 +197,7 @@ Two more trace checks catch this pattern: `no_repeat_retrieval` (no two retrieva
 - Deterministic tools plus recorded model responses give reproducible traces with no API key.
 - Checks over traces catch failures that checks over answers cannot: fabricated evidence, wasted steps.
 
+The [tracing cheat sheet](../../cheatsheets/tracing.md) puts this module on one page.
+
 **Next:** the [lab](lab.md), then [Sending traces to Phoenix, Langfuse, and Braintrust](backends.md).
 Sources and influences are listed on the [Credits](../../credits.md) page.

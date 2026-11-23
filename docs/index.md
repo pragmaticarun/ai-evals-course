@@ -8,6 +8,17 @@ those failures with evaluators you can trust, and improve it with evidence.
 - **Hands-on**: every module has a lab that runs offline from recorded model responses, exercises with
   collapsed solutions, and a quiz.
 - **Live runs on Claude** through the Anthropic Python SDK when you want them; CI never needs a key.
+- **A capstone**: a complete [eval report](capstone/index.md) on MediaDoctor, generated from every module's
+  artifacts, and the tools to write your own.
+
+New here? Read **[Start here](start-here.md)** for a 13-week study plan at about 7 hours a week.
+
+!!! warning "The data in this course is synthetic"
+    MediaDoctor's model responses, traces, user questions, production traffic, and attacks were **written for the
+    course** by the scripts in `scripts/` (every recorded response is labelled `"source": "synthetic-authored"`).
+    That makes every lab reproducible offline, with known failures to find. It also means the rates you measure
+    describe the method, not how Claude models behave: re-record live with your own key before using any number
+    for a real decision. The code (agent, tools, checks, judges, statistics, CI gate) is real.
 
 ## Course map
 
@@ -24,7 +35,7 @@ those failures with evaluators you can trust, and improve it with evidence.
 | 9 | [Production monitoring and annotation app](modules/09-monitoring-and-annotation/index.md) | 8 | Available |
 | 10 | [Red-teaming and safety](modules/10-red-teaming/index.md) | 7 | Available |
 | 11 | [Improving with evidence](modules/11-improving-with-evidence/index.md) | 8 | Available |
-| 12 | [Capstone eval report](modules/12-capstone/index.md) | 8 | Planned |
+| 12 | [Capstone eval report](modules/12-capstone/index.md) | 8 | Available |
 
 ## Who it is for
 
@@ -36,9 +47,6 @@ Examples lean on Android media and multimedia, but each one is explained as it c
 The structure of this course is inspired by Hamel Husain and Shreya Shankar's work on AI evals, including their
 Maven course and public writing. All text, code, and data here are original. See [Credits](credits.md).
 
-Start with [Setup](setup.md), then [Module 1](modules/01-why-evals/index.md),
-[Module 2](modules/02-agent-with-tracing/index.md), [Module 3](modules/03-error-analysis/index.md),
-[Module 4](modules/04-synthetic-data/index.md), [Module 5](modules/05-evaluators-and-judges/index.md),
-[Module 6](modules/06-trustworthy-metrics/index.md), [Module 7](modules/07-architectures/index.md),
-[Module 8](modules/08-ci-cd/index.md), [Module 9](modules/09-monitoring-and-annotation/index.md),
-[Module 10](modules/10-red-teaming/index.md), and [Module 11](modules/11-improving-with-evidence/index.md).
+Start with [Setup](setup.md) and the [study plan](start-here.md), then work through the modules in order, from
+[Module 1](modules/01-why-evals/index.md) to the [Module 12 capstone](modules/12-capstone/index.md). Keep the
+[cheat sheets](cheatsheets/index.md), [templates](eval-templates/index.md), and [glossary](glossary.md) at hand.

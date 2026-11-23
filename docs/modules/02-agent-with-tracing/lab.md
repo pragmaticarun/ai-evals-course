@@ -3,6 +3,13 @@
 **Time:** about 3 hours. **Needs:** the setup from [lab 1](../01-why-evals/lab.md).
 **Does not need:** an API key, ffmpeg, or network access. Everything replays from committed fixtures.
 
+!!! info "Synthetic-authored model turns, real tools"
+    The model's turns in the recorded traces were written by `scripts/author_module02_fixtures.py` and are labelled
+    `"source": "synthetic-authored"`; the media files, device tables, and logs were made for the course. They make no
+    claim about how Claude behaves. The tools (ffprobe output, codec tables, log search), the tracer, the span
+    attributes, and the trace checks are real code, and each call's cost is computed from its recorded token counts
+    with the prices in `config/models.toml`.
+
 ## 1. Update and check
 
 ```bash

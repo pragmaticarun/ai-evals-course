@@ -4,13 +4,55 @@ An original, self-paced course on evaluating LLM agents. You build one running a
 (Android and multimedia debugging assistant on Claude), and take it through the whole loop: analyze failures,
 measure them with evaluators you trust, and improve with evidence.
 
-Site: https://pragmaticarun.github.io/ai-evals-course/
+Site: https://pragmaticarun.github.io/ai-evals-course/ ·
+[Start here (13-week study plan)](https://pragmaticarun.github.io/ai-evals-course/start-here/) ·
+[Capstone reference report](https://pragmaticarun.github.io/ai-evals-course/capstone/)
 
-## Quick start
+**Status:** all 12 modules are available (about 87 hours at about 7 hours a week). Versions last checked
+**2026-11-23** (see [Versions checked](https://pragmaticarun.github.io/ai-evals-course/versions/)).
+
+> **The data is synthetic.** MediaDoctor's recorded model responses, traces, questions, production traffic, and
+> attacks were written for the course by the scripts in `scripts/`; every recorded response is labelled
+> `"source": "synthetic-authored"`. That keeps every lab reproducible offline with known failures to find. The
+> numbers describe the methods, not how Claude models behave; re-record live before relying on any of them. The
+> code (agent, tools, checks, judges, statistics, CI gate) is real.
+
+## How to run it
+
+Ubuntu (or any Linux or macOS) with `git` and [uv](https://docs.astral.sh/uv/). No API key is needed for anything
+in this section.
 
 ```bash
+git clone https://github.com/pragmaticarun/ai-evals-course.git && cd ai-evals-course
 uv sync                                   # Python 3.14 + pinned deps from uv.lock
-uv run pytest -q                          # offline: replays recorded Claude responses
+uv run pytest -q                          # the whole test suite, offline (about a minute)
+uv run pytest evals -q                    # the eval suite (fast tier and judge tier, replayed)
+uv run ruff check . && uv run ruff format --check .
+uv run zensical build --clean --strict    # the site, as CI builds it (fallback: uv run mkdocs build --strict)
+uv run zensical serve                     # the course site at http://localhost:8000
+uv run mediadoctor-capstone run           # the whole eval loop, modules 1 to 11, in a few seconds
+```
+
+## Replay, record, and live
+
+Every Claude call in the course goes through `evalkit.LLM`, whose mode comes from `EVALS_LLM_MODE`:
+
+| Mode | What it does | Needs | Used by |
+|---|---|---|---|
+| `replay` (default) | Looks each request up in `fixtures/recorded/` by the SHA-256 of its canonical JSON. Never touches the network; a request with no recording raises `FixtureMissingError`. | nothing | every lab, every test, and CI |
+| `record` | Calls the Anthropic API and saves each response under its request key. | `ANTHROPIC_API_KEY` | re-recording a lab; the manual `live-evals.yml` workflow |
+| `live` | Calls the API and saves nothing. | `ANTHROPIC_API_KEY` | trying a prompt without saving anything |
+
+Put the key in your shell or a git-ignored `.env`, never in a committed file (CI runs gitleaks). Record into a
+directory under `runs/` (git-ignored) rather than over the course fixtures, because the tests pin the synthetic
+numbers. Most labs end with an optional section showing how, and module 12's
+[Make it your own](https://pragmaticarun.github.io/ai-evals-course/modules/12-capstone/extensions/) covers a full
+live re-record. Models are set per role in `config/models.toml` (agent `claude-sonnet-5-5`; judge and synthetic
+data `claude-haiku-5-5`).
+
+## Commands by module
+
+```bash
 uv run mediadoctor-lab01 compare v1 v2    # the module 1 worked example
 uv run mediadoctor-lab02 run --out runs/t.jsonl   # module 2: tool-using agent, traced
 uv run evalkit view runs/t.jsonl m2q03    # read one trace in the terminal
@@ -39,11 +81,12 @@ uv run mediadoctor-lab10 gate             # the red-team CI gate (also in `pytes
 uv run mediadoctor-lab11 report           # module 11: success CI, p50/p95, cost per successful task for 7 configurations
 uv run mediadoctor-lab11 pareto --svg runs/m11/pareto.svg   # the accuracy vs cost frontier
 uv run mediadoctor-lab11 memo             # draft the one-page decision memo from the pre-registered rule
-uv run zensical serve                     # the course site at http://localhost:8000
+uv run mediadoctor-capstone slices        # module 12: baseline vs candidate per topic, to choose a slice
+uv run mediadoctor-capstone report --slice drm-resolution --out runs/capstone/report.md   # the eval report (dev only)
+uv run mediadoctor-capstone check runs/capstone/report.md   # self-review against the eval report template
 ```
 
-No API key is needed for any of the above. To record real responses, set `ANTHROPIC_API_KEY` in your
-environment (or a git-ignored `.env`) and use `EVALS_LLM_MODE=record`. See `docs/setup.md`.
+No API key is needed for any of the above. See `docs/setup.md` for the full setup.
 
 ## Layout
 
@@ -55,9 +98,10 @@ config/release.toml       the prompt MediaDoctor ships; the eval gate compares c
 config/eval_gate.toml     the eval gate's tiers, rule, and budgets (module 8)
 config/redteam/           the attack suite's dimensions and the red-team gate (module 10)
 config/experiments/       module 11's configurations, pre-registration, and experiment log
+docs/capstone/            the module 12 reference eval report (generated; a test checks it is current)
 docs/                     course site (Zensical, Material-compatible mkdocs.yml)
 labs/evalkit/             record/replay LLM wrapper, fixtures, tracer, trace viewer, OTLP export, annotation and taxonomy tools, synthetic data (tuples, batching, dedup, coverage, splits), judges (prompts, TPR/TNR), statistics (Wilson and bootstrap CIs, judge-error correction, McNemar, Holm, pass^k, sample sizes), retrieval metrics, trajectory metrics and transition-failure matrices, regression gates, golden manifests, dataset hygiene, production sampling and drift (PSI, p-charts, CUSUM), Cohen's kappa
-labs/mediadoctor/         the running agent (module 1 seed; module 2 Claude tool-use agent with 4 tools; module 7 RAG, chat with a simulated user, planner + specialists, vision; module 10 action tools and guardrails, simulated; module 11 experiment configurations, cascade and retry strategies)
+labs/mediadoctor/         the running agent (module 1 seed; module 2 Claude tool-use agent with 4 tools; module 7 RAG, chat with a simulated user, planner + specialists, vision; module 10 action tools and guardrails, simulated; module 11 experiment configurations, cascade and retry strategies; module 12 capstone pipeline and report generator)
 labs/annotate/            the trace review app (FastAPI + HTMX, keyboard-driven, localhost only; module 9)
 data/kb/                  knowledge-base notes the agent retrieves from
 data/kb_v2/               second-edition knowledge base (25 docs, 57 sections) for the module 7 retrieval evals
@@ -72,7 +116,7 @@ data/media/               small ffmpeg-generated sample clips + cached ffprobe o
 data/devices/, data/logs/ fictional device codec tables and synthetic logcat captures
 fixtures/recorded/        SHA-256 keyed JSONL recorded responses (replayed in CI)
 scripts/                  maintenance scripts (fixture authoring, version report)
-tests/                    pytest suite, offline
+tests/                    pytest suite, offline (includes docs checks: nav, solutions, synthetic-data notices)
 evals/                    the eval suite as pytest tests (fast and judge tiers), the red-team regression tests, and the committed baselines (modules 8, 10)
 .github/workflows/        ci.yml, deploy.yml (GitHub Pages), eval-gate.yml (module 8 gate), live-evals.yml (manual)
 ```

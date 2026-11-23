@@ -165,4 +165,6 @@ Three more lessons are hiding in the same run:
 - Code checks first, judges for fuzzy criteria (validated against humans), human time for discovery and labels.
 - A fixed case set and a per-case diff catch regressions that an aggregate number or a spot check would hide.
 
+The [eval loop cheat sheet](../../cheatsheets/eval-loop.md) puts this module on one page.
+
 **Next:** the [lab](lab.md) runs this worked example on your machine.
