@@ -15,7 +15,7 @@ Approve `retry` as the release configuration in `config/release.toml`, in place 
 
 ## 2. Summary
 
-- **Better answers.** On the 108 dev queries, `retry` succeeds on 0.898 (97/108) [0.827, 0.942] against 0.667 (72/108) [0.573, 0.748] for `v1`: a paired difference of +0.231 [+0.157, +0.315] (25 queries fixed, 0 broken). On the 29 held-out queries, read once for this report: 0.966 (28/29) [0.828, 0.994] against 0.828 (24/29) [0.655, 0.924], difference +0.138 [+0.000, +0.310].
+- **Better answers.** On the 29 held-out queries, read once and never used to choose: `retry` 0.966 (28/29) [0.828, 0.994] against 0.828 (24/29) [0.655, 0.924] for `v1`, a difference of +0.138 [+0.000, +0.310]: the unbiased estimate, and too few queries to pin the size down. On the 108 dev queries every step was chosen on, 0.898 (97/108) [0.827, 0.942] against 0.667 (72/108) [0.573, 0.748], +0.231 [+0.157, +0.315] (25 fixed, 0 broken); optimistic, because the configuration was selected on them.
 - **Cheaper per successful task.** $0.00428 [$0.00381, $0.00483] against $0.00880 [$0.00782, $0.01020], a change of -51%; p95 latency 10.4 s [8.3, 11.3] against 10.1 s, inside the 12 s guardrail.
 - **Not a fix for everything.** Production monitoring shows evidence failures at 16.1% on app 4.2.0 against 0.0% on 4.1.3 (CUSUM alarm 19.7 h after the rollout), which this change does not address; the audio-focus slice is the weakest topic under `retry` at 0.667 (8/12) [0.391, 0.862].
 
@@ -38,7 +38,7 @@ Approve `retry` as the release configuration in `config/release.toml`, in place 
 | Module 1 smoke set | 20 queries | hand-written | the first baseline and code checks |
 | Module 3 traces | 100 traces | synthetic-authored agent runs, open and axial coded | the failure taxonomy |
 | Module 4 dataset v1 | 182 queries (train 88, dev 45, test 49) | dimension tuples → LLM-written queries, checked and deduplicated | judges, stats, experiments |
-| Golden set | mediadoctor-golden 1.0.0, 12 files | module 8 manifest with hashes and splits | the CI gate |
+| Golden set | mediadoctor-golden 1.0.1, 12 files | module 8 manifest with hashes and splits | the CI gate |
 | Experiment cases | 108 dev + 29 held out | module 5's agent slice of dataset v1 | this decision |
 | Module 7 retrieval set | 48 labelled queries, 57 KB sections | hand-labelled relevance | the architecture-specific eval |
 | Module 9 traffic | 776 requests over 7 days | simulated production with a rollout and a model snapshot change | monitoring |
@@ -255,6 +255,7 @@ Chosen because it is the topic where `retry` does worst on dev (`uv run mediadoc
 
 - **Synthetic data.** Every fixture is synthetic-authored. The method transfers; the rates do not. Re-record live (module 12, *Make it your own*) before using any number for a real decision.
 - **Sample size.** 108 dev queries detect a paired change of about 0.13; the audio-focus slice (12 queries) cannot detect anything smaller than its discordant share. A step can be detected below that size only when almost every query that changed moved the same way: the last step, +0.046 [+0.009, +0.093], rests on 5 fixed and 0 broken queries.
+- **The last step's test.** `retry` was kept by the pre-registered rule (a paired bootstrap interval above zero), but it rests on 5 changed queries, and the exact McNemar p is 0.06. Module 6 trusts the exact test below about 10 changed queries; amendment 1 of the pre-registration requires it from the next study on. Read the last step as likely, not proven, and confirm it on more queries.
 - **Judge error.** The self-check judge fails 1 good first answers and passes 2 bad ones on dev; the other judges' TNRs (section 6) are lower than their TPRs, so raw judge pass rates overstate quality.
 - **Metric definitions differ across modules.** Module 6 grades all human-labelled failure modes (v1 → v2 +0.051 [-0.044, +0.146]); module 11 grades four checks (v1 → v2 +0.093 [+0.037, +0.157]). They answer different questions; do not quote one as the other.
 - **Modes not tracked after the change.** Module 11's labels cover four modes. Fabricated evidence, wrong tool arguments, wrong API details, and retrieval misses (modules 3 and 7) were not re-measured for `retry`.
@@ -275,8 +276,8 @@ Chosen because it is the topic where `retry` does worst on dev (`uv run mediadoc
 ## 10. Appendix
 
 - **Code version:** `git log -1 --format=%H -- docs/capstone/index.md` (the commit that published this page)
-- **Inputs fingerprint:** `789ecc995132ea27` (sha256 of `fixtures/recorded`, `data`, and `config`)
-- **Golden set:** mediadoctor-golden 1.0.0
+- **Inputs fingerprint:** `4ebd82858623197e` (sha256 of `fixtures/recorded`, `data`, and `config`)
+- **Golden set:** mediadoctor-golden 1.0.1
 - **Reproduce:**
 
 ```bash

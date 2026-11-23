@@ -3,11 +3,11 @@
  "label": "release (v1)",
  "config": {
   "prompt": "v1",
-  "fingerprint": "371cb022dc79"
+  "fingerprint": "0c401c90b13f"
  },
  "golden": {
   "name": "mediadoctor-golden",
-  "version": "1.0.0"
+  "version": "1.0.1"
  },
  "tiers": {
   "code": {

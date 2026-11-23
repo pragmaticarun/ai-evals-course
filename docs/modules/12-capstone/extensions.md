@@ -9,6 +9,22 @@ system, or a failure mode you found yourself. Each one ends with the same delive
 Replace the synthetic-authored model turns with real Claude responses and see how many of the course's numbers
 survive.
 
+!!! warning "Record and live call Claude Haiku 4.5 only"
+    `[live]` in `config/models.toml` sends every record and live request to `claude-haiku-4-5`, whatever role it is
+    for, and refuses any other model before a request leaves the machine (`ModelNotAllowedError`). No Opus, Fable,
+    Sonnet, or Haiku 5.5 call is made with your key. Three consequences:
+
+    - **Model comparisons collapse.** Module 11's `haiku`, `cascade`, and Sonnet variants all run on Haiku 4.5, as do
+      the judges and the simulated user, so a live run can compare prompts and strategies, not models. Self-preference
+      (module 5) is maximal: judge and agent are the same model.
+    - **Prompt caching will not cache.** Haiku 4.5's minimum cacheable prompt is 4,096 tokens; MediaDoctor's cached
+      prefix is about 1,000, so `v3-cache` costs the same as `v3`.
+    - **Recordings are keyed with the model called.** To replay your own recordings, set
+      `EVALS_REPLAY_LIVE_MODEL=1`; without it, replay keeps using the course fixtures.
+
+    Haiku 4.5 is $1 / $5 per million tokens and thinks only when asked, so no thinking or effort is sent. Re-recording
+    every module costs roughly $8 at the course's token counts (real answers may be longer).
+
 1. Set `ANTHROPIC_API_KEY` in your shell (never in a file in the repo; the repo's gitleaks check will catch a
    committed key, but do not rely on it).
 2. Record into `runs/`, not into `fixtures/`, so that the course fixtures stay intact. The pattern is the one in

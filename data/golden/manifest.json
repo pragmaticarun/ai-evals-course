@@ -1,8 +1,8 @@
 {
   "schema": "evalkit-golden/1",
   "name": "mediadoctor-golden",
-  "version": "1.0.0",
-  "created": "2026-11-23 04:00 IST",
+  "version": "1.0.1",
+  "created": "2026-11-23 22:12 UTC",
   "source": "dataset v1 (module 4), reference labels (modules 5 and 6), recorded runs",
   "notes": "Bump the version when any file changes: major for new cases or splits, minor for relabels or re-recorded runs, patch for fixes that change no outcome.",
   "files": {
@@ -39,20 +39,20 @@
       "bytes": 44406
     },
     "fixtures/recorded/mediadoctor-judges.jsonl": {
-      "sha256": "3ef606b4d8d10f1db054284fcdce6c2fc586f1fb63e99cf8087d497c32ebe837",
-      "bytes": 3703943
+      "sha256": "8f9707be77ab5a7e9e2fe6ae28de4b1ba6f42eb4aa1cc006ad299cd5cc3e0483",
+      "bytes": 3728135
     },
     "fixtures/recorded/mediadoctor-m5.jsonl": {
-      "sha256": "9369fa42cd74fa80b4532ed59f3a87fe6d1f63b49f145b41919e20e42dd3dc7d",
-      "bytes": 1223555
+      "sha256": "d4d7935b807867807511c4585edfa737b97f6b38831654e46dca8190e15241e0",
+      "bytes": 1245155
     },
     "fixtures/recorded/mediadoctor-m6.jsonl": {
-      "sha256": "b215b1074b2426f75cfaf9c6e9f20c8c9b2aa583a83d60a6d4306b569a621383",
-      "bytes": 4180981
+      "sha256": "ce5b0e05b6d564b5f502fad01b7380333822c9d38decd503de7620cb6d982774",
+      "bytes": 4250749
     },
     "fixtures/recorded/mediadoctor-m8-judges.jsonl": {
-      "sha256": "88301623121bb78994647bd1fadd4bea2565b033cdaba5c9f0bf432bab98d7bd",
-      "bytes": 550754
+      "sha256": "0607543c0ea03da2cd59483f8f593018fed70a33fad93fbb88d4e176c46e44dc",
+      "bytes": 554210
     }
   },
   "splits": {

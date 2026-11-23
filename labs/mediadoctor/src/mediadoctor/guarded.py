@@ -45,6 +45,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 from evalkit import LLM, Tracer, load_models, load_prices, repo_root, text_of
+from evalkit.llm import incomplete_stop
 from mediadoctor.kb import KnowledgeBase, load_kb
 from mediadoctor.tools import TOOLS as READ_TOOLS
 from mediadoctor.tools import ToolError, codec_caps, mp4_top_level_boxes, sha256_file
@@ -792,7 +793,9 @@ def run_guarded(
                         "gen_ai.response.finish_reasons": [str(resp.get("stop_reason"))],
                         "gen_ai.usage.input_tokens": tin,
                         "gen_ai.usage.output_tokens": tout,
-                        "evalkit.cost.usd": round(price.cost_usd(tin, tout), 6) if price else 0.0,
+                        "evalkit.cost.usd": round(p.cost_usd(tin, tout), 6)
+                        if (p := load_prices().get(str(resp.get("model")), price))
+                        else 0.0,
                         "evalkit.replayed": llm.last_replayed,
                     }
                 )
@@ -836,6 +839,8 @@ def run_guarded(
                 "mediadoctor.guard.interventions": len(res.interventions),
             }
         )
+        if why := incomplete_stop(res.stop_reason):
+            root.set_error(why, "IncompleteStop")
     return res
 
 

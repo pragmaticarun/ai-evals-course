@@ -25,6 +25,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from evalkit.config import check_live_model, to_live_model
 from evalkit.llm import LLM, Mode, _to_dict
 
 Tuple = dict[str, str]
@@ -259,6 +260,10 @@ def create_many(
     """
     if llm.mode is Mode.REPLAY or not use_batch:
         return {cid: llm.create(**req) for cid, req in requests.items()}
+    # As LLM.create does in record and live: the `[live]` model only, checked before sending.
+    requests = {cid: to_live_model(req) for cid, req in requests.items()}
+    for req in requests.values():
+        check_live_model(req)
     client = llm.client
     batch = client.messages.batches.create(
         requests=[{"custom_id": cid, "params": req} for cid, req in requests.items()]

@@ -330,7 +330,7 @@ prompt v1, (b) a new agent model ID, (c) a sentence added to a tool's descriptio
     tool_description             108    108    n/a
     kb_edit                        0     57    n/a
     judge_wording                  0      0    107
-    relabel: ['data/labels/module06_runs.csv: changed since version 1.0.0']
+    relabel: ['data/labels/module06_runs.csv: changed since version 1.0.1']
     ```
 
     - Prompt, model, and tool definitions are part of every request: all 108 cases miss at the first turn, and

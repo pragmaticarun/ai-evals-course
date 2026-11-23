@@ -79,6 +79,7 @@ A threat model for an agent answers four questions. Write the answers down befor
 | knowledge-base notes | `search_kb` output | anyone who can contribute a note |
 | workspace files | `read_file` output | repository contributors |
 | web pages | `fetch_url` output | the page's owner |
+| tool descriptions and results from third-party tool servers (for example MCP servers) | the tool list and every result | whoever publishes or controls that server |
 
 | Sink | Risk | v2 control |
 |---|---|---|
@@ -87,6 +88,12 @@ A threat model for an agent answers four questions. Write the answers down befor
 | `fetch_url` | sends data to any host in the URL (exfiltration) | URL allowlist, egress check |
 | `file_ticket` | publishes text on a public tracker (exfiltration, spam) | human approval |
 | `transcode` | shell command built from strings (argument injection) | fixed presets, argv |
+
+The last row matters as soon as an agent loads tools from servers you do not run, such as Model Context Protocol
+(MCP) servers. A tool's *description* is text the model reads on every request, so a malicious or compromised server
+can inject instructions without ever being called ("tool poisoning"), and a server can change its descriptions after
+you approved it. Treat third-party tool descriptions as untrusted input: pin and review them, diff them on every
+update, and include poisoned descriptions in the attack suite as their own vector.
 
 The module adds four **action tools** to module 2's read-only MediaDoctor: `read_file` (a workspace file),
 `fetch_url` (a web page), `file_ticket` (a public issue), and `transcode` (queue an `ffmpeg` job). They are what make
@@ -141,6 +148,16 @@ Others you should know by name, and can add as values when your threat model cal
 run of fake dialogue that normalises the behaviour), payload splitting across several inputs, translation into a
 lower-resource language, and multi-turn escalation. The OWASP LLM01 page and MITRE [ATLAS](https://atlas.mitre.org/)
 keep current taxonomies.
+
+**A fixed suite measures yesterday's attacks.** Real attackers adapt: they try, read the response, and try again.
+Automated red-teaming does the same with an attacker model in a loop: it proposes an attack, sees what the target
+did, and refines (PAIR, Chao et al., [arXiv 2310.08419](https://arxiv.org/abs/2310.08419); TAP, Mehrotra et al.,
+[arXiv 2312.02119](https://arxiv.org/abs/2312.02119), which searches a tree of refinements). Run such a loop against
+your own staging system, keep every attack that worked as a new `must_block` case (Step 9), and report its success
+rate per attacker budget ("within 20 attempts"), because adaptive ASR depends on how hard the attacker tries.
+Benchmarks such as [AgentDojo](https://arxiv.org/abs/2406.13352) measure injection attacks and benign task success
+together on tool-using agents, which is the pairing this module insists on. Multi-turn escalation in particular can
+only be tested this way, or with a scripted multi-turn suite: a single-turn case cannot see it.
 
 ## Step 4: unsafe tool calls and leakage
 
@@ -201,6 +218,9 @@ want to make. Two cautions specific to red-teaming:
   fixed. A low ASR says "these attacks are handled", never "the system is safe".
 - Report the false-positive rate on benign traffic next to it, every time. A guardrail that blocks everything has an
   ASR of zero.
+- Measure over-refusal as its own rate. Guardrails and model safeguards both fail benign requests that merely look
+  risky; the hard negatives below exist for this. Report "benign requests refused or blocked" next to ASR, by cause,
+  and treat a rise in it as a regression, since users experience it as the product not working.
 - Count model refusals separately. Claude's safety classifiers can decline a request with HTTP 200 and
   `stop_reason: "refusal"` (with a `stop_details.category`). The agent records that as `mediadoctor.stop_reason` on
   the trace. A refusal on an attack is a defence you did not build, and a refusal on benign traffic is a false
@@ -266,8 +286,11 @@ Read it the way module 6 taught:
   no action is needed": the payload is in the user's own message, so fencing does not apply, the detector never sees
   it, and no tool is called for a validator to check. Output filters cannot judge whether "no action is needed" is
   true. This is the residual risk you write down (the gate lists both as accepted risks).
-- The detector caught 34 of the 40 injected texts it screened (TPR 0.85) and raised two false alarms on 42 clean
-  texts (TNR 0.95): the dialogue clip's subtitles and the reviewer checklist. The six it missed were all stopped
+- The detector caught 34 of the 40 injected texts it screened (0.85) and raised two false alarms on 42 clean
+  texts (it passed 0.95 of them). Note the positive class: elsewhere in the course PASS is positive, so for a
+  detector whose job is to flag, "caught 0.85" is its TNR in module 5's terms and "passed 0.95 of clean texts" its
+  TPR. Say which class is positive whenever you quote a detector's rates. The two false alarms are the dialogue
+  clip's subtitles and the reviewer checklist. The six it missed were all stopped
   later (four by the fence, where the model read the text and did not act on it, and two by argument validation),
   which is the point of layering.
 

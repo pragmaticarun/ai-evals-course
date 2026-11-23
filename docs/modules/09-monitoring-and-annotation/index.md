@@ -58,6 +58,13 @@ Both use the same evaluators, at different volumes. A rule of thumb that the lab
 - **People on a smaller, targeted sample.** The annotation queue. Human labels are the only ones that can find a
   failure mode nobody has named yet.
 
+**Online experiments.** When a change is safe to expose to some users, an A/B test answers what offline evals
+cannot: what real users do with it. Randomise by user, not by request (so one person does not see both versions),
+decide the primary metric and the guardrails before starting, use the paired and multiple-comparison discipline of
+module 6, and do not stop early because a daily p-value looked good (module 6, "Looking more than once"). Kohavi,
+Tang, and Xu's [Trustworthy Online Controlled Experiments](https://experimentguide.com/) is the reference. The
+offline gate (module 8) still runs first: an online test is for changes that passed it, not a replacement.
+
 Things you did not change also change in production: the provider updates a model snapshot, an app release changes
 what users ask, a new phone appears. Online evals are how you find out. Hamel Husain and Shreya Shankar's FAQ answer on
 [how evaluations differ between CI and production](https://hamel.dev/blog/posts/evals-faq/how-are-evaluations-used-differently-in-cicd-vs-monitoring-production.html)
@@ -72,7 +79,7 @@ Two events are planted, and the lab's job is to find them from the data:
 
 | When (IST) | Event | What it does |
 |---|---|---|
-| Tue 17, 14:00 | the provider's model snapshot changes (`claude-sonnet-5-5-20261001` to `-20261116`, fictional ids) | nothing, by construction |
+| Tue 17, 14:00 | the provider's serving stack changes under the same model id (recorded as `claude-sonnet-5-5-20261001` to `-20261116`, fictional build labels) | nothing, by construction |
 | Thu 19, 10:00 | app 4.2 starts a staged rollout (15%, then 40%, 70%, and 90% of users) that makes AV1 the default codec | 70% of 4.2 requests ask about AV1, many on a new phone, the `vela-v2`, which has no device profile |
 
 !!! info "Synthetic-authored traffic"
@@ -123,7 +130,11 @@ label by one over that probability (the Horvitz-Thompson idea, in its ratio form
 | the random part only (30 picks) | 0.400 |
 
 The weighted queue uses every label and lands close to the truth; the random part alone is unbiased but noisy at
-n=30. Never report a pass rate from a triggered queue without weights.
+n=30 (Wilson 95% interval [0.246, 0.577]). The weighted estimate needs an interval too, and the Wilson formula does
+not apply to it: resample the queue's picks with replacement, recompute the weighted rate each time, and take the
+middle 95% (`evalkit.monitor.weighted_rate_ci`). Here it is **0.364 [0.270, 0.475]**: narrower than the random part
+alone, because the triggered picks carry information, but not the ±0.01 the point estimate suggests. Never report a
+pass rate from a triggered queue without weights, and never without its interval.
 
 ## Step 4: code checks on everything, a judge on a sample
 
@@ -139,8 +150,12 @@ corrected rate:
 
 Three lessons sit in this table.
 
-- **For change detection, the raw rate is enough.** The same judge on both sides of the rollout dropped from 0.864
-  to 0.680. Whatever its errors, they did not change on Thursday morning; the traffic did.
+- **For change detection, the raw rate is a signal, not a measurement.** The same judge on both sides of the
+  rollout dropped from 0.864 to 0.680. That is enough to say *something* changed, and the code checks and the
+  segments below agree. It is not enough to say how much the agent got worse, because the judge's own error rates
+  can change with the traffic (third bullet): on the new AV1 traces its TPR falls from 0.90 to 0.79, so part of the
+  drop is the judge failing correct answers it has not seen the like of. Re-validate the judge on the new traffic
+  before quoting the size of the drop.
 - **For the level, the correction needs more labels than you have.** With 25 validation traces, only 5 of them
   failing, the TNR is uncertain and the corrected interval covers almost everything. The point estimate after the
   rollout (0.561) is further from the truth than the raw rate. Label more failing traces before quoting a corrected
@@ -198,11 +213,21 @@ p1 = 2·p0 and h = 4:
 Choosing h is a trade between false alarms and delay; exercise 2 measures both on replayed traffic. The thumbs-down
 rate never alarms: Step 6 explains why.
 
-**System drift: model snapshots.** Every trace records `gen_ai.response.model`. When it changes, compare the 24 hours
-on each side: `evidence_fail` went from 1/125 to 3/115 (p = 0.27). The test cannot see a change that small, and here
+**System drift: model snapshots.** Every trace records `gen_ai.response.model`. The simulation gives it fictional
+dated values so a change is visible in the data; current Claude model ids carry no date suffix, and the id you pin
+is the id you get back, so in practice a change shows up as a new model id you chose to adopt, a provider notice, or
+a step in your own metrics with no release of yours behind it. Whatever the source, compare the 24 hours on each
+side: `evidence_fail` went from 1/125 to 3/115 (p = 0.27). The test cannot see a change that small, and here
 there was none (the simulation makes the snapshot change harmless), but you cannot know that from 240 requests. Treat
 a snapshot change like a release you did not make: re-run the offline gate from module 8 against the new snapshot,
 where the paired comparison has the power that a before/after comparison of different traffic lacks.
+
+**Discovering what you did not name.** A rule-based tagger can only find the topics it has rules for; the
+`vela-v2` shows up because the device extractor reports any name it does not know. For questions no rule anticipates,
+cluster the traffic: embed each question (or have a model write a one-line summary of it first, which also strips
+personal details), cluster the embeddings, and read a few examples from each cluster, newest and fastest-growing
+first. Anthropic's [Clio](https://arxiv.org/abs/2412.13678) describes this at scale, with privacy protections built
+in. A new cluster is a candidate topic for the tagger, the golden set, and error analysis, never a metric by itself.
 
 **Segments find the cause.** Split the metrics after the rollout by app version: version 4.1.3 has 0% evidence
 failures and 8.9% tool errors; 4.2.0 has 16.1% and 40.8%. The drift is not "the model got worse"; it is "4.2 users ask

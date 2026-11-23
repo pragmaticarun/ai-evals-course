@@ -108,6 +108,7 @@ synthetic-authored (`scripts/author_module11_fixtures.py`); the prompts, tools, 
 | Adversarial technique taxonomy for AI systems | MITRE [ATLAS](https://atlas.mitre.org/) |
 | Generative AI risk management, including information security and confabulation | NIST, [AI 600-1: Generative Artificial Intelligence Profile](https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf) (2024) |
 | Argument injection and path traversal | MITRE [CWE-88](https://cwe.mitre.org/data/definitions/88.html); OWASP, [Path Traversal](https://community.owasp.org/attacks/Path_Traversal) |
+| Automated, adaptive jailbreak search | Chao et al., [Jailbreaking Black Box Large Language Models in Twenty Queries](https://arxiv.org/abs/2310.08419) (PAIR, arXiv 2310.08419); Mehrotra et al., [Tree of Attacks](https://arxiv.org/abs/2312.02119) (TAP, arXiv 2312.02119) |
 
 The guarded agent, its tools and guardrails, the success checks, the report, and the red-team gate were written for
 this course. The attack and benign cases, the model's turns, and the detector's verdicts are synthetic-authored
@@ -126,6 +127,8 @@ attacker hosts use the reserved `.example` domain. No real-world payloads are in
 | Head and tail sampling of traces | [OpenTelemetry: Sampling](https://opentelemetry.io/docs/concepts/sampling/) |
 | HTMX (vendored in `labs/annotate`, 0BSD licence) | [htmx documentation](https://htmx.org/docs/) and [source](https://github.com/bigskysoftware/htmx) |
 | Testing the app without a server | [FastAPI: Testing](https://fastapi.tiangolo.com/tutorial/testing/) |
+| Clustering production traffic to discover new uses | Tamkin et al., [Clio: Privacy-Preserving Insights into Real-World AI Use](https://arxiv.org/abs/2412.13678) (arXiv 2412.13678) |
+| Online controlled experiments | Kohavi, Tang, and Xu, [Trustworthy Online Controlled Experiments](https://experimentguide.com/) |
 
 The sampling, drift, and agreement code, the annotation app, and the monitoring pages were written for this course.
 The week of traffic, its feedback, the 40 AV1 traces, their labels, the judge verdicts on them, and both annotators'
@@ -161,6 +164,10 @@ output the gate replays comes from modules 5 and 6.
 | BM25 | [Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25) (Robertson and colleagues) |
 | Images in Claude requests | [Anthropic: vision](https://platform.claude.com/docs/en/build-with-claude/vision) |
 | Test frames and spectrograms | [FFmpeg filters](https://ffmpeg.org/ffmpeg-filters.html) (`testsrc2`, `mandelbrot`, `smptehdbars`, `geq`, `lutrgb`, `showspectrumpic`) and libx264 |
+| Dense retrieval | Karpukhin et al., [Dense Passage Retrieval for Open-Domain Question Answering](https://arxiv.org/abs/2004.04906) (arXiv 2004.04906) |
+| Reranking retrieved passages | Nogueira and Cho, [Passage Re-ranking with BERT](https://arxiv.org/abs/1901.04085) (arXiv 1901.04085) |
+| Contextual chunks | [Anthropic: Introducing Contextual Retrieval](https://www.anthropic.com/research/contextual-retrieval) |
+| Grading agents by the final state of an environment | Barres et al., [τ²-Bench](https://arxiv.org/abs/2506.07982) (arXiv 2506.07982) |
 
 The second-edition knowledge base (`data/kb_v2/`), the relevance labels, the chat scenarios, and the image labels
 were written for this course. All module 7 model outputs (RAG answers, chat and simulated-user turns, planner and
@@ -182,6 +189,7 @@ are computed, not authored.
 | pass^k | Yao et al., [τ-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains](https://arxiv.org/abs/2406.12045) (arXiv 2406.12045) |
 | Temperature and determinism on Claude | [Anthropic: Messages API reference](https://platform.claude.com/docs/en/api/messages); [API version 2026-10-21 migration guide](https://platform.claude.com/docs/en/api/migration-2026-10-21) (sampling parameters removed) |
 | Nondeterminism in LLM serving | Horace He and Thinking Machines Lab, [Defeating Nondeterminism in LLM Inference](https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/) |
+| Repeated looks at a running experiment | Johari et al., [Always Valid Inference: Bringing Sequential Analysis to A/B Testing](https://arxiv.org/abs/1512.04922) (arXiv 1512.04922) |
 
 The module 6 runs (agent prompt v2, and repeats of both prompts), their labels, the reference answers, and the
 helpfulness judge's scores are synthetic-authored for this course (`scripts/author_module06_fixtures.py`,
@@ -198,6 +206,10 @@ the models live.
 | Position, verbosity, and self-enhancement bias in LLM judges | Zheng et al., [Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena](https://arxiv.org/abs/2306.05685) (arXiv 2306.05685) |
 | Self-preference in LLM evaluators | Panickssery et al., [LLM Evaluators Recognize and Favor Their Own Generations](https://arxiv.org/abs/2404.13076) (arXiv 2404.13076) |
 | Criteria drift | Shankar et al., [Who Validates the Validators?](https://arxiv.org/abs/2404.12272) (arXiv 2404.12272) |
+| Prediction-powered inference | Angelopoulos et al., [Prediction-Powered Inference](https://arxiv.org/abs/2301.09633) (arXiv 2301.09633); Angelopoulos, Duchi, and Zrnic, [PPI++: Efficient Prediction-Powered Inference](https://arxiv.org/abs/2311.01453) (arXiv 2311.01453) |
+| Panels of judges from different model families | Verga et al., [Replacing Judges with Juries](https://arxiv.org/abs/2404.18796) (arXiv 2404.18796) |
+| Case-specific rubric grading | Arora et al., [HealthBench](https://arxiv.org/abs/2505.08775) (arXiv 2505.08775) |
+| Judges that inspect the environment | Zhuge et al., [Agent-as-a-Judge](https://arxiv.org/abs/2410.10934) (arXiv 2410.10934) |
 
 The module 5 traces, reference labels, judge specs, and recorded judge outputs (including the judges' mistakes)
 are synthetic-authored for this course (`scripts/author_module05_fixtures.py`, `config/judges/`,

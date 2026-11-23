@@ -65,6 +65,13 @@ Two details matter for evals:
   every tool is deterministic. `ffprobe` reads a cached probe (keyed by the clip's SHA-256) instead of running the
   binary, because different ffprobe versions print slightly different output. Set `MEDIADOCTOR_LIVE_FFPROBE=1`
   to run the real binary in live mode.
+- **Not every stop is an answer.** The loop ends on any `stop_reason` other than `tool_use`, but `max_tokens` (the
+  reply was cut off), `refusal` (the model declined), and `pause_turn` (a server-tool turn paused) all end it
+  without a complete answer. The agent marks those as `ERROR` on the root span (`evalkit.llm.incomplete_stop`), so
+  a truncated reply is never graded as if it were finished. Thinking makes `max_tokens` easy to hit: Sonnet 5.5 and
+  Haiku 5.5 think by default, and thinking counts toward the limit. The course sets thinking and effort explicitly
+  for each model in `config/models.toml` (`[generation.<model>]`), and `evalkit.LLM` adds them to every request, so
+  they are part of the recorded request, its replay key, and its trace.
 
 ## Anatomy of a trace
 

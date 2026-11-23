@@ -123,7 +123,7 @@ inform, until the judge is good enough to gate.
 
 A gate compares against something fixed. Two files pin it down.
 
-The **golden manifest** (`data/golden/manifest.json`) names the golden set (`mediadoctor-golden 1.0.0`) and lists the
+The **golden manifest** (`data/golden/manifest.json`) names the golden set (`mediadoctor-golden 1.0.1`) and lists the
 SHA-256 of every file the gate's numbers depend on: the dataset, the reference labels from modules 5 and 6, the judge
 specs, the recorded fixtures, a digest of each labelled answer, and the hygiene review. It also stores a digest of
 each split's case ids (108 gate, 37 judge, 29 held out). `evalkit.golden.check_manifest` lists every difference, and

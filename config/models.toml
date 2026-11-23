@@ -19,6 +19,43 @@ max_tokens = 512
 model = "claude-haiku-5-5"
 max_tokens = 512
 
+# Generation settings per model, filled into every request by evalkit.LLM (unless a request sets
+# them itself), so they are part of each fixture's key, its stored request, and the config
+# fingerprint the eval gate compares. Checked against Anthropic's model documentation on 2026-11-23:
+#
+# - Sonnet 5.5 and Haiku 5.5 run adaptive thinking when a request leaves `thinking` out, and thinking
+#   tokens count toward max_tokens (and are billed as output). Leaving it implicit is how an agent
+#   with max_tokens = 1024 starts ending turns at stop_reason "max_tokens" with no answer.
+# - The course turns thinking off explicitly: Sonnet 5.5 rejects {type = "disabled"} and takes
+#   {type = "between_tools"} (no extended thinking; short progress notes between tool calls come back
+#   as thinking blocks); Haiku 5.5 takes {type = "disabled"} at effort high or below.
+# - Effort is set explicitly because the defaults differ (Sonnet 5.5: high; Haiku 5.5: medium).
+#   Medium is the starting point for multistep tool use, low for short classification-style calls.
+#
+# To try thinking on, set thinking = {type = "adaptive"}, raise max_tokens in the role above to leave
+# room for it (several thousand tokens), and re-record: it is a new configuration (module 11).
+[generation.claude-sonnet-5-5]
+thinking = {type = "between_tools"}
+effort = "medium"
+
+[generation.claude-haiku-5-5]
+thinking = {type = "disabled"}
+effort = "low"
+
+# Record and live modes: every request goes to this model, whatever its role above says, and to no
+# other. Replay keeps using the roles above, because the committed fixtures were keyed with them.
+# Calls the API with `model` swapped in, `[generation.<model>]` for THAT model applied, and refuses
+# anything not in `allowed_models` before a request leaves the machine. Recordings are keyed with the
+# model really called; replay them with EVALS_REPLAY_LIVE_MODEL=1.
+[live]
+model = "claude-haiku-4-5"
+allowed_models = ["claude-haiku-4-5"]
+
+# Haiku 4.5 thinks only when a request asks for it (with budget_tokens) and has no effort parameter,
+# so there is nothing to add; an empty table records that this was decided, not forgotten.
+# Checked against Anthropic's model documentation on 2026-11-23 (still served; 200K context).
+[generation.claude-haiku-4-5]
+
 # Prices in USD per million tokens, used for the cost attributes on traces (module 2 onward).
 # Checked against https://platform.claude.com/docs/en/about-claude/models/overview on 2026-11-23.
 # Haiku 5.5 is listed as "from" $0.10 / $0.50; we use those base prices.
@@ -31,6 +68,14 @@ max_tokens = 512
 input_per_mtok = 2.00
 output_per_mtok = 10.00
 cache_write_per_mtok = 2.50
+cache_read_per_mtok = 0.10
+
+# Haiku 4.5 (live and record modes only): $1 / $5; cache writes 1.25x, reads 0.1x. Its minimum cacheable
+# prompt is 4,096 tokens, so module 11's ~1,000-token cached prefix will not cache on it.
+[pricing.claude-haiku-4-5]
+input_per_mtok = 1.00
+output_per_mtok = 5.00
+cache_write_per_mtok = 1.25
 cache_read_per_mtok = 0.10
 
 [pricing.claude-haiku-5-5]

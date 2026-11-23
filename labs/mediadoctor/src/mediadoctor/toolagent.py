@@ -24,6 +24,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from evalkit import LLM, Tracer, load_models, load_prices, text_of
+from evalkit.llm import incomplete_stop
 from mediadoctor.tools import SIMULATED_TOOL_MS, TOOLS, ToolError, run_tool
 
 AGENT_TOOLS_NAMESPACE = "mediadoctor-agent"
@@ -135,7 +136,9 @@ def run_agent(
                 tracer.clock.advance(llm.last_latency_ms or 0.0)  # moves only the virtual clock
                 usage = resp.get("usage", {})
                 tin, tout = int(usage.get("input_tokens", 0)), int(usage.get("output_tokens", 0))
-                cost = price.cost_usd(tin, tout) if price else 0.0
+                # Price by the model that answered: in record and live mode that is `[live].model`.
+                p = load_prices().get(str(resp.get("model")), price)
+                cost = p.cost_usd(tin, tout) if p else 0.0
                 sp.set_attributes(
                     {
                         "gen_ai.response.id": resp.get("id"),
@@ -203,6 +206,8 @@ def run_agent(
         )
         if stop == "max_steps":
             root.set_error(f"stopped after {max_steps} steps without a final answer", "MaxSteps")
+        elif why := incomplete_stop(stop):
+            root.set_error(why, "IncompleteStop")
         trace_id = root.trace_id
 
     return AgentResult(answer, trace_id, stop, steps, totals["in"], totals["out"], totals["cost"])

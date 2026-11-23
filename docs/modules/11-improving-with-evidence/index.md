@@ -224,6 +224,22 @@ matter; a better router (a validated judge on the premise and the cause) is a ne
 latency. Routing by query difficulty instead (easy questions to Haiku) needs a difficulty signal you have tested the
 same way.
 
+### Thinking and effort: the lever to try before a cheaper model
+
+Every request in the course sets thinking and effort explicitly, per model, in `config/models.toml`
+(`[generation.<model>]`): thinking off (Sonnet 5.5's `between_tools`, Haiku 5.5's `disabled`) and effort medium for
+Sonnet, low for Haiku. Leaving them out is not neutral: both models then think by default, the thinking counts
+toward `max_tokens` and is billed as output, and a 1024-token agent can end its turn at `stop_reason: "max_tokens"`
+with no answer (the agent loops now mark that as an error on the trace, module 2).
+
+That makes effort and thinking a lever in their own right, and for most teams the first one to measure, before a
+cascade: the same model at lower effort often matches a stronger setting on routine work, keeps one prompt cache,
+and needs no router. Treat it like any other variant: one change (say `v3-cache` with thinking adaptive and effort
+high, with `max_tokens` raised to leave room for it), the same pre-registered rule, success with an interval, p95,
+and cost per success, because thinking makes answers slower and longer. The course does not ship recordings for it,
+since the synthetic fixtures cannot say what thinking would change; it is the first experiment to run with a key
+(module 12's [Make it your own](../12-capstone/extensions.md)).
+
 ### Retries and self-checks
 
 The `retry` configuration adds a Haiku judge that reviews each answer against the tool output; on FAIL, the agent
@@ -241,9 +257,22 @@ retry     vs v3-cache  +0.046 [+0.009, +0.093]  only parent  0, only retry  5  c
 The judge is good (TPR 14/16, one false alarm), but catching a defect is not fixing it: only 5 of the 14 caught
 defects were fixed on the second try. Every task pays for the judge call (about 0.4 s and a little money); the 15
 retried tasks pay for a second agent turn (about 3.5 s each). The gain clears the pre-registered bar, but only just,
-and the exact McNemar test on 5 fixed against 0 broken gives p = 0.06. Two reasonable tests disagree at this size;
-that is exactly why the rule names its test in advance. [Self-Refine](https://arxiv.org/abs/2303.17651) (Madaan et
-al.) studies the general pattern of a model critiquing and revising its own output.
+and the exact McNemar test on 5 fixed against 0 broken gives p = 0.06. Two reasonable tests disagree at this size,
+and module 6 already said which one to believe: with fewer than about 10 discordant tasks the bootstrap interval
+comes out too narrow, and the exact test should decide. So the pre-registration named the wrong test for a step this
+small. That is a mistake in the registration, and it is worth seeing how to handle one:
+
+- **Do not change the rule now.** Switching to McNemar after seeing that it says "no" is the forking-paths problem
+  the registration exists to prevent; the next study would switch back when that suited it.
+- **Record an amendment, dated and marked as written after the results.** `config/experiments/preregistration.toml`
+  has one: from the next study on, superiority needs the bootstrap interval above zero *and*, below 10 changed
+  tasks, an exact McNemar p under 0.05.
+- **Keep the registered decision, and say plainly what it rests on.** `retry` is kept under the original rule; the
+  memo and the eval report both state that it would fail the amended one, and recommend confirming it on more
+  tasks. A reader then knows exactly how strong the last step is.
+
+[Self-Refine](https://arxiv.org/abs/2303.17651) (Madaan et al.) studies the general pattern of a model critiquing
+and revising its own output.
 
 ### Prompt caching
 
@@ -321,6 +350,9 @@ Two traps when reading it:
 The lab applies the pre-registered rule mechanically: each change is kept only if it passed its own test and its
 parent was kept, and the recommendation is the most accurate kept configuration. That gives
 v1 → v2 → v3 → v3-cache → retry: success from 67% to 90% and cost per success from $0.0088 to $0.0043 (−51%).
+Both numbers are measured on the dev queries every step was chosen on. Five sequential keep-or-drop decisions on the
+same 108 queries favour changes that happened to do well on them, so the chain's total gain is optimistic: the
+held-out look below is the estimate to lead with, and the dev chain is the record of how you got there.
 
 ## Step 6: knowing when to stop
 
@@ -407,8 +439,10 @@ held-out (n=29): v1 0.828  retry 0.966 [0.828, 0.994]  paired diff +0.138 [+0.00
 cost/success $0.00650 -> $0.00329; look logged in runs/m11/holdout_log.csv
 ```
 
-Consistent with dev, and wide, as 29 tasks must be. The memo reports it as a check that nothing has gone wrong,
-not as a second estimate of the gain.
+Consistent with dev, and wide, as 29 tasks must be. It is the only estimate of the gain that was not used to choose
+the configuration, so the eval report leads with it (+0.138 [+0.000, +0.310]) and quotes the dev chain's +0.231 as
+the optimistic, selection-biased number it is. Its interval reaching zero is the honest summary: the direction is
+clear, the size is not.
 
 ## Checklist
 

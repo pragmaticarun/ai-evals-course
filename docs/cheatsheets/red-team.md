@@ -57,6 +57,14 @@ the dangerous outcomes impossible in code, not just unlikely in the prompt. Modu
 
 ## Commands
 
+## Beyond the fixed suite
+
+- Adaptive attacks: an attacker model loop (PAIR, TAP) against staging; ASR per attacker budget; every success
+  becomes a `must_block` case.
+- Third-party tool servers (MCP): descriptions are untrusted input; pin, review, diff on update; poisoned
+  descriptions are their own vector.
+- Report over-refusal (benign refused or blocked, by cause) next to ASR; a rise is a regression.
+
 ```bash
 uv run mediadoctor-lab10 surface                # attack surface map
 uv run mediadoctor-lab10 suite                  # dimensions and coverage

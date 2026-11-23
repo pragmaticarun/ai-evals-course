@@ -43,12 +43,20 @@ Every Claude call in the course goes through `evalkit.LLM`, whose mode comes fro
 | `record` | Calls the Anthropic API and saves each response under its request key. | `ANTHROPIC_API_KEY` | re-recording a lab; the manual `live-evals.yml` workflow |
 | `live` | Calls the API and saves nothing. | `ANTHROPIC_API_KEY` | trying a prompt without saving anything |
 
+Record and live mode call **`claude-haiku-4-5` only** (`[live]` in `config/models.toml`): every request is sent to it
+whatever its role, and any other model (Opus, Fable, Sonnet, Haiku 5.5) is refused before the request leaves the
+machine. Replay is unaffected. Recordings are keyed with Haiku 4.5; replay your own with `EVALS_REPLAY_LIVE_MODEL=1`.
+Live runs therefore compare prompts and strategies, not models, and prompt caching will not cache (Haiku 4.5 needs a
+4,096-token prefix).
+
 Put the key in your shell or a git-ignored `.env`, never in a committed file (CI runs gitleaks). Record into a
 directory under `runs/` (git-ignored) rather than over the course fixtures, because the tests pin the synthetic
 numbers. Most labs end with an optional section showing how, and module 12's
 [Make it your own](https://pragmaticarun.github.io/ai-evals-course/modules/12-capstone/extensions/) covers a full
 live re-record. Models are set per role in `config/models.toml` (agent `claude-sonnet-5-5`; judge and synthetic
-data `claude-haiku-5-5`).
+data `claude-haiku-5-5`), and so are each model's thinking and effort settings (`[generation.<model>]`), which
+`evalkit.LLM` adds to every request. Changing them changes every request key: re-record, or for the synthetic
+fixtures run `uv run python scripts/migrate_fixtures_generation.py`.
 
 ## Commands by module
 
@@ -62,6 +70,7 @@ uv run mediadoctor-lab04 generate --out runs/m4_v1.jsonl   # module 4: tuples ->
 uv run mediadoctor-lab04 coverage         # coverage matrix of the frozen dataset
 uv run mediadoctor-lab05 validate --split dev   # module 5: LLM judges vs human labels (TPR/TNR)
 uv run mediadoctor-lab05 estimate         # judge-corrected pass rate with a bootstrap CI
+uv run mediadoctor-lab05 ppi              # the same budget of labels with PPI / PPI++ instead
 uv run mediadoctor-lab06 modes            # module 6: prompt v1 vs v2 per failure mode, paired tests
 uv run mediadoctor-lab06 report --out runs/m6_report.md   # metric report with confidence intervals
 uv run mediadoctor-lab07 retrieval        # module 7: recall@k, MRR, nDCG for 4 chunking/ranking configs
@@ -91,7 +100,7 @@ No API key is needed for any of the above. See `docs/setup.md` for the full setu
 ## Layout
 
 ```text
-config/models.toml        Claude model per role (agent; cheaper judge and synth), and prices including prompt-cache rates
+config/models.toml        Claude model per role (agent; cheaper judge and synth), thinking and effort per model, and prices including prompt-cache rates
 config/synth/             test dimensions and exclusion rules for synthetic data (module 4)
 config/judges/            versioned LLM judge specs: criterion, PASS/FAIL, context, train-split examples (module 5)
 config/release.toml       the prompt MediaDoctor ships; the eval gate compares changes to it (module 8)

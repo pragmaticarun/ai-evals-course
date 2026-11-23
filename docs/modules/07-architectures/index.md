@@ -100,6 +100,13 @@ lands on the diagnostics section instead of a window that starts mid-sentence. B
 everywhere ("decoder", "Android") and stemming matches "decoders" to "decoder". The paired difference on the same
 48 queries, fixed+keyword to section+bm25, is **+0.17 recall@5 [+0.09, +0.25]**.
 
+Read that number with module 6's and module 8's rules, because it breaks two of them. It compares the best of four
+configurations with the worst, chosen after looking (four configurations make six possible pairs), and it is
+measured on the same 48 queries that picked the winner, so it is optimistic. Here the interval is far from zero and
+both design choices have a mechanism you can read in the `misses`, so the conclusion "section + BM25 is better" is
+safe. The *size*, 17 points, is not established. For a decision that rests on the size, split the relevance set
+before comparing (choose on one part, report on the other), or adjust for the comparisons you made (Holm, module 6).
+
 Read the topic columns with module 6 in mind. Codec queries went from 0.51 to 0.62, but that difference is measured
 on 14 queries and its interval is [−0.04, +0.29]. The overall gain is real; the codec gain is not established. The
 `misses` command shows why codec stays hard: "frames out immediately for cloud gaming" shares no words with the
@@ -108,6 +115,26 @@ gap; query rewriting, synonyms, or embedding search might, and the relevance set
 
 Chunk size is a design choice to test, not a default. [Husain and Shankar's FAQ on chunk sizes](https://hamel.dev/blog/posts/evals-faq/how-do-i-choose-the-right-chunk-size-for-my-document-processing-tasks.html)
 makes the point that the right size depends on the task; the relevance set is how you measure it.
+
+**Beyond keyword search.** Production RAG systems rarely stop at BM25, and each step up is one more configuration
+for the same relevance set:
+
+- **dense retrieval**: embed queries and chunks, rank by similarity
+  ([Karpukhin et al., DPR](https://arxiv.org/abs/2004.04906)); it closes vocabulary gaps like "cloud gaming", and
+  can miss exact identifiers such as `c2.android.av1.decoder` that BM25 finds;
+- **hybrid**: run both and merge the rankings (for example reciprocal rank fusion), usually better than either;
+- **reranking**: retrieve 20 to 50 candidates cheaply, then reorder them with a model that reads query and passage
+  together ([Nogueira and Cho](https://arxiv.org/abs/1901.04085)); measure recall@k *before* the reranker, since it
+  cannot rank what was never retrieved, and nDCG after;
+- **contextual chunks**: prepend a model-written sentence of document context to every chunk before indexing it
+  ([Anthropic: contextual retrieval](https://www.anthropic.com/research/contextual-retrieval)), the general form of
+  this lab's "prefix the section title".
+
+Each adds cost per query and latency, so report them next to recall, as module 11 does. And **relevance labels
+themselves can be drafted by a model**: have a judge propose which sections answer each query, then have a person
+accept or correct them. Validate the drafter like any judge (its TPR and TNR on a sample a person labelled from
+scratch) before you let it label the rest; a drafter that misses relevant sections makes every retriever's recall
+look higher than it is.
 
 ### Step 4: evaluate generation
 
@@ -229,7 +256,14 @@ A simulated user is a model too, and it fails. Two planted faults in the lab:
   wrong answer follows from that.
 
 Code checks on the simulator's turns (did it answer what was asked, did it add facts) flag both. Count simulator
-faults as eval-harness bugs, exclude or fix those sessions, and report how many you dropped. An alternative that
+faults as eval-harness bugs, exclude or fix those sessions, and report how many you dropped.
+
+Those checks catch a simulator that breaks its rules; they do not show that it talks like your users. A simulator
+that is too cooperative (answers every question fully, never gets annoyed, never pastes the wrong log) makes every
+agent look better than it will be. Once real conversations exist, compare the two: sample real and simulated
+sessions on the same scenarios, have a reviewer who does not know which is which label them, and check that the
+agent's pass rate and the turn-level failure counts are similar on both. Until then, treat simulated session
+results as an upper bound and say so. An alternative that
 avoids simulation is **N−1 testing**: replay the first N−1 turns of a real conversation and evaluate only the next
 turn; it is less flexible but uses real user language (both approaches are described in the FAQ above).
 
@@ -248,6 +282,18 @@ A run of a tool-using agent is a trajectory: the ordered steps it took. Evaluate
 Scored this way, module 5's traces (the 100 outside the missing-detail slice, where the right move is to ask) show the pattern that makes process metrics useful but
 not sufficient: every run that skipped an expected tool failed (4 of 4), but runs that called every expected tool
 still failed 65% of the time, on the answer. Process metrics locate problems; the outcome decides.
+
+**Agents that change things: grade the final state.** MediaDoctor mostly answers questions, so its outcome is an
+answer. Agents that act (file a ticket, edit a config, book a refund, drive a browser) have a better outcome to
+check: the state of the world afterwards. Run them in a sandbox seeded with a known state, and assert on the state in
+code after the run: the ticket exists with these fields, the config file parses and has this value, nothing else
+changed. This is how current agent benchmarks such as [τ²-bench](https://arxiv.org/abs/2506.07982) grade, with a
+simulated user on one side and a database whose final state is compared with the expected one. State checks are
+cheaper and more exact than any judge, they catch the agent that *says* it did the task without doing it, and they
+make pass^k (module 6) meaningful for actions: did the agent reach the right state every time? Module 10's action
+tools are a small version of this: the red-team success checks read what the tools really did, not what the answer
+claims. For long-horizon or computer-use agents, add checkpoints (intermediate states the run must pass through)
+so a failure can be located the way the transition-failure matrix below locates it.
 
 ### Step 10: a planner, specialists, and handoffs
 

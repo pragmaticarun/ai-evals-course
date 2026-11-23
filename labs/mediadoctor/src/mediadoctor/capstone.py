@@ -662,12 +662,20 @@ def report_markdown(topic: str | None = None, release: bool = False, today: str 
     # 2
     add("## 2. Summary")
     add("")
-    add(f"- **Better answers.** On the {b.n} dev queries, `{cand}` succeeds on {rate(c.successes, c.n)} against "
-        f"{rate(b.successes, b.n)} for `{BASELINE}`: a paired difference of {diff(ov)} ({ov.b_only} queries fixed, "
-        f"{ov.a_only} broken)."
-        + (f" On the {ho.n} held-out queries, read once for this report: {rate(ho.cand, ho.n)} against "
-           f"{rate(ho.base, ho.n)}, difference {diff(ho.paired)}." if ho else
-           " The held-out split has not been read yet (run with `--release` once)."))  # fmt: skip
+    if ho:
+        # Lead with the held-out number: the dev number comes from the queries every step was chosen on,
+        # so it is biased upward (selection, and five sequential keep-or-drop decisions).
+        add(f"- **Better answers.** On the {ho.n} held-out queries, read once and never used to choose: "
+            f"`{cand}` {rate(ho.cand, ho.n)} against {rate(ho.base, ho.n)} for `{BASELINE}`, a difference of "
+            f"{diff(ho.paired)}: the unbiased estimate, and too few queries to pin the size down. On the {b.n} "
+            f"dev queries every step was chosen on, {rate(c.successes, c.n)} against {rate(b.successes, b.n)}, "
+            f"{diff(ov)} ({ov.b_only} fixed, {ov.a_only} broken); optimistic, because the configuration was "
+            "selected on them.")  # fmt: skip
+    else:
+        add(f"- **Better answers.** On the {b.n} dev queries, `{cand}` succeeds on {rate(c.successes, c.n)} "
+            f"against {rate(b.successes, b.n)} for `{BASELINE}`: a paired difference of {diff(ov)} "
+            f"({ov.b_only} queries fixed, {ov.a_only} broken). This is the set every step was chosen on, so it "
+            "is optimistic; the held-out split has not been read yet (run with `--release` once).")  # fmt: skip
     add(f"- **Cheaper per successful task.** {money(c.cost_per_success)} {ci_money(c.cps_low, c.cps_high)} "
         f"against {money(b.cost_per_success)} {ci_money(b.cps_low, b.cps_high)}, a change of "
         f"{cps_change:+.0%}; p95 latency {c.p95_ms / 1000:.1f} s [{c.p95_low / 1000:.1f}, {c.p95_high / 1000:.1f}] "
@@ -957,6 +965,11 @@ def report_markdown(topic: str | None = None, release: bool = False, today: str 
         + ". A step can be detected below that size only when almost every query that changed moved the same "
         f"way: the last step, {diff(s11['chain'][-1][2])}, rests on {s11['chain'][-1][2].b_only} fixed and "
         f"{s11['chain'][-1][2].a_only} broken queries.",
+        f"**The last step's test.** `{s11['chain'][-1][1]}` was kept by the pre-registered rule (a paired "
+        f"bootstrap interval above zero), but it rests on {s11['chain'][-1][2].a_only + s11['chain'][-1][2].b_only} "
+        f"changed queries, and the exact McNemar p is {s11['chain'][-1][2].p_value:.2f}. Module 6 trusts the exact "
+        "test below about 10 changed queries; amendment 1 of the pre-registration requires it from the next study "
+        "on. Read the last step as likely, not proven, and confirm it on more queries.",
         f"**Judge error.** The self-check judge fails {sc.fp} good first answers and passes {sc.fn} bad ones on dev; "
         "the other judges' TNRs (section 6) are lower than their TPRs, so raw judge pass rates overstate quality.",
         "**Metric definitions differ across modules.** Module 6 grades all human-labelled failure modes "

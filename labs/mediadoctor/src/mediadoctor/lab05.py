@@ -17,6 +17,7 @@ are synthetic-authored (see scripts/author_module05_fixtures.py).
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 from collections import Counter
@@ -39,6 +40,7 @@ from evalkit.judge import (
     load_judge,
     run_judge,
 )
+from evalkit.stats import ppi_mean, wilson_interval
 from evalkit.trace import VIRTUAL_EPOCH_NS, SeededIds, VirtualClock
 from evalkit.viewer import root_of
 from mediadoctor import lab03, lab04
@@ -268,6 +270,36 @@ def estimate(name: str = "tool-grounding", llm: LLM | None = None):
     return est, truth, test.result
 
 
+def ppi_comparison(name: str = "tool-grounding", n_labelled: int = 25, llm: LLM | None = None):
+    """Three estimates of the module 3 pass rate from the same budget of human labels.
+
+    A person labels `n_labelled` of the judged traces, picked by a stable hash (a random sample of
+    the traffic itself); the judge's verdicts cover all of them. Compared: the human labels alone
+    (Wilson), Rogan-Gladen with the test split's TPR and TNR (as `estimate` does), and PPI / PPI++,
+    which use the labelled sample to correct the judge's mean on the rest.
+    """
+    spec = load_spec(name)
+    pool = m3_items()
+    verdicts = run_spec(spec, list(pool), pool=pool, llm=llm)
+    m3_ref = {a.case_id: a for a in load_annotations(lab03.reference_labels_path())}
+    human = {c: spec.mode not in m3_ref[c].modes for c in verdicts}
+    order = sorted(verdicts, key=lambda c: hashlib.sha256(f"ppi:{c}".encode()).hexdigest())
+    lab_ids, unl_ids = order[:n_labelled], order[n_labelled:]
+    labelled = [(human[c], bool(verdicts[c].passed)) for c in lab_ids]
+    unlabelled = [bool(verdicts[c].passed) for c in unl_ids]
+    k = sum(h for h, _ in labelled)
+    rg, _truth, _test = estimate(name, llm=llm)
+    return {
+        "n": len(verdicts),
+        "truth": sum(human.values()) / len(human),
+        "judge raw": sum(bool(v.passed) for v in verdicts.values()) / len(verdicts),
+        "human labels only": (k / n_labelled, *wilson_interval(k, n_labelled)),
+        "Rogan-Gladen (test-split TPR/TNR)": (rg.corrected, rg.low, rg.high),
+        "PPI": ppi_mean(labelled, unlabelled, tune=False),
+        "PPI++": ppi_mean(labelled, unlabelled, tune=True),
+    }
+
+
 # --- A 1-5 judge, for comparison ---------------------------------------------------------------------
 
 LIKERT_SYSTEM = """\
@@ -329,6 +361,10 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser(
         "estimate", help="corrected pass rate on the module 3 traces, with a bootstrap CI"
     )
+    pp = sub.add_parser(
+        "ppi", help="human labels alone vs Rogan-Gladen vs PPI / PPI++ on the module 3 traffic"
+    )
+    pp.add_argument("--labels", type=int, default=25, help="how many traces a person labels")
     lk = sub.add_parser(
         "likert", help="a 1-5 actionability judge against the binary next-step judge"
     )
@@ -364,6 +400,18 @@ def main(argv: list[str] | None = None) -> int:
         print(f"judge {load_spec('tool-grounding').key} on test: {test}")
         print(est)
         print(f"true pass rate from the module 3 reference labels: {truth:.3f}")
+        return 0
+    if args.cmd == "ppi":
+        res = ppi_comparison(n_labelled=args.labels)
+        print(f"tool-grounding on the {res['n']} module 3 traces with tool output; true pass rate {res['truth']:.3f}, "
+              f"judge's raw pass rate {res['judge raw']:.3f}")  # fmt: skip
+        for key in ("human labels only", "Rogan-Gladen (test-split TPR/TNR)"):
+            pt, lo, hi = res[key]
+            print(f"  {key:<36} {pt:.3f} [{lo:.3f}, {hi:.3f}]  width {hi - lo:.3f}")
+        for key in ("PPI", "PPI++"):
+            e = res[key]
+            print(f"  {key:<36} {e.estimate:.3f} [{e.low:.3f}, {e.high:.3f}]  width {e.high - e.low:.3f}"
+                  f"  (lambda {e.lam:.2f})")  # fmt: skip
         return 0
     if args.cmd == "likert":
         scores = likert_scores(args.split)

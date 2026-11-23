@@ -20,6 +20,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from evalkit import LLM, load_models, text_of
+from evalkit.llm import incomplete_stop
 from mediadoctor.tools import TOOLS, ToolError, run_tool
 
 NAMESPACE = "mediadoctor-m7-agents"
@@ -125,7 +126,9 @@ def run_specialist(name: str, brief: str, earlier: list[str], llm: LLM, run: Run
         messages.append({"role": "assistant", "content": resp["content"]})
         if resp.get("stop_reason") != "tool_use":
             findings = text_of(resp).strip()
-            run.steps.append(Step("findings", name, text=findings))
+            # A truncated or declined reply is not findings the planner can rely on.
+            ok = incomplete_stop(resp.get("stop_reason")) is None
+            run.steps.append(Step("findings", name, ok=ok, text=findings))
             return findings
         results = []
         for block in resp["content"]:

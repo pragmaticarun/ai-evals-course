@@ -86,6 +86,12 @@ sharing it.
    flagged.
 4. Human review, then into `data/golden/` with a manifest version bump; re-validate affected judges.
 
+## Also
+
+- Discover unnamed topics: summarise and embed questions, cluster, read the newest and fastest-growing clusters.
+- Online A/B tests for changes that passed the offline gate: randomise by user, pre-register, no early stopping.
+- Weighted queue rates get an interval too (`monitor.weighted_rate_ci`).
+
 ## Lab commands
 
 ```bash

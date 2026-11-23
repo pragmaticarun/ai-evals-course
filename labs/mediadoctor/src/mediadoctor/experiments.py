@@ -26,6 +26,7 @@ from functools import cache
 from typing import Any
 
 from evalkit import LLM, Tracer, load_prices, repo_root, text_of
+from evalkit.llm import incomplete_stop
 from mediadoctor import lab04, lab05
 from mediadoctor.toolagent import AGENT_NAME, SYSTEM_AGENT_V1, SYSTEM_AGENT_V2
 from mediadoctor.tools import SIMULATED_TOOL_MS, TOOLS, ToolError, run_tool
@@ -263,7 +264,8 @@ def _chat(tracer: Tracer, llm: LLM, request: dict[str, Any], step: int, usage: U
     ) as sp:  # fmt: skip
         resp = llm.create(**request)
         tracer.clock.advance(llm.last_latency_ms or 0.0)
-        u = call_usage(model, resp.get("usage", {}))
+        answered = str(resp.get("model"))  # in record and live mode, `[live].model`
+        u = call_usage(answered if answered in load_prices() else model, resp.get("usage", {}))
         sp.set_attributes(
             {
                 "gen_ai.response.id": resp.get("id"),
@@ -381,6 +383,8 @@ def run_attempt(
                 "evalkit.cost.usd": round(usage.cost_usd, 8),
             }
         )
+        if why := incomplete_stop(stop):
+            root.set_error(why, "IncompleteStop")
     spans = tracer.span_dicts()
     r = next(s for s in spans if s["parent_span_id"] is None)
     latency = (r["end_time_unix_nano"] - r["start_time_unix_nano"]) / 1e6
