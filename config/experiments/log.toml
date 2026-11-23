@@ -1,0 +1,55 @@
+# Module 11: the experiment log, as written BEFORE each run (hypothesis, metric, expected effect,
+# decision rule). `uv run mediadoctor-lab11 log` merges in what was measured and the decision.
+# One entry per experiment; each compares a variant to its parent in config/experiments/variants.toml.
+#
+#   kind = "superiority"       ship if the paired CI for success (variant - parent) is above 0
+#          "non-inferiority"   ship if the CI's lower bound is above -margin AND cost per success fell
+#          "no-change"         answers must be identical; ship if cost per success fell and p95 held
+
+[[experiment]]
+id = "E1"
+date = "2026-11-23"
+variant = "v2"
+kind = "superiority"
+hypothesis = "Module 6's claim check makes the agent stop adopting false premises (the top failure on false-premise rows), raising success."
+expected = "+5 to +10 points; cost per task up slightly (longer prompt)"
+
+[[experiment]]
+id = "E2"
+date = "2026-11-23"
+variant = "v3"
+kind = "superiority"
+hypothesis = "Asking the agent to quote the tool value it relies on, cite only tools that ran, plus two few-shot examples, cuts ignored-tool-output and fabricated-evidence (the two highest expected-value modes)."
+expected = "+5 to +10 points; cost per task up 20-40% (the examples add about 400 input tokens to every call)"
+
+[[experiment]]
+id = "E3"
+date = "2026-11-23"
+variant = "v3-cache"
+kind = "no-change"
+hypothesis = "Caching the tools and system prompt (about 1,000 tokens, the same for every call) cuts input cost without changing a single answer."
+expected = "cost per task down 40-60%; answers identical; p50 latency down a little"
+
+[[experiment]]
+id = "E4"
+date = "2026-11-23"
+variant = "haiku"
+kind = "non-inferiority"
+hypothesis = "Haiku 5.5 with the v3 prompt is within 5 points of Sonnet 5.5 at a tenth of the cost."
+expected = "cost per success down about 90%; success down 5-15 points (unknown, which is why we test)"
+
+[[experiment]]
+id = "E5"
+date = "2026-11-23"
+variant = "cascade"
+kind = "non-inferiority"
+hypothesis = "Haiku first, escalating to Sonnet when Haiku's answer fails a code check, keeps most of Sonnet's success at a fraction of its cost."
+expected = "within 5 points of v3-cache; cost per success down 70%"
+
+[[experiment]]
+id = "E6"
+date = "2026-11-23"
+variant = "retry"
+kind = "superiority"
+hypothesis = "A Haiku self-check that triggers one retry with its critique catches defects the agent can fix."
+expected = "+2 to +5 points; cost per task up 10-20%; p95 latency up (a retry doubles a task's time)"

@@ -1,0 +1,73 @@
+# Module 11: the configurations compared in the lab. Each one changes ONE thing from its parent, so
+# its effect can be attributed. Read by mediadoctor.experiments and `uv run mediadoctor-lab11`.
+#
+#   prompt     a key of mediadoctor.experiments.PROMPTS (v1 and v2 from modules 2 and 6, v3 new here)
+#   model      a model ID with a [pricing.<model>] entry in config/models.toml
+#   cache      prompt caching of the tools and system prompt (a cache_control breakpoint)
+#   strategy   single | cascade (cheap model first, escalate when its code checks fail)
+#              | retry (a cheap self-check judge; one retry with its critique on FAIL)
+
+[variants.v1]
+label = "v1 (release)"
+parent = ""
+change = "baseline: the prompt MediaDoctor ships (config/release.toml)"
+prompt = "v1"
+model = "claude-sonnet-5-5"
+cache = false
+strategy = "single"
+
+[variants.v2]
+label = "v2 prompt"
+parent = "v1"
+change = "prompt: check the user's claims before relying on them (module 6)"
+prompt = "v2"
+model = "claude-sonnet-5-5"
+cache = false
+strategy = "single"
+
+[variants.v3]
+label = "v3 prompt"
+parent = "v2"
+change = "prompt: quote the tool value you rely on, never cite what did not run; two few-shot examples"
+prompt = "v3"
+model = "claude-sonnet-5-5"
+cache = false
+strategy = "single"
+
+[variants.v3-cache]
+label = "v3 + caching"
+parent = "v3"
+change = "prompt caching of tools + system prompt"
+prompt = "v3"
+model = "claude-sonnet-5-5"
+cache = true
+strategy = "single"
+
+[variants.haiku]
+label = "Haiku only"
+parent = "v3-cache"
+change = "model: Haiku 5.5 instead of Sonnet 5.5"
+prompt = "v3"
+model = "claude-haiku-5-5"
+cache = true
+strategy = "single"
+
+[variants.cascade]
+label = "Haiku → Sonnet cascade"
+parent = "v3-cache"
+change = "routing: Haiku first; Sonnet when Haiku's answer fails a code check"
+prompt = "v3"
+model = "claude-haiku-5-5"
+escalate_to = "claude-sonnet-5-5"
+cache = true
+strategy = "cascade"
+
+[variants.retry]
+label = "retry on judge FAIL"
+parent = "v3-cache"
+change = "self-check: a Haiku judge reviews each answer; one retry with its critique on FAIL"
+prompt = "v3"
+model = "claude-sonnet-5-5"
+judge = "claude-haiku-5-5"
+cache = true
+strategy = "retry"

@@ -52,6 +52,20 @@ def _percentile(sorted_values: Sequence[float], q: float) -> float:
     return sorted_values[int(q * (len(sorted_values) - 1))]
 
 
+def percentile(values: Sequence[float], q: float) -> float:
+    """The q-quantile (0 <= q <= 1) by linear interpolation between order statistics (the same
+    rule as numpy's default), e.g. percentile(latencies, 0.95) for p95."""
+    if not values:
+        raise ValueError("percentile of an empty sequence")
+    if not 0 <= q <= 1:
+        raise ValueError("q must be in [0, 1]")
+    xs = sorted(values)
+    pos = q * (len(xs) - 1)
+    lo = int(pos)
+    hi = min(lo + 1, len(xs) - 1)
+    return xs[lo] + (xs[hi] - xs[lo]) * (pos - lo)
+
+
 def bootstrap_ci[T](
     data: Sequence[T],
     statistic: Callable[[Sequence[T]], float],

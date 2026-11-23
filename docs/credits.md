@@ -43,6 +43,37 @@ anyone serious about evals should read them directly and consider their course.
 | Validating evaluators against human labels; criteria drift | Modules 5, 6, 9 | Shreya Shankar et al., [Who Validates the Validators? Aligning LLM-Assisted Evaluation of LLM Outputs with Human Preferences](https://arxiv.org/abs/2404.12272) (arXiv 2404.12272) |
 | Guardrails sit inline and block clear failures before users see them (so their false positives are production bugs: version the rules, log triggers, monitor rates); evaluators measure afterwards; never use off-the-shelf LLM guardrails without reading their prompts | Module 10 | [AI Evals FAQ: What's the difference between guardrails & evaluators?](https://hamel.dev/blog/posts/evals-faq/whats-the-difference-between-guardrails-evaluators.html), Hamel Husain and Shreya Shankar |
 | Red-teaming as part of the eval loop | Module 10 | Hamel Husain and Shreya Shankar's [Maven course](https://maven.com/parlance-labs/evals) |
+| Error analysis before switching models; ask whether the model is really the problem | Module 11 | [AI Evals FAQ: How much time should I spend on model selection?](https://hamel.dev/blog/posts/evals-faq/how-much-time-should-i-spend-on-model-selection.html), Hamel Husain and Shreya Shankar |
+| Write prompts by hand first; automated optimizers hill-climb a metric and cannot discover new failure modes; useful for the last stretch once evals are trusted | Module 11 | [AI Evals FAQ: Should I stop writing prompts manually in favor of automated tools?](https://hamel.dev/blog/posts/evals-faq/should-i-stop-writing-prompts-manually-in-favor-of-automated-tools.html), Hamel Husain and Shreya Shankar |
+| Using an evaluator in the request path: weigh its latency and cost, and its false positives against its false negatives | Module 11 | [AI Evals FAQ: Can my evaluators also be used to automatically fix or correct outputs in production?](https://hamel.dev/blog/posts/evals-faq/can-my-evaluators-also-be-used-to-automatically-fix-or-correct-outputs-in-production.html), Hamel Husain and Shreya Shankar |
+| Weigh the cost of building something against the value of the failure it addresses | Module 11 | [AI Evals FAQ: Should I build automated evaluators for every failure mode I find?](https://hamel.dev/blog/posts/evals-faq/should-i-build-automated-evaluators-for-every-failure-mode-i-find.html), Hamel Husain and Shreya Shankar |
+| Improving cost and accuracy with evidence as the last stage of the eval loop | Module 11 | Hamel Husain and Shreya Shankar's [Maven course](https://maven.com/parlance-labs/evals) |
+
+## Module 11 references
+
+| Topic | Source |
+|---|---|
+| Prompt caching: prefix order, `cache_control`, lifetime, minimum length, usage fields | Anthropic, [Prompt caching](https://platform.claude.com/docs/en/build-with-claude/prompt-caching) |
+| Prices, cache multipliers, and how they stack with the Batch API discount (values in `config/models.toml`, checked 2026-11-23) | Anthropic, [Pricing](https://platform.claude.com/docs/en/about-claude/pricing) |
+| Batch API: 50% discount, asynchronous results | Anthropic, [Batch processing](https://platform.claude.com/docs/en/build-with-claude/batch-processing) |
+| Model families and their trade-offs | Anthropic, [Models overview](https://platform.claude.com/docs/en/about-claude/models/overview) |
+| Few-shot (multishot) examples in prompts | Anthropic, [Prompting best practices: use examples effectively](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#use-examples-effectively) |
+| Levers for latency (model size, prompt and output length, streaming) | Anthropic, [Reducing latency](https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-latency) |
+| Automated prompt optimization as programs with optimizable instructions and examples | Khattab et al., [DSPy: Compiling Declarative Language Model Calls into Self-Improving Pipelines](https://arxiv.org/abs/2310.03714) (arXiv 2310.03714); [dspy.ai](https://dspy.ai/) |
+| Model cascades: cheaper models first, escalation behind a scorer | Chen, Zaharia, and Zou, [FrugalGPT](https://arxiv.org/abs/2305.05176) (arXiv 2305.05176) |
+| A model critiquing and revising its own output | Madaan et al., [Self-Refine: Iterative Refinement with Self-Feedback](https://arxiv.org/abs/2303.17651) (arXiv 2303.17651) |
+| Why tail latency dominates systems built from many steps | Dean and Barroso, [The Tail at Scale](https://research.google/pubs/the-tail-at-scale/), Communications of the ACM, 2013 |
+| Targets on latency percentiles rather than averages | Google, [Site Reliability Engineering, chapter 4: Service Level Objectives](https://sre.google/sre-book/service-level-objectives/) |
+| Choosing an analysis after seeing the data; pre-registration | Gelman and Loken, [The garden of forking paths](https://sites.stat.columbia.edu/gelman/research/unpublished/p_hacking.pdf) (2013); Center for Open Science, [Preregistration](https://www.cos.io/initiatives/prereg) |
+| Controlled experiments: one change, pre-set metrics, guardrail metrics | Kohavi, Tang, and Xu, [Trustworthy Online Controlled Experiments](https://experimentguide.com/) (Cambridge University Press, 2020) |
+| Non-inferiority comparisons with a margin | [Wikipedia: Non-inferiority trial](https://en.wikipedia.org/wiki/Non-inferiority_trial) |
+| Pareto efficiency | [Wikipedia: Pareto front](https://en.wikipedia.org/wiki/Pareto_front) |
+| Common random numbers in simulation | [Wikipedia: Variance reduction](https://en.wikipedia.org/wiki/Variance_reduction) |
+| Paired comparisons and power for evals | Evan Miller, [Adding Error Bars to Evals](https://arxiv.org/abs/2411.00640) (arXiv 2411.00640) |
+
+The experiment runner, the metrics, the frontier plot, the experiment log and decision memo generators, and the
+templates were written for this course. The model's behaviour, token counts, and latencies in the lab are
+synthetic-authored (`scripts/author_module11_fixtures.py`); the prompts, tools, requests, checks, and prices are real.
 
 ## Module 10 references
 

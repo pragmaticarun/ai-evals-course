@@ -36,6 +36,9 @@ uv run mediadoctor-lab10 surface          # module 10: the attack surface map
 uv run mediadoctor-lab10 report           # attack success rate and benign false positives for guardrails none/v1/v2
 uv run mediadoctor-lab10 hitl --approver ask   # be the human approving (or not) a risky tool call
 uv run mediadoctor-lab10 gate             # the red-team CI gate (also in `pytest evals`)
+uv run mediadoctor-lab11 report           # module 11: success CI, p50/p95, cost per successful task for 7 configurations
+uv run mediadoctor-lab11 pareto --svg runs/m11/pareto.svg   # the accuracy vs cost frontier
+uv run mediadoctor-lab11 memo             # draft the one-page decision memo from the pre-registered rule
 uv run zensical serve                     # the course site at http://localhost:8000
 ```
 
@@ -45,15 +48,16 @@ environment (or a git-ignored `.env`) and use `EVALS_LLM_MODE=record`. See `docs
 ## Layout
 
 ```text
-config/models.toml        Claude model per role (agent; cheaper judge and synth)
+config/models.toml        Claude model per role (agent; cheaper judge and synth), and prices including prompt-cache rates
 config/synth/             test dimensions and exclusion rules for synthetic data (module 4)
 config/judges/            versioned LLM judge specs: criterion, PASS/FAIL, context, train-split examples (module 5)
 config/release.toml       the prompt MediaDoctor ships; the eval gate compares changes to it (module 8)
 config/eval_gate.toml     the eval gate's tiers, rule, and budgets (module 8)
 config/redteam/           the attack suite's dimensions and the red-team gate (module 10)
+config/experiments/       module 11's configurations, pre-registration, and experiment log
 docs/                     course site (Zensical, Material-compatible mkdocs.yml)
 labs/evalkit/             record/replay LLM wrapper, fixtures, tracer, trace viewer, OTLP export, annotation and taxonomy tools, synthetic data (tuples, batching, dedup, coverage, splits), judges (prompts, TPR/TNR), statistics (Wilson and bootstrap CIs, judge-error correction, McNemar, Holm, pass^k, sample sizes), retrieval metrics, trajectory metrics and transition-failure matrices, regression gates, golden manifests, dataset hygiene, production sampling and drift (PSI, p-charts, CUSUM), Cohen's kappa
-labs/mediadoctor/         the running agent (module 1 seed; module 2 Claude tool-use agent with 4 tools; module 7 RAG, chat with a simulated user, planner + specialists, vision; module 10 action tools and guardrails, simulated)
+labs/mediadoctor/         the running agent (module 1 seed; module 2 Claude tool-use agent with 4 tools; module 7 RAG, chat with a simulated user, planner + specialists, vision; module 10 action tools and guardrails, simulated; module 11 experiment configurations, cascade and retry strategies)
 labs/annotate/            the trace review app (FastAPI + HTMX, keyboard-driven, localhost only; module 9)
 data/kb/                  knowledge-base notes the agent retrieves from
 data/kb_v2/               second-edition knowledge base (25 docs, 57 sections) for the module 7 retrieval evals

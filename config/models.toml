@@ -23,10 +23,18 @@ max_tokens = 512
 # Checked against https://docs.anthropic.com/en/docs/about-claude/models/overview on 2026-11-23.
 # Haiku 5.5 is listed as "from" $0.10 / $0.50; we use those base prices.
 # Batch API requests are 50% off and prompt-cache reads are cheaper; module 11 models those.
+# Cache prices (5-minute cache writes and cache hits) checked against
+# https://platform.claude.com/docs/en/build-with-claude/prompt-caching on 2026-11-23: writes are 1.25x
+# the base input price; hits are 0.05x for Sonnet 5.5 and 0.1x for Haiku 5.5. Minimum cacheable
+# prompt: 512 tokens for both. Haiku's prices are for prompts up to 100,000 tokens.
 [pricing.claude-sonnet-5-5]
 input_per_mtok = 2.00
 output_per_mtok = 10.00
+cache_write_per_mtok = 2.50
+cache_read_per_mtok = 0.10
 
 [pricing.claude-haiku-5-5]
 input_per_mtok = 0.10
 output_per_mtok = 0.50
+cache_write_per_mtok = 0.125
+cache_read_per_mtok = 0.01

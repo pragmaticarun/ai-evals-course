@@ -1,0 +1,30 @@
+# Module 11: the pre-registration for the MediaDoctor cost/latency/accuracy study. Written BEFORE any
+# variant was run on the dev cases, and not edited after: the lab reads it, the experiment log quotes
+# it, and the decision memo applies its rule. Changing it after seeing results is the forking-paths
+# problem module 11 warns about; if you must, add a dated amendment below and say so in the memo.
+
+[study]
+question = "Which MediaDoctor configuration should replace v1 in config/release.toml?"
+registered = "2026-11-23"
+cases = "module 5's agent slice of data/datasets/module04_v1.jsonl (137 queries)"
+dev_splits = ["train", "dev"]      # where every experiment runs (108 queries)
+holdout_split = "test"             # 29 queries; read once, by `confirm --release`, for the winner only
+level = 0.95
+
+[metric]
+# Primary: task success. A task succeeds when its final answer passes all four checks (format,
+# citations, investigated, correct) AND the whole task finished within the timeout.
+primary = "success"
+headline = "cost per successful task"   # total cost of every call / number of successful tasks
+non_inferiority_margin = 0.05            # a cheaper variant may lose at most 5 points (CI bound)
+
+[guardrails]
+timeout_ms = 15000         # a task still running at 15 s counts as a failure (the user gave up)
+p95_latency_ms = 12000     # the variant's p95 task latency on dev must stay under 12 s
+max_cost_per_success_usd = 0.01
+
+[decision]
+rule = """Each experiment in config/experiments/log.toml adds its one change to the release candidate
+only if it passes its own pre-registered rule (and every guardrail), and only if its parent was
+kept. Recommend the kept configuration with the highest dev success (ties: lower cost per successful
+task). Then confirm it once on the held-out split before changing config/release.toml."""

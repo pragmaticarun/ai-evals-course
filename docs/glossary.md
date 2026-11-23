@@ -2,6 +2,9 @@
 
 Seeded in module 1; each later module adds its terms. The module that introduces a term is in brackets.
 
+**Ablation** [11]
+: Removing or adding one component at a time to see how much each contributes, when several changes were made together.
+
 **Alignment session** [5]
 : A regular review of judge-versus-human disagreements with the domain expert, sorting each into judge wrong, label wrong, or criterion unclear, and logging the decisions.
 
@@ -47,8 +50,14 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Bootstrap (percentile interval)** [5, 6]
 : Resampling the data with replacement many times and recomputing a statistic each time; the middle 95% of the results gives an approximate 95% confidence interval.
 
+**Cache hit rate (prompt caching)** [11]
+: The share of input tokens read from the prompt cache: cache reads divided by all input tokens (uncached, cache writes, and cache reads).
+
 **Canary token** [10]
 : A unique, valueless string planted where a secret would be (here, in the system prompt and a fake secrets file). Its appearance anywhere it should not be, an answer or a tool argument, proves a leak, and the CI gate fails on it.
+
+**Cascade (model cascade)** [11]
+: Running a cheaper model first and sending the task to a more expensive one only when a router (a check or a judge) says the cheap answer is not good enough. Its quality depends on the router's recall on the failures that matter.
 
 **Case / test case** [1]
 : One input to the system (here, a user question) with an id, plus any metadata needed to evaluate it.
@@ -77,6 +86,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Cohen's kappa** [9]
 : Agreement between two annotators corrected for chance: (p_o − p_e) / (1 − p_e). 1 is perfect, 0 is chance level; low for rare categories even when raw agreement is high.
 
+**Common random numbers** [11]
+: Using the same random draws for every configuration in a simulation, so differences between configurations are not swamped by sampling noise; the lab's synthetic fixtures use them per query and failure mode.
+
 **Compounding failure** [3]
 : An early mistake in a multi-step run that causes later symptoms, such as a bad tool argument followed by an answer citing the failed tool. Label the first one.
 
@@ -95,6 +107,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Corrected pass rate (Rogan-Gladen)** [5, 6]
 : A judge-measured pass rate adjusted for the judge's TPR and TNR: (observed + TNR − 1) / (TPR + TNR − 1). Defined only when TPR + TNR > 1.
 
+**Cost per successful task** [11]
+: The total cost of every call for every task (agent, judge, retries, escalations) divided by the number of tasks that succeeded. The headline cost metric, because failures cost money too.
+
 **Cost per trace** [2]
 : The summed price of a run's model calls (tokens times per-token price). Divide by successful runs to get cost per successful task.
 
@@ -112,6 +127,12 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Data leakage (split leakage)** [4]
 : Test examples that are copies or near-copies of training or dev examples, so tuning on one inflates scores on the other. Prevented by grouping similar items before splitting.
+
+**Decision memo** [11]
+: A one-page document for the person who decides: the decision requested, the recommendation with its key numbers and their uncertainty, the options considered, what is not being claimed, and next steps.
+
+**Decision rule** [11]
+: The pre-written condition under which an experiment's change is kept, such as a paired CI above zero (superiority) or above minus a margin with lower cost (non-inferiority).
 
 **Dimension (test dimension)** [4]
 : One way real inputs differ, such as persona, topic, or expertise, with a few concrete values. Chosen from failure hypotheses.
@@ -137,8 +158,14 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Exfiltration** [10]
 : Getting private data out of a system to a place the attacker can read: a query string on a fetched URL, a public ticket, an image link in an answer. Requires access to the data, an injection, and an outbound channel (the lethal trifecta).
 
+**Expected value of fixing** [11]
+: A ranking score for failure modes: rate times severity times the chance a fix works, optionally divided by the effort. Turns opinions about what to fix into estimates others can challenge.
+
 **Experiment comparison report** [8]
 : A Markdown diff of two runs: what was compared, a per-metric table with paired intervals, the flipped cases to read first, and cost and time. Posted as a CI job summary and uploaded as an artifact.
+
+**Experiment log** [11]
+: The running record of experiments: for each, the change, hypothesis, expected effect, metric, and decision rule written before the run, then the measured result and the decision, including failures.
 
 **Explicit and implicit feedback** [9]
 : Explicit: ratings users give on purpose (thumbs up or down). Implicit: behaviour that hints at quality (retries, copies, abandonment). Both are sparse or ambiguous and biased; use them to pick traces, not as the metric.
@@ -163,6 +190,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Few-shot example (judge)** [5]
 : A labelled trace with verdict and critique included in a judge prompt; taken from the train split only.
+
+**Few-shot example (prompt)** [11]
+: A worked input and output placed in the agent's prompt to show the behaviour wanted. Chosen from failures, outside the eval set, and checked for near-duplicates of eval questions.
 
 **Finish reason / stop reason** [2]
 : Why the model stopped generating: for Claude, `end_turn` (final answer), `tool_use` (wants a tool), or `max_tokens` (cut off).
@@ -269,8 +299,14 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Near-duplicate** [4]
 : Two items whose texts are highly similar without being identical; here measured as Jaccard similarity of word 3-grams.
 
+**Non-inferiority test** [11]
+: A comparison that asks whether a new option is not worse than the current one by more than a margin set in advance; used for changes that save cost or time.
+
 **Offline vs online eval** [9]
 : Offline: evaluators run on a fixed, labelled dataset before release (in CI). Online: the same evaluators run on live production traffic, on all of it (code checks) or on a sample (judges).
+
+**One-variable experiment** [11]
+: An experiment whose configuration differs from its parent in exactly one thing (prompt, model, caching, or strategy), so a change in the metrics can be attributed to it.
 
 **Open coding** [3]
 : The first pass of error analysis: writing short free-text notes on what went wrong in each trace, without predefined categories.
@@ -280,6 +316,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **OTLP** [2]
 : The OpenTelemetry protocol for sending traces, metrics, and logs to a backend, over HTTP or gRPC, encoded as protobuf or JSON.
+
+**p50 / p95 latency** [11]
+: The median and 95th percentile of task latency: what a typical user waits, and what one user in twenty waits or longer. The p95 of n tasks rests on about n/20 of them, so it needs an interval.
 
 **Paired bootstrap** [6]
 : A bootstrap that resamples queries while keeping each query's pair of outcomes together, giving an interval for the difference between two variants.
@@ -295,6 +334,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Pareto chart** [3]
 : Bars of failure-mode counts sorted from most to least frequent, with a line for the cumulative share; shows whether a few modes dominate.
+
+**Pareto frontier** [11]
+: The configurations that no other configuration beats on both cost and accuracy. Dominated configurations are never the right choice; picking among frontier points is a business decision.
 
 **Pass-all rate** [6]
 : The share of queries that pass every check; a single headline number that can still be drilled down per failure mode.
@@ -317,6 +359,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Power (statistical)** [6]
 : The chance that a comparison detects a difference of a given size if it is real; 80% is the usual target.
 
+**Pre-registration** [11]
+: Writing down the metric, the decision rule, the data split, and the expected effect before running an experiment, so the analysis cannot be chosen after seeing the results.
+
 **Precision@k** [7]
 : The share of the top k results that are relevant. Divides by k, so returning fewer results is not rewarded.
 
@@ -326,8 +371,14 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Priority (failure mode)** [3]
 : A ranking score for failure modes; in this course, traces affected times severity, with fixability breaking ties.
 
+**Prompt caching** [11]
+: An API feature that stores a prompt's unchanging prefix (tools, system prompt) so later requests that start with the same bytes read it at a fraction of the input price; it expires after a few minutes unused.
+
 **Prompt injection (direct, indirect)** [10]
 : Text that makes a model follow instructions its operator did not give. Direct: in the user's own message. Indirect: in content the agent reads while working (tool output, documents, metadata, file names), so the victim is a user who never saw it.
+
+**Prompt optimizer (automated)** [11]
+: A tool, such as DSPy, that searches over instructions and few-shot examples to maximise a metric on a training set. Only as good as the metric, and prone to overfitting small dev sets.
 
 **PSI (population stability index)** [9]
 : A measure of how far one categorical distribution has moved from a reference: the sum of (current − reference) · ln(current / reference). Below 0.1 is usually stable, above 0.25 a large shift.
@@ -359,6 +410,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Root cause (first upstream failure)** [1, 3]
 : The earliest step in a run where something went wrong; fixing it often fixes later symptoms.
 
+**Router** [11]
+: The component in a cascade or routing setup that decides which model handles a task, or whether to escalate; measured by how often it escalates the answers that are actually bad.
+
 **Run-to-run variance** [6]
 : Variation in outcomes when the same query is run again with nothing changed, from model sampling and the serving stack.
 
@@ -367,6 +421,9 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 
 **Seeded ids** [2]
 : Trace and span ids generated from a fixed seed so replayed traces are identical across runs.
+
+**Self-check (retry on judge failure)** [11]
+: A judge that reviews an answer before the user sees it, triggering a retry with its critique on FAIL. Costs a call on every task and a second turn on flagged ones.
 
 **Self-preference (self-enhancement) bias** [5]
 : A judge's tendency to rate text from its own model or family more highly.
@@ -410,8 +467,14 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 **Synthetic data** [4]
 : Test inputs written by a model or by templates rather than by real users. Useful for coverage before launch and for rare cases; not evidence of how often anything happens.
 
+**Tail latency** [11]
+: The slow end of the latency distribution (p95, p99). Dominated by the few tasks that need extra calls or hit slow responses, and the part users remember.
+
 **Theoretical saturation** [3]
 : The point where reading more traces no longer reveals new failure modes or changes definitions; the signal to stop an error-analysis round.
+
+**Timeout (task)** [11]
+: The longest a task may run before the user is assumed to have given up; a task that exceeds it counts as a failure regardless of its answer.
 
 **TNR (true negative rate)** [5]
 : With PASS as positive: the share of human-failed traces the judge fails. Measures whether the judge catches failures.

@@ -19,6 +19,7 @@ mediadoctor-lab07 = "mediadoctor.lab07:main"
 mediadoctor-lab08 = "mediadoctor.lab08:main"
 mediadoctor-lab09 = "mediadoctor.lab09:main"
 mediadoctor-lab10 = "mediadoctor.lab10:main"
+mediadoctor-lab11 = "mediadoctor.lab11:main"
 
 [tool.uv.sources]
 evalkit = { workspace = true }

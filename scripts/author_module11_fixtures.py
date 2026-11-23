@@ -1,0 +1,303 @@
+"""Write module 11's recorded responses: seven MediaDoctor configurations on module 5's 137 agent
+queries (module 4's dataset rows that exercise a module 3 scenario), and the self-check judge.
+
+No API key was used. As in modules 2 to 10, the real loop (mediadoctor.experiments.run_task) runs
+against a scripted model, so every request holds the real prompts, tool schemas, tool outputs, and
+cache_control blocks; the model's turns, token usage, and latency are written by this script from
+documented rules:
+
+  * Defects. Each (model, prompt) has a rate per failure mode (RATES). Draws are common random
+    numbers, u(case, mode), shared by every configuration, so a better prompt fixes a subset of the
+    worse prompt's failures instead of reshuffling them, as a real paired comparison would see.
+    Harder rows multiply the rates (HARDER). The first mode drawn decides the answer:
+      premise   (false-premise rows only) the answer adopts the user's premise (module 4's ADOPT)
+      ignored   the answer contradicts the tool output (module 3's `ignored` answers)
+      skipped   no tool calls, but the Sources line cites them (fails module 5's code checks)
+      format    no Sources line
+    Prompt caching does not change answers: a cached configuration answers like its uncached twin.
+  * Self-check judge (Haiku): FAILs a defective answer with probability JUDGE_TPR and a good one
+    with probability 1 - JUDGE_TNR. After a FAIL the agent fixes the defect with probability
+    RETRY_FIX (a skipped investigation is fixed by running the tools); a good answer stays good.
+  * Usage: tokens are characters / 4 of the request. With caching, the first request of each
+    (model, prompt) writes the tools + system prefix to the cache, and every later one reads it,
+    as back-to-back traffic inside the 5-minute TTL would.
+  * Latency per call: LATENCY[model] = (base ms, ms per uncached input token, ms per cached input
+    token, ms per output token), times lognormal jitter (sigma 0.25), and 3% of calls take 4x
+    (a slow tail). Tool time comes from mediadoctor.tools.SIMULATED_TOOL_MS as in every module.
+
+Every draw is a hash, so re-running this script rewrites identical files.
+Outputs: fixtures/recorded/mediadoctor-m11-*.jsonl, and the reference labels
+data/labels/module11_reference.csv: for every (configuration, query), the failure mode the scripted
+model put into the final answer ("none" for a correct answer), which the tests compare with the
+lab's graders.
+
+Usage:  uv run python scripts/author_module11_fixtures.py
+"""
+
+from __future__ import annotations
+
+import csv
+import hashlib
+import math
+import sys
+from pathlib import Path
+from statistics import NormalDist
+from types import SimpleNamespace
+from typing import Any
+
+sys.path.insert(0, str(Path(__file__).parent))
+
+from author_module03_fixtures import FakeClock, T, answer  # noqa: E402
+from author_module04_fixtures import ADOPT  # noqa: E402
+from module03_scenarios import S  # noqa: E402
+
+from evalkit import LLM, repo_root  # noqa: E402
+from evalkit.fixtures import canonical_json, compact_request, request_key  # noqa: E402
+from mediadoctor import experiments as X  # noqa: E402
+from mediadoctor import lab04  # noqa: E402
+
+SRC = "synthetic-authored"
+ROOT = repo_root()
+RECORDED_AT = "2026-11-23T06:00:00+05:30"  # fixed, so the files are byte-for-byte reproducible
+
+MODES = ("premise", "ignored", "skipped", "format")
+RATES = {  # (model family, prompt) -> mode -> probability
+    ("sonnet", "v1"): {"premise": .42, "ignored": .10, "skipped": .06, "format": .03},
+    ("sonnet", "v2"): {"premise": .12, "ignored": .10, "skipped": .06, "format": .03},
+    ("sonnet", "v3"): {"premise": .10, "ignored": .035, "skipped": .02, "format": .01},
+    ("haiku", "v3"): {"premise": .30, "ignored": .12, "skipped": .07, "format": .05},
+}  # fmt: skip
+HARDER = {"expertise": {"expert": 1.3}, "evidence": {"file+device": 1.4},
+          "ambiguity": {"missing-detail": 1.2}}  # fmt: skip
+JUDGE_TPR, JUDGE_TNR, RETRY_FIX = 0.80, 0.92, 0.65
+LATENCY = {"sonnet": (600, 0.12, 0.012, 22), "haiku": (250, 0.04, 0.004, 8)}
+TAIL_P, TAIL_X, SIGMA = 0.03, 4.0, 0.25
+RETRY_PREFIX = "A reviewer checked your answer"
+
+
+def u(*parts: str) -> float:
+    h = hashlib.sha256("\n".join(parts).encode()).hexdigest()
+    return int(h[:12], 16) / 16**12
+
+
+def multiplier(row: dict[str, Any]) -> float:
+    m = 1.0
+    for field, table in HARDER.items():
+        m *= table.get(row.get(field, ""), 1.0)
+    return m
+
+
+def defect(row: dict[str, Any], family: tuple[str, str]) -> str | None:
+    rates, m = RATES[family], multiplier(row)
+    for mode in MODES:
+        if mode == "premise" and row["ambiguity"] != "false-premise":
+            continue
+        if u(row["id"], mode) < min(0.95, rates[mode] * m):
+            return mode
+    return None
+
+
+def answer_text(row: dict[str, Any], mode: str | None) -> str:
+    sid = lab04.scenario_for(row)
+    sc = S[sid]
+    cause, nxt, src = sc["cause"], sc["next"], sc["src"]
+    if row["ambiguity"] == "false-premise" and mode != "premise":
+        cause = f"That premise does not hold here. {cause}"
+    if mode == "premise" or (mode == "ignored" and not sc.get("ignored")):
+        field, wrong = ADOPT[sid]
+        cause, nxt = (wrong, nxt) if field == "cause" else (cause, wrong)
+    elif mode == "ignored":
+        cause = sc["ignored"][int(u(row["id"], "which") * len(sc["ignored"]))][0]
+    return answer(cause, nxt, src, sources_line=mode != "format")[0]["text"]
+
+
+CRITIQUE = {
+    "premise": "The answer repeats the user's claim without checking it against the evidence.",
+    "ignored": "The Likely cause contradicts what the tool output shows.",
+    "skipped": "The answer cites tools that never ran; nothing was inspected.",
+    "format": "The answer has no Sources line.",
+    None: "The cause is not clearly tied to the evidence.",  # a false alarm
+}
+
+
+class Agent:
+    """The scripted agent. Decides each turn from the request alone."""
+
+    def __init__(self, rows: list[dict[str, Any]], clock: FakeClock):
+        self.rows = {r["question"]: r for r in rows}
+        self.clock = clock
+        self.warm: set[tuple[str, str]] = set()
+        # answer text -> (case id, mode); a skipped investigation's text equals the correct answer's,
+        # so it is stored as None and told apart by whether any tool ran
+        self.answers: dict[str, tuple[str, str | None]] = {}
+        self.messages = SimpleNamespace(create=self._create)
+
+    def family(self, req: dict[str, Any]) -> tuple[str, str]:
+        system = req["system"] if isinstance(req["system"], str) else req["system"][0]["text"]
+        prompt = next(k for k, v in X.PROMPTS.items() if v == system)
+        return X.short_model(req["model"]), prompt
+
+    def turn(self, req: dict[str, Any]) -> list[dict]:
+        msgs = req["messages"]
+        row = self.rows[msgs[0]["content"]]
+        sc = S[lab04.scenario_for(row)]
+        fam = self.family(req)
+        mode = defect(row, fam)
+        retry_at = next((i for i, m in enumerate(msgs)
+                         if m["role"] == "user" and isinstance(m["content"], str)
+                         and m["content"].startswith(RETRY_PREFIX)), None)  # fmt: skip
+        if retry_at is not None:
+            fixed = mode is None or u(row["id"], fam[0], fam[1], "retry-fix") < RETRY_FIX
+            ran_tools = any(m["role"] == "assistant" and any(b["type"] == "tool_use" for b in m["content"])
+                            for m in msgs)  # fmt: skip
+            new_mode = None if fixed else mode
+            phase_steps = sum(1 for m in msgs[retry_at:] if m["role"] == "assistant")
+            if new_mode is None and not ran_tools:
+                turns = sc["turns"]
+            else:
+                turns = []
+            tag, k, text_mode = "r", phase_steps, new_mode
+        else:
+            turns = [] if mode == "skipped" else sc["turns"]
+            tag, k, text_mode = "a", sum(1 for m in msgs if m["role"] == "assistant"), mode
+        if k < len(turns):
+            blocks = [T(sc["pre"])] if k == 0 and sc.get("pre") and tag == "a" else []
+            for i, (name, args) in enumerate(turns[k]):
+                blocks.append({"type": "tool_use", "id": f"toolu_{row['id']}_{tag}{k}_{i}",
+                               "name": name, "input": dict(args)})  # fmt: skip
+            return blocks
+        text = answer_text(row, text_mode)
+        self.answers[text] = (row["id"], None if text_mode == "skipped" else text_mode)
+        return [T(text)]
+
+    def _create(self, **req: Any) -> dict:
+        content = self.turn(req)
+        stop = "tool_use" if any(b["type"] == "tool_use" for b in content) else "end_turn"
+        fam = (X.short_model(req["model"]), self.family(req)[1])
+        total = len(canonical_json({k: req[k] for k in ("system", "tools", "messages")})) // 4
+        tout = max(1, len(canonical_json(content)) // 4)
+        usage = {"input_tokens": total, "output_tokens": tout}
+        cached = 0
+        if not isinstance(req["system"], str):
+            prefix = len(canonical_json({"system": req["system"], "tools": req["tools"]})) // 4
+            if fam in self.warm:
+                usage.update(input_tokens=total - prefix, cache_read_input_tokens=prefix,
+                             cache_creation_input_tokens=0)  # fmt: skip
+                cached = prefix
+            else:
+                self.warm.add(fam)
+                usage.update(input_tokens=total - prefix, cache_creation_input_tokens=prefix,
+                             cache_read_input_tokens=0)  # fmt: skip
+        self.clock.t += latency_ms(fam[0], total - cached, cached, tout, canonical_json(req)) / 1e3
+        rid = hashlib.sha256(canonical_json(req).encode()).hexdigest()[:12]
+        return {"id": f"msg_synthetic_{rid}", "type": "message", "role": "assistant",
+                "model": req["model"], "content": content, "stop_reason": stop, "usage": usage}  # fmt: skip
+
+
+def latency_ms(family: str, uncached: int, cached: int, out: int, key: str) -> float:
+    base, per_in, per_cached, per_out = LATENCY[family]
+    ms = base + per_in * uncached + per_cached * cached + per_out * out
+    z = NormalDist().inv_cdf(min(max(u(key, "jitter"), 1e-6), 1 - 1e-6))
+    ms *= math.exp(SIGMA * z - SIGMA**2 / 2)
+    if u(key, "tail") < TAIL_P:
+        ms *= TAIL_X
+    return round(ms, 1)
+
+
+class Judge:
+    def __init__(self, agent: Agent, clock: FakeClock):
+        self.agent, self.clock = agent, clock
+        self.messages = SimpleNamespace(create=self._create)
+
+    def _create(self, **req: Any) -> dict:
+        content = req["messages"][0]["content"]
+        ans = content.split("<answer>\n", 1)[1].rsplit("\n</answer>", 1)[0]
+        cid, mode = self.agent.answers[ans]
+        if mode is None and "(no tool output)" in content:  # same text as a correct answer
+            mode = "skipped"
+        draw = u(cid, ans, "judge")
+        fail = draw < JUDGE_TPR if mode else draw < 1 - JUDGE_TNR
+        crit = CRITIQUE[mode] if fail else "none"
+        out = f"CRITIQUE: {crit}\nVERDICT: {'FAIL' if fail else 'PASS'}"
+        tin, tout = len(canonical_json(req)) // 4, len(out) // 4
+        self.clock.t += latency_ms("haiku", tin, 0, tout, canonical_json(req)) / 1e3
+        rid = hashlib.sha256(canonical_json(req).encode()).hexdigest()[:12]
+        return {"id": f"msg_synthetic_{rid}", "type": "message", "role": "assistant",
+                "model": req["model"], "content": [T(out)], "stop_reason": "end_turn",
+                "usage": {"input_tokens": tin, "output_tokens": tout}}  # fmt: skip
+
+
+class MemoryLLM(LLM):
+    """Record mode into memory (FixtureStore rewrites its file on every put)."""
+
+    def __init__(self, namespace: str, client: Any, clock: FakeClock):
+        super().__init__(namespace=namespace, mode="live", client=client, source=SRC, clock=clock)
+        self.records: dict[str, dict[str, Any]] = {}
+
+    def create(self, **request: Any) -> dict[str, Any]:
+        key = request_key(request)
+        if key in self.records:
+            rec = self.records[key]
+            self.last_latency_ms, self.last_replayed = rec["latency_ms"], True
+            return rec["response"]
+        resp = super().create(**request)
+        self.records[key] = {
+            "request_sha256": key, "request": compact_request(request), "response": resp,
+            "recorded_at": RECORDED_AT, "source": SRC,
+            "latency_ms": round(float(self.last_latency_ms or 0.0), 1),
+        }  # fmt: skip
+        return resp
+
+    def write(self) -> Path:
+        path = ROOT / "fixtures" / "recorded" / f"{self.store.namespace}.jsonl"
+        with path.open("w", encoding="utf-8") as fh:
+            for k in sorted(self.records):
+                fh.write(canonical_json(self.records[k]) + "\n")
+        return path
+
+
+def main() -> None:
+    rows = X.cases()
+    clock = FakeClock()
+    agent = Agent(rows, clock)
+    llms: dict[str, MemoryLLM] = {}
+
+    def llm(ns: str) -> MemoryLLM:
+        if ns not in llms:
+            llms[ns] = MemoryLLM(
+                ns, Judge(agent, clock) if ns == X.JUDGE_NAMESPACE else agent, clock
+            )
+        return llms[ns]
+
+    X.llm_for.cache_clear()
+    original = X.llm_for
+    X.llm_for = llm  # route every namespace to the scripted clients
+    labels = []
+    try:
+        for name in X.variants():
+            ok = 0
+            for row in rows:
+                t = X.run_task(row, name)
+                ok += t.graded_success
+                mode = agent.answers[t.answer][1]
+                ran = any(sp["attributes"].get("gen_ai.operation.name") == "execute_tool"
+                          for sp in t.attempts[-1].spans)  # fmt: skip
+                if mode is None and not ran:  # a skipped investigation reads like a correct answer
+                    mode = "skipped"
+                labels.append((name, row["id"], mode or "none"))
+            print(f"{name:10s} graded success {ok}/{len(rows)}")
+    finally:
+        X.llm_for = original
+    path = ROOT / "data" / "labels" / "module11_reference.csv"
+    with path.open("w", encoding="utf-8", newline="") as fh:
+        w = csv.writer(fh, lineterminator="\n")
+        w.writerow(["variant", "case_id", "mode", "annotator"])
+        for v, cid, mode in labels:
+            w.writerow([v, cid, mode, "reference (synthetic-authored)"])
+    print(f"labels: {len(labels)} -> {path}")
+    for ns in sorted(llms):
+        print(f"{ns}: {len(llms[ns].records)} responses -> {llms[ns].write()}")
+
+
+if __name__ == "__main__":
+    main()
