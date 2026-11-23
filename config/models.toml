@@ -2,7 +2,7 @@
 # Changing a model ID changes the request hash, so recorded fixtures must be re-recorded
 # (EVALS_LLM_MODE=record) after you edit this file.
 #
-# IDs checked against https://docs.anthropic.com/en/docs/about-claude/models/overview on 2026-11-23.
+# IDs checked against https://platform.claude.com/docs/en/about-claude/models/overview on 2026-11-23.
 
 [agent]
 # The MediaDoctor agent itself: needs good reasoning and tool use.
@@ -20,7 +20,7 @@ model = "claude-haiku-5-5"
 max_tokens = 512
 
 # Prices in USD per million tokens, used for the cost attributes on traces (module 2 onward).
-# Checked against https://docs.anthropic.com/en/docs/about-claude/models/overview on 2026-11-23.
+# Checked against https://platform.claude.com/docs/en/about-claude/models/overview on 2026-11-23.
 # Haiku 5.5 is listed as "from" $0.10 / $0.50; we use those base prices.
 # Batch API requests are 50% off and prompt-cache reads are cheaper; module 11 models those.
 # Cache prices (5-minute cache writes and cache hits) checked against

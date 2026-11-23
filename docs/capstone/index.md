@@ -275,7 +275,7 @@ Chosen because it is the topic where `retry` does worst on dev (`uv run mediadoc
 ## 10. Appendix
 
 - **Code version:** `git log -1 --format=%H -- docs/capstone/index.md` (the commit that published this page)
-- **Inputs fingerprint:** `9a53ebba1e65d23d` (sha256 of `fixtures/recorded`, `data`, and `config`)
+- **Inputs fingerprint:** `789ecc995132ea27` (sha256 of `fixtures/recorded`, `data`, and `config`)
 - **Golden set:** mediadoctor-golden 1.0.0
 - **Reproduce:**
 

@@ -5,7 +5,7 @@ description = "Small, dependency-light eval toolkit used throughout the course: 
 requires-python = ">=3.14,<3.16"
 license = "MIT"
 dependencies = [
-    "anthropic==2.12.0",
+    "anthropic==2.13.0",
 ]
 
 [project.scripts]

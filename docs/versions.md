@@ -19,7 +19,7 @@ Exact transitive versions are pinned in `uv.lock`. Regenerate this page with `uv
 
 | Package | Version | Role |
 |---|---|---|
-| anthropic | 2.12.0 | Anthropic Python SDK (live and record modes) |
+| anthropic | 2.13.0 | Anthropic Python SDK (live and record modes) |
 | pytest | 9.2.0 | Test runner |
 | ruff | 0.17.6 | Linter |
 | zensical | 0.1.3 | Site generator (primary) |

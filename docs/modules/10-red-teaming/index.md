@@ -201,6 +201,10 @@ want to make. Two cautions specific to red-teaming:
   fixed. A low ASR says "these attacks are handled", never "the system is safe".
 - Report the false-positive rate on benign traffic next to it, every time. A guardrail that blocks everything has an
   ASR of zero.
+- Count model refusals separately. Claude's safety classifiers can decline a request with HTTP 200 and
+  `stop_reason: "refusal"` (with a `stop_details.category`). The agent records that as `mediadoctor.stop_reason` on
+  the trace. A refusal on an attack is a defence you did not build, and a refusal on benign traffic is a false
+  positive your guardrails did not cause, so break both rates down by layer, refusals included.
 
 ## Step 7: guardrails, in layers
 

@@ -24,11 +24,11 @@ wrong?**
     independent queries and gives an interval that is too narrow. Resample the 40 queries and keep each query's runs
     together (a cluster bootstrap), or average per query first.
 
-**4. You can only set temperature to its default on your model. How do you deal with run-to-run variance?**
+**4. The API no longer lets you set temperature at all. How do you deal with run-to-run variance?**
 
 ??? question "Answer"
     Measure it rather than trying to remove it: run each query several times, report the run-to-run spread and
-    pass^k, and treat a query's outcome as a probability. Even temperature 0 was never fully deterministic (serving
+    pass^k, and treat a query's outcome as a probability. Even temperature 0, back when you could set it, was never fully deterministic (serving
     and batching effects), and evals should use the settings you ship. More queries narrow comparisons; repeats
     measure consistency.
 

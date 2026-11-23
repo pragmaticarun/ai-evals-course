@@ -180,7 +180,7 @@ are computed, not authored.
 | Multiple comparisons; Holm-Bonferroni | [Multiple comparisons problem](https://en.wikipedia.org/wiki/Multiple_comparisons_problem), [Holm-Bonferroni method](https://en.wikipedia.org/wiki/Holm%E2%80%93Bonferroni_method) (Holm, 1979) |
 | pass@k unbiased estimator | Chen et al., [Evaluating Large Language Models Trained on Code](https://arxiv.org/abs/2107.03374) (arXiv 2107.03374) |
 | pass^k | Yao et al., [τ-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains](https://arxiv.org/abs/2406.12045) (arXiv 2406.12045) |
-| Temperature and determinism on Claude | [Anthropic: Messages API reference](https://platform.claude.com/docs/en/api/messages) (the `temperature` parameter) |
+| Temperature and determinism on Claude | [Anthropic: Messages API reference](https://platform.claude.com/docs/en/api/messages); [API version 2026-10-21 migration guide](https://platform.claude.com/docs/en/api/migration-2026-10-21) (sampling parameters removed) |
 | Nondeterminism in LLM serving | Horace He and Thinking Machines Lab, [Defeating Nondeterminism in LLM Inference](https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/) |
 
 The module 6 runs (agent prompt v2, and repeats of both prompts), their labels, the reference answers, and the
