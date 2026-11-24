@@ -141,6 +141,13 @@ def validate(ans: dict, req: dict) -> str | None:
             missing = set(tools[b["name"]]["input_schema"].get("required", [])) - set(b["input"])
             if missing:
                 return f"{b['name']} missing required {sorted(missing)}"
+            # A named file or device must come from the conversation (catches answers written
+            # to the wrong key).
+            seen = json.dumps(req["messages"]).lower()
+            for arg in ("file", "device", "log", "path"):
+                v = b["input"].get(arg)
+                if isinstance(v, str) and v and v.lower().split("/")[-1] not in seen:
+                    return f"{b['name']} {arg}={v!r} is not in the conversation"
         else:
             return f"unsupported block type {b.get('type')!r}"
     if "PENDING-ANSWER" in json.dumps(content):

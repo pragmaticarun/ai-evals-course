@@ -30,6 +30,8 @@ Rules:
   repository (other than this instruction file) (no fixtures, labels, scripts, tests, or lab code), and do not look at other answers.
 - Read every task in full and compose each answer for that task. Do not generate answers with a
   script, keyword rules, or a template; a script may only write out JSON you composed yourself.
+- Keep any helper file you create in a new directory named after your batch id, never in a
+  shared location such as /tmp/claude-0/.
 - Write valid JSON (escape newlines and quotes inside strings). Use the Write tool, one file per key.
 
 When done, reply with one line: how many answer files you wrote.
