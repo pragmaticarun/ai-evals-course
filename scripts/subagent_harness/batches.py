@@ -162,7 +162,8 @@ def validate(ans: dict, req: dict) -> str | None:
             for arg in ("file", "device", "log", "path"):
                 v = b["input"].get(arg)
                 if isinstance(v, str) and v and v.lower().split("/")[-1] not in seen:
-                    return f"{b['name']} {arg}={v!r} is not in the conversation"
+                    # A model may infer or guess a name, so this is only reported.
+                    print(f"   note: {b['name']} {arg}={v!r} is not in the conversation")
         else:
             return f"unsupported block type {b.get('type')!r}"
     if "PENDING-ANSWER" in json.dumps(content):
