@@ -63,6 +63,10 @@ def _block(b: dict, images: dict[str, Path]) -> str:
         if isinstance(c, list):
             c = "\n".join(x.get("text", "") for x in c)
         err = " (is_error)" if b.get("is_error") else ""
+        try:  # pretty-print JSON so no line is long (the Read tool cuts lines over 2000 chars)
+            c = json.dumps(json.loads(c), indent=1, ensure_ascii=False)
+        except (TypeError, ValueError):
+            pass
         return f"TOOL RESULT for {b['tool_use_id']}{err}:\n{c}"
     return json.dumps(b)
 
@@ -81,7 +85,18 @@ def render(req: dict, images: dict[str, Path]) -> str:
         body = c if isinstance(c, str) else "\n\n".join(_block(b, images) for b in c)
         parts += [f"### {m['role'].upper()}", body, ""]
     parts.append("## Your job: write the next ASSISTANT turn.")
-    return "\n".join(parts)
+    return wrap_long("\n".join(parts))
+
+
+def wrap_long(text: str, width: int = 1200) -> str:
+    """Hard-wrap lines longer than `width` (marked with a trailing backslash)."""
+    out = []
+    for line in text.split("\n"):
+        while len(line) > width:
+            out.append(line[:width] + "\\")
+            line = line[width:]
+        out.append(line)
+    return "\n".join(out)
 
 
 def prepare(hdir: Path, rnd: str) -> None:
