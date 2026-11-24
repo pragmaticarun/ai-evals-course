@@ -81,7 +81,9 @@ if os.environ.get("SUBAGENT_HARNESS_DIR"):
         if _probe():  # behave as the final replay will: new answers, and real misses
             if ans is None:
                 raise fx.FixtureMissingError(key, self.namespace, self.path)
-            _log("used.jsonl", {"ns": self.namespace, "key": key, "trial": trial})
+            # Logged apart: a probe test's requests go into the fixtures only if some other
+            # consumer reads them too (a perturbed request must stay a miss).
+            _log("probe_used.jsonl", {"ns": self.namespace, "key": key, "trial": trial})
             return {"response": ans["response"], "latency_ms": ans.get("latency_ms")}
         compact = fx.compact_request(fx.apply_generation(request))
         if ans is not None:
