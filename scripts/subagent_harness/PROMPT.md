@@ -28,6 +28,8 @@ Rules:
 - Keep within the request's max_tokens and any length limit the system prompt sets.
 - Read only the task files listed and any image they name. Do not open other files in the
   repository (other than this instruction file) (no fixtures, labels, scripts, tests, or lab code), and do not look at other answers.
+- Read every task in full and compose each answer for that task. Do not generate answers with a
+  script, keyword rules, or a template; a script may only write out JSON you composed yourself.
 - Write valid JSON (escape newlines and quotes inside strings). Use the Write tool, one file per key.
 
 When done, reply with one line: how many answer files you wrote.
