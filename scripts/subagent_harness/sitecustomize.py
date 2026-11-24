@@ -22,7 +22,7 @@ if os.environ.get("SUBAGENT_HARNESS_DIR"):
     MARK = "PENDING-ANSWER"
     PLACEHOLDER_TEXT = (
         f"{MARK}\nLikely cause: {MARK}\nNext step: {MARK}\nSources: [kb:{MARK.lower()}]\n"
-        f"CRITIQUE: {MARK}\nVERDICT: PASS\n"
+        f"CRITIQUE: {MARK}\nVERDICT: PASS\nVERDICT: CLEAN\n"
         '{"verdict": "PASS", "pass": true, "score": 5, "label": "PASS", "critique": "'
         + MARK
         + '", "reasoning": "'

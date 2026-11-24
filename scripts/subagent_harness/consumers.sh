@@ -6,6 +6,7 @@ set -u
 q() { "$@" </dev/null >/dev/null 2>&1 || true; }
 q uv run pytest -q -p no:cacheprovider -x --co   # import check only
 q uv run pytest -q -p no:cacheprovider
+q uv run python scripts/subagent_harness/drivers.py
 q uv run mediadoctor-capstone run
 for v in v1 v2 v3 v3-cache haiku cascade retry; do
   q uv run mediadoctor-lab11 run "$v"
