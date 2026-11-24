@@ -38,6 +38,7 @@ if os.environ.get("SUBAGENT_HARNESS_DIR"):
         "test_unrecorded_trial_fails_loudly",
         "test_v1_test_split_was_never_run",
         "test_changed_image_is_a_fixture_miss",
+        "test_solution_snippet_runs",  # exercise solutions that perturb requests on purpose
     )
 
     def _probe():
@@ -76,10 +77,13 @@ if os.environ.get("SUBAGENT_HARNESS_DIR"):
             rec = _orig_get_record(self, request, trial)
             _log("audit.jsonl", {"ns": self.namespace, "key": key})
             return rec
-        if _probe():
-            return _orig_get_record(self, request, trial)  # the real miss the test expects
-        compact = fx.compact_request(fx.apply_generation(request))
         ans = _load_answers().get(key)
+        if _probe():  # behave as the final replay will: new answers, and real misses
+            if ans is None:
+                raise fx.FixtureMissingError(key, self.namespace, self.path)
+            _log("used.jsonl", {"ns": self.namespace, "key": key, "trial": trial})
+            return {"response": ans["response"], "latency_ms": ans.get("latency_ms")}
+        compact = fx.compact_request(fx.apply_generation(request))
         if ans is not None:
             _log("used.jsonl", {"ns": self.namespace, "key": key, "trial": trial})
             return {"response": ans["response"], "latency_ms": ans.get("latency_ms")}
