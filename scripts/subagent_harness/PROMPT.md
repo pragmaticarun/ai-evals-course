@@ -32,6 +32,8 @@ Rules:
   script, keyword rules, or a template; a script may only write out JSON you composed yourself.
 - Keep any helper file you create in a new directory named after your batch id, never in a
   shared location such as /tmp/claude-0/.
+- Use only file tools (Read, Write, and Bash for local file work). Never call session, agent,
+  messaging, GitHub, cloud, or any other external tool.
 - Write valid JSON (escape newlines and quotes inside strings). Use the Write tool, one file per key.
 
 When done, reply with one line: how many answer files you wrote.
