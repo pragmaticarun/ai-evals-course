@@ -7,16 +7,16 @@
   "notes": "Bump the version when any file changes: major for new cases or splits, minor for relabels or re-recorded runs, patch for fixes that change no outcome.",
   "files": {
     "config/judges/false-premise.v1.toml": {
-      "sha256": "43b41da8b4003620a357829397a87135a02c731ad1efe6c12ed7174cf0e1f7d9",
-      "bytes": 1374
+      "sha256": "6470f47921190dc789d6612e007c0d9b2e1ec86aae439f62ce826e179d923aea",
+      "bytes": 1555
     },
     "config/judges/next-step.v1.toml": {
-      "sha256": "452435bb5eef0faee05d404eff06ab625879cdd9009922998f8926b12f46e8d1",
-      "bytes": 1502
+      "sha256": "2f318e91d76a65af3a2582a04ab77476eb3b8831bbbdb36c879d5ad64448eb32",
+      "bytes": 1778
     },
     "config/judges/tool-grounding.v2.toml": {
-      "sha256": "683240a8fd2f495d95a1cf44d8c969dd369cd09c10ef5d81eeb9df183526d918",
-      "bytes": 2509
+      "sha256": "9f0ea75d957d615466f02973ccdcb5744a8e7f8c0cf7c290f58bba727cf5654a",
+      "bytes": 3005
     },
     "data/datasets/module04_v1.jsonl": {
       "sha256": "85c44efd56db2fba1ab2f2516ee128a004ad3cb371575f9521db8a246f4d2b70",
@@ -39,8 +39,8 @@
       "bytes": 38681
     },
     "fixtures/recorded/mediadoctor-judges.jsonl": {
-      "sha256": "dc9d37982c36d04aade348b4b86b13be248e918954ba0c245b3c83a8bde51948",
-      "bytes": 4457267
+      "sha256": "5cfdb13e83ffa17d350fbd94f6803044a53ed8df04b260a332eadb4e71d2cd5b",
+      "bytes": 5043236
     },
     "fixtures/recorded/mediadoctor-m5.jsonl": {
       "sha256": "6ba6737752f39ce001073adafdfeefcb2ab146ccf8d4ab4a59e39a02f30acb58",
@@ -49,6 +49,10 @@
     "fixtures/recorded/mediadoctor-m6.jsonl": {
       "sha256": "1067171892488201c41622cfc45235324f29abcc0d5674769f2a1bcef5f6fded",
       "bytes": 4049074
+    },
+    "fixtures/recorded/mediadoctor-m8-judges.jsonl": {
+      "sha256": "93842b5969b6934939ee818ca1db44d2e9007b71c8d7b53e898a7bd785b45245",
+      "bytes": 1229591
     }
   },
   "splits": {
