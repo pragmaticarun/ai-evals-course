@@ -16,14 +16,15 @@ absent, or a cause the log rules out."""
 
 [[example]]
 case_id = "m4q007"
-verdict = "FAIL"
-critique = """The answer says the lumen-l3 "supports 16 concurrent hardware decoders", but codec_caps
-reports max_concurrent_hw_video_decoders 4 and the log shows NO_MEMORY: max instances reached. The cause
-contradicts the tool output."""
+verdict = "PASS"
+critique = """The answer says lumen-l3 reports max_concurrent_hw_video_decoders 4 and that ThumbGrid fails at
+position 4 with NO_MEMORY: max instances reached; codec_caps and the log show exactly that, including
+"recycled position=0 but decoder not released". No claim contradicts the tools."""
 
 [[example]]
-case_id = "m4q119"
+case_id = "m4q067"
 verdict = "PASS"
-critique = """The answer says the fifth decoder allocation fails with NO_MEMORY and that the lumen-l3
-allows 4 concurrent hardware decoders; the log and codec_caps show exactly that. No claim contradicts
-the tools."""
+critique = """The answer's diagnosis matches the tools: ffprobe shows 3840x2160 at 60 fps and codec_caps lists only
+the software c2.android.av1.decoder at 1920x1080, 30 fps. Its aside that lumen-l3's hardware AVC/HEVC
+decoders list 1920x1080 at 60 fps comes from no tool call (only video/av01 was queried), but no tool
+result contradicts it. Unsupported is a different failure mode; this criterion passes."""

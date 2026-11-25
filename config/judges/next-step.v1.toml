@@ -14,19 +14,22 @@ The Next step is generic advice that could follow any question ("check the docum
 different device", "look into the rendering code", "contact your provider"), or it is missing."""
 
 [[example]]
-case_id = "m4q123"
-verdict = "FAIL"
-critique = """The Next step is "Try a different device or lower the quality." It names no rendition,
-API, or check; it would fit almost any playback problem."""
+case_id = "m4q139"
+verdict = "PASS"
+critique = """The answer cannot diagnose yet because no clip or device was named, and its Next step asks for
+"the device id and the clip file name" and names MediaCodecInfo.isHardwareAccelerated() and
+getVideoCapabilities() for video/av01. Asking for named details is actionable, not a non-answer."""
 
 [[example]]
-case_id = "m4q072"
+case_id = "m4q151"
 verdict = "PASS"
-critique = """The Next step asks for "the exact file name and the device model", the specific
-information needed to investigate. Asking for named details is actionable."""
+critique = """The Next step is a documentation decision, not code: leave HEVC Main 10 at 2160p out of the
+release notes and describe lumen-l3 as supporting up to 1080p 8-bit Main HEVC. It names exactly what to
+change, so it is actionable."""
 
 [[example]]
-case_id = "m4q119"
+case_id = "m4q087"
 verdict = "PASS"
-critique = """The Next step says to call MediaCodec.release() when a thumbnail is recycled and to cap
-concurrent decoders at 4: specific APIs and a specific limit."""
+critique = """The Next step opens with "Don't try to use 16 slots", but goes on to limit ThumbGrid's decoder pool
+to at most 4 and release the decoder when a thumbnail position is recycled: a specific limit and a
+specific change."""

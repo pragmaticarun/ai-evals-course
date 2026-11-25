@@ -1,7 +1,8 @@
 # Judge for the failure mode "ignored-tool-output" (module 3's top mode). Version 2.
 # Change from v1 (after reading dev disagreements): v1 passed answers that repeated a wrong claim the
 # USER had made, as if agreeing with the user made it true. v2 says so in the FAIL definition and adds
-# two few-shot negatives of exactly that kind.
+# two few-shot examples of exactly that kind: the user asserts a claim the tool output contradicts and
+# the answer sides with the tools (PASS). No train trace repeats such a claim, so there is no negative.
 # Few-shot examples are module 5 traces from the TRAIN split only (`mediadoctor-lab05 leaks` checks).
 name = "tool-grounding"
 version = "v2"
@@ -20,27 +21,29 @@ question: agreeing with the user does not make a claim true if the tool output c
 
 [[example]]
 case_id = "m4q007"
-verdict = "FAIL"
-critique = """The answer says the lumen-l3 "supports 16 concurrent hardware decoders", but codec_caps
-reports max_concurrent_hw_video_decoders 4 and the log shows NO_MEMORY: max instances reached. The cause
-contradicts the tool output."""
-
-[[example]]
-case_id = "m4q119"
 verdict = "PASS"
-critique = """The answer says the fifth decoder allocation fails with NO_MEMORY and that the lumen-l3
-allows 4 concurrent hardware decoders; the log and codec_caps show exactly that. No claim contradicts
-the tools."""
+critique = """The answer says lumen-l3 reports max_concurrent_hw_video_decoders 4 and that ThumbGrid fails at
+position 4 with NO_MEMORY: max instances reached; codec_caps and the log show exactly that, including
+"recycled position=0 but decoder not released". No claim contradicts the tools."""
 
 [[example]]
-case_id = "m4q084"
-verdict = "FAIL"
-critique = """The user says the lumen-l3 "can run 16 hardware decoders at once" and the answer repeats it,
-but codec_caps reports max_concurrent_hw_video_decoders 4 and the log shows max instances reached. The
-user's claim does not override the tool output."""
+case_id = "m4q067"
+verdict = "PASS"
+critique = """The answer's diagnosis matches the tools: ffprobe shows 3840x2160 at 60 fps and codec_caps lists only
+the software c2.android.av1.decoder at 1920x1080, 30 fps. Its aside that lumen-l3's hardware AVC/HEVC
+decoders list 1920x1080 at 60 fps comes from no tool call (only video/av01 was queried), but no tool
+result contradicts it. Unsupported is a different failure mode; this criterion passes."""
+
+[[example]]
+case_id = "m4q087"
+verdict = "PASS"
+critique = """The user says the lumen-l3 "supports 16 concurrent hardware decoders", but the answer goes by
+codec_caps: max_concurrent_hw_video_decoders 4, "not 16", matching the log's failure at position 4 with
+max instances reached. Disagreeing with the user in favour of the tool output passes."""
 
 [[example]]
 case_id = "m4q012"
-verdict = "FAIL"
-critique = """The answer says "Both streams start at 0.000 s", echoing the user, but ffprobe reports the
-video stream's start_time as 0.300000 and the audio's as 0.000000. The cause contradicts the tool output."""
+verdict = "PASS"
+critique = """The user says "Both streams start at zero", but the answer reports ffprobe's start_time 0.300000
+for video and 0.000000 for audio and says the offset is already in the container timing. Every claim
+agrees with the tool output, not with the user."""
