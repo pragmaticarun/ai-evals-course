@@ -498,9 +498,9 @@ def stages() -> list[Stage]:
             f"{d.chosen}: success {cs.rate:.3f}, cost/success {money(cs.cost_per_success)}"
         )
     else:
-        best = s11["summaries"][s11["compared"]]
+        rej = s11["summaries"][s11["compared"]]
         improvement = (f"no change kept, {d.chosen} stays: success {cs.rate:.3f}, cost/success "
-                       f"{money(cs.cost_per_success)}; best rejected {s11['compared']} {best.rate:.3f}")  # fmt: skip
+                       f"{money(cs.cost_per_success)}; best rejected {s11['compared']} {rej.rate:.3f}")  # fmt: skip
     if fired:
         monitoring = (f"{fired[0].metric} CUSUM alarm {fired[0].hours_after_rollout:+.1f} h after the rollout"
                       + (f" ({len(fired) - 1} more)" if len(fired) > 1 else ""))  # fmt: skip
@@ -654,7 +654,7 @@ def _slice_section(topic: str, ho: Holdout | None) -> tuple[list[str], dict[str,
     tpr = f"{sc[('good', 'pass')]}/{good}" if good else "n/a (no good first answers)"
     tnr = f"{sc[('bad', 'fail')]}/{bad}" if bad else "n/a (no defective first answers)"
     if sc["retried"]:
-        retry_note = (f"It triggered {sc['retried']} retries here and {sc['fixed']} of them ended correct "
+        retry_note = (f"It triggered {sc['retried']} {'retry' if sc['retried'] == 1 else 'retries'} here and {sc['fixed']} of them ended correct "
                       f"(across all dev topics: {selfcheck_fixed()}). Too few retries to say whether the retry "
                       "works better or worse here; what the slice does show is which failures survive it.")  # fmt: skip
     else:
@@ -763,9 +763,9 @@ def report_markdown(topic: str | None = None, release: bool = False, today: str 
         orph = ""
         if orphans:
             parents = sorted({X.variants()[n].parent for n in orphans})
-            orph = (f" {', '.join(f'`{n}`' for n in orphans)} passed {'its' if len(orphans) == 1 else 'their'} own "
+            orph = (f" {and_join(f'`{n}`' for n in orphans)} passed {'its' if len(orphans) == 1 else 'their'} own "
                     f"test{'' if len(orphans) == 1 else 's'} but build{'s' if len(orphans) == 1 else ''} on "
-                    f"{', '.join(f'`{p}`' for p in parents)}, which did not.")  # fmt: skip
+                    f"{and_join(f'`{p}`' for p in parents)}, which did not.")  # fmt: skip
         add(f"Keep `{BASELINE}` as the release configuration in `config/release.toml`. A change is kept only when it "
             f"passes its own pre-registered test and its parent was kept, and no change qualified: {n_rejected} of the "
             f"{len(d.verdicts)} tested changes failed their tests (section 7).{orph} Where the template needs a "
@@ -975,7 +975,7 @@ def report_markdown(topic: str | None = None, release: bool = False, today: str 
     add("")
     add(f"### Configurations on dev (n = {b.n})")
     add("")
-    add("Each kept change was tested against its parent with a rule written down before the run "
+    add("Each change was tested against its parent with a rule written down before the run "
         "(`config/experiments/preregistration.toml`). Success means all four checks pass within the 15 s timeout.")  # fmt: skip
     add("")
     crow = []
@@ -1091,7 +1091,9 @@ def report_markdown(topic: str | None = None, release: bool = False, today: str 
     add("")
     add(f"The release configuration {'passes' if s8['status'] == 'pass' else 'does not pass'} its gate against "
         f"the committed baseline ({s8['status']}: code tier {s8['tiers']['code']}, judge tier "
-        f"{s8['tiers']['judges']}); the golden manifest has {len(s8['manifest_problems'])} problems. "
+        f"{s8['tiers']['judges']}); the golden manifest has {len(s8['manifest_problems'])} "
+        f"problem{'' if len(s8['manifest_problems']) == 1 else 's'}"
+        + (f" ({'; '.join(s8['manifest_problems'])}). " if s8["manifest_problems"] else ". ")
         + (f"Switching `config/release.toml` to `{ship}` will change the request keys, so the pull request must "
            "re-record the gate fixtures and update `evals/baseline.json`." if is_change
            else "No change to `config/release.toml` is proposed, so the gate fixtures and `evals/baseline.json` "
@@ -1177,10 +1179,10 @@ def report_markdown(topic: str | None = None, release: bool = False, today: str 
     judge = (f"**Judge error.** The self-check judge fails {sc.fp} good first answers and passes {sc.fn} of the "
              f"{sc.tp + sc.fn} bad ones on dev.")  # fmt: skip
     if lower:
-        judge += (f" {', '.join(lower)} {'has' if len(lower) == 1 else 'have'} a lower TNR than TPR (section 6), "
+        judge += (f" {and_join(lower)} {'has' if len(lower) == 1 else 'have'} a lower TNR than TPR (section 6), "
                   "so raw judge pass rates overstate quality.")  # fmt: skip
     if undef:
-        judge += (f" The TNR of {', '.join(undef)} is n/a (0/0): {'its' if len(undef) == 1 else 'their'} "
+        judge += (f" The TNR of {and_join(undef)} is n/a (0/0): {'its' if len(undef) == 1 else 'their'} "
                   "validation labels hold no failing answers, so how often "
                   f"{'it passes' if len(undef) == 1 else 'they pass'} bad ones is unmeasured.")  # fmt: skip
     untracked = [r.mode.id for r in s3["ranked"] if r.mode.id not in MODE_NAMES.values()]
@@ -1215,12 +1217,13 @@ def report_markdown(topic: str | None = None, release: bool = False, today: str 
         "**Metric definitions differ across modules.** Module 6 grades all human-labelled failure modes "
         f"(v1 → v2 {diff(s6['paired'])}); module 11 grades four checks (v1 → v2 "
         f"{diff(s11['v1v2'])}). They answer different questions; do not quote one as the other.",
-        "**Modes not tracked after the change.** Module 11's labels cover four modes. Fabricated evidence, "
+        "**Modes module 11 does not track.** Its labels cover four modes. Fabricated evidence, "
         "wrong tool arguments, wrong API details, and retrieval misses (modules 3 and 7) were not re-measured "
         f"for {'`' + ship + '`' if is_change else 'any configuration'}"
         + (
-            f". Module 3's failing traces show {', '.join(f'`{m}`' for m in untracked)}, which module 11's "
-            "labels do not track."
+            f". Module 3's failing traces show {and_join(f'`{m}`' for m in untracked)}, so the "
+            f"{'mode' if len(untracked) == 1 else 'modes'} the error analysis found {'is' if len(untracked) == 1 else 'are'} "
+            "among the unmeasured ones."
             if untracked
             else "."
         ),
@@ -1274,9 +1277,14 @@ def report_markdown(topic: str | None = None, release: bool = False, today: str 
     steps = [
         first,
         red,
-        f"{topic}: the top remaining mode is "
-        f"{MODE_NAMES.get(sl['top_mode'], sl['top_mode']) if sl['top_mode'] else 'none'}. Pre-register a "
-        f"slice-specific fix, and write about {sl['need']} more {topic} queries (module 4) so the experiment can "
+        f"{topic}: "
+        + (
+            f"the top remaining mode under `{ship}` is {MODE_NAMES.get(sl['top_mode'], sl['top_mode'])}."
+            if sl["top_mode"]
+            else f"`{ship}` fails {len(sl['still'])} of {len(sl['ids'])} queries with no "
+            "labelled mode (timeouts or check failures); read those traces first."
+        )
+        + f" Pre-register a slice-specific fix, and write about {sl['need']} more {topic} queries (module 4) so the experiment can "
         "be read on the slice.",
         "Re-label a sample of the release configuration's answers for the modes module 11 did not track "
         "(section 8).",
@@ -1333,6 +1341,11 @@ def base_mode(cid: str) -> str:
     if m != "none":
         return MODE_NAMES.get(m, m)
     return "timed out" if dev_rows(BASELINE)[cid].timed_out else "a check failed"
+
+
+def and_join(items: Any) -> str:
+    xs = list(items)
+    return ", ".join(xs[:-1]) + " and " + xs[-1] if len(xs) > 1 else "".join(xs)
 
 
 def col(v: str) -> str:

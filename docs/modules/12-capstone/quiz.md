@@ -7,16 +7,18 @@ Answer each one about **your** report first, in writing; then expand to compare 
 
 ??? question "Answer"
     It should name the action (ship, fund, stop, route), the thing acted on (a configuration, a team, a slice),
-    and the alternative it replaces. "Approve `retry` in `config/release.toml` in place of `v1`" passes; "we
-    evaluated several configurations and found promising results" does not. If the decision needs a caveat to be
+    and the alternative it replaces (or keeps). "Approve `retry` in `config/release.toml` in place of `v1`" passes, and
+    so does the reference report's "keep `v1`: no change passed its pre-registered test"; "we evaluated several
+    configurations and found promising results" does not. If the decision needs a caveat to be
     safe, the caveat goes in the same paragraph, not in section 8.
 
 **2. Pick the largest number in your summary. What is its interval, and what would change your recommendation if
 the truth were at the bottom of it?**
 
 ??? question "Answer"
-    In the reference report, the bottom of +0.231 is +0.157, which still supports shipping, so the recommendation is
-    robust to the interval. If the bottom of your headline interval would change the decision, your report must
+    In the reference report, the largest difference is the best rejected configuration's +0.042, and the bottom of
+    its interval is +0.000, which is exactly why the rule rejected it; the recommendation to keep `v1` is robust to
+    the interval. Had the bottom been above zero, `v2` would still have failed its guardrails. If the bottom of your headline interval would change the decision, your report must
     say so and the recommendation becomes conditional (more data, or a staged rollout with module 9's monitors).
     A headline whose interval you have never thought about is the most common weakness in eval reports.
 
@@ -24,16 +26,18 @@ the truth were at the bottom of it?**
 
 ??? question "Answer"
     Usually the judge with the smallest validation set or the lowest TNR, because a low TNR means bad answers pass
-    and your quality numbers are optimistic. In the reference report that is the tool-grounding judge (TNR 0.60 on
-    5 failing traces; the corrected interval runs from 0.24 to 1.00). The honest response is in the report already:
-    the corrected rate, its interval, and the plan to label more failures. An evaluator you cannot defend should
+    and your quality numbers are optimistic. In the reference report that is the tool-grounding judge: its 28
+    labelled test traces contain no failures, so its TNR is n/a (0/0) and its pass rate cannot be corrected at all.
+    The `correct` code check is a close second: on the av-sync and DRM slices it fails answers that state the right
+    diagnosis in other words. The honest response is to say so in the report and plan to label failures and validate
+    the check. An evaluator you cannot defend should
     not carry a headline number.
 
 **4. Your slice has n queries. What is the smallest difference it can detect, and did your report claim anything
 smaller?**
 
 ??? question "Answer"
-    The report's slice section prints it (module 6's `mdd_paired`; for 12 to 15 queries, nothing smaller than the
+    The report's slice section prints it (module 6's `mdd_paired`; for 10 to 19 queries, nothing smaller than the
     discordant share). Any claim about a slice-level improvement below that size is an anecdote, however it is
     worded. The useful output of a small slice is the list of surviving failures by id and a data request, not a
     rate.
@@ -59,7 +63,7 @@ smaller?**
 ??? question "Answer"
     Slice choice is the usual place: picking the topic that makes the candidate look best (or worst) and then
     reporting its p-value as if it had been chosen in advance. The reference report chooses its slice by a stated
-    rule (the weakest topic under the candidate) and the lab asks you to write your expectation before looking.
+    rule (the weakest topic under the release configuration) and the lab asks you to write your expectation before looking.
     Other places: changing the success definition, dropping a configuration from a table, or reading the held-out
     split twice. Say what was pre-registered and what was exploratory; exploratory findings are fine when they are
     labelled.
