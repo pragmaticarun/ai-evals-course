@@ -153,10 +153,16 @@ Faithfulness is about the context, not about truth: an answer from general knowl
 fails, because next time the general knowledge will be wrong and nothing in the system will notice. Citation
 correctness needs no model at all, so it is a code check.
 
-Both judges are binary and get the module 5 treatment: label, measure TPR and TNR, then decide. In the lab, the
-faithfulness judge has TPR 0.94 but TNR 0.68 (17 of 25): it misses a third of unfaithful answers, most often a
-single invented detail ("This behaviour was introduced in Android 9 (API 28).") appended to an otherwise grounded
-answer. Use it with the module 6 correction, or improve it before you rely on it.
+Both judges are binary and get the module 5 treatment: label, measure TPR and TNR, then decide. In the lab's data
+the generator rarely misbehaves, which makes the judges hard to validate. The labels mark only 1 of 96 answers as
+unfaithful (`baseline:r34`, which states a fact from a passage that was not retrieved), and the faithfulness judge
+passed it along with all the others: TPR 1.00 (95/95), TNR 0/1. With a single negative, TNR is not measured at all.
+The judge has never been shown to catch an unfaithful answer, so do not use it to compare systems yet. To validate
+it you need more unfaithful examples, either from a system that fails more often or written on purpose (append one
+unsupported detail to a grounded answer). The answer-relevance judge has the opposite problem. The labels call all
+96 answers relevant, but the judge fails 14 of them, and every one of the 14 is a faithful abstention ("the
+passages do not cover this"). That is a disagreement about the criterion, not noise. Decide whether a polite
+"not in the passages" counts as relevant, then fix the labels or the judge prompt (module 5's alignment step).
 
 ### Step 5: separate retrieval failures from generation failures
 
@@ -172,22 +178,27 @@ In the lab, with the top 3 passages as context:
 
 | System | pass | generation failures | retrieval failures | pass rate when retrieval hit |
 |---|---|---|---|---|
-| baseline (fixed + keyword) | 27/48 = 0.56 | 9 | 12 | 0.75 |
-| improved (section + bm25) | 29/48 = 0.60 | 11 | 8 | 0.72 |
+| baseline (fixed + keyword) | 36/48 = 0.75 | 0 | 12 | 1.00 |
+| improved (section + bm25) | 40/48 = 0.83 | 0 | 8 | 1.00 |
 
-Retrieval failures fell from 12 to 8, but the end-to-end pass rate moved only from 0.56 to 0.60 (paired difference
-+0.04, CI [−0.04, +0.13]), because generation failures rose from 9 to 11: some of the newly retrieved passages were
-then mishandled. In the improved
-system, generation failures now outnumber retrieval failures, so the next fix is the generator (most of those
-failures add unsupported details). Without the split you would see "+4 points, not significant" and might keep
-tuning the retriever.
+Retrieval failures fell from 12 to 8, and the end-to-end pass rate rose from 0.75 to 0.83. The paired difference is
++0.08, CI [−0.02, +0.19]: 5 queries passed only with the improved system and 1 only with the baseline. The split
+gives a clear answer. Every failure in both systems is a retrieval failure. Whenever an answering passage reached
+the generator, the answer passed. When none did, the generator declined or hedged instead of inventing an answer,
+so it never passed despite a miss either. The next fix is still retrieval: the codec vocabulary gaps from step 3
+(r07, r11, r13) are among the improved system's eight failures. Without the split you would see "+8 points, not
+significant" and might start rewriting the prompt, which these numbers say would not help. On a system whose
+generator also fails, the same table would show whether those failures outnumber the retrieval failures, and so
+which fix to try first.
 
 ### Worked example: a wrong answer about MediaCodec diagnostics
 
 Query r04: *"What does the diagnosticInfo string in a codec exception tell me?"*
 
-The baseline answered: *"This is usually a bug in the device's codec driver; updating the firmware fixes it."* and
-cited `[kb:mediacodec-errors@40]`. Wrong, and confidently so. Before touching the prompt, check each component:
+The baseline answered: *"The passage says to log `diagnosticInfo` from the exception and that it names something,
+but the text is cut off before saying what it names. I can't say more than that from the passages provided."* and
+cited `[kb:mediacodec-errors@40]`. It did not answer the question, so it fails. Before touching the prompt, check
+each component:
 
 1. **Retrieval.** The context held three 40-word windows: one from the MediaCodec errors document, one on fixing
    blocking artifacts, and one on listing codecs. The first is the interesting one. It is mostly the "Common causes"
@@ -195,13 +206,14 @@ cited `[kb:mediacodec-errors@40]`. Wrong, and confidently so. Before touching th
    rest of the sentence, the part that answers the question, is in the next window, which did not rank. A chunk is
    credited to the section it mostly covers, so this counts as a miss for the answering section,
    `mediacodec-errors#3`: hit@3 = 0. This is a retrieval failure, caused by where the chunk boundary fell.
-2. **Generation.** Given no answering passage, the model answered from general knowledge instead of saying the
-   passages do not cover it. The faithfulness judge failed it, correctly. That is a second, smaller problem.
+2. **Generation.** Given no answering passage, the model noticed that the passage was cut off and declined to
+   guess. Given that context, this was the right behaviour: the answer is faithful, and the faithfulness judge
+   passed it, correctly. Nothing here needs fixing in the generator.
 3. **Citations.** The citation was *valid* (the id was in the context) but did not point to a relevant passage.
    Validity alone would have passed it.
 
-With section chunks and BM25, the "Diagnostics" section ranked first, and the answer became *"Log diagnosticInfo
-from the exception; it names the failing component, such as c2.qti.avc.decoder"*, citing `[kb:mediacodec-errors#3]`.
+With section chunks and BM25, the "Diagnostics" section ranked first, and the answer became *"It names the failing
+component, such as `c2.qti.avc.decoder`, so log it from the exception."*, citing `[kb:mediacodec-errors#3]`.
 Across all 48 queries, recall@5 went from 0.64 to 0.81; on the 14 codec queries from 0.51 to 0.62, which, as
 step 3 showed, is not yet a demonstrated gain. One fixed query is an anecdote; the table is the evidence.
 
@@ -233,30 +245,46 @@ where it has everything. Two chat prompts: v1 answers immediately; v2 asks first
 
 | | resolved | gave up early | asked when a fact was missing | mean user turns |
 |---|---|---|---|---|
-| v1 (answer first) | 9/16 = 0.56 [0.33, 0.77] | 4 | 2 of 11 | 1.12 |
-| v2 (ask first) | 12/16 = 0.75 [0.51, 0.90] | 3 | 9 of 11 | 1.81 |
+| v1 (answer first) | 16/16 = 1.00 [0.81, 1.00] | 3 | 0 of 11 | 1.00 |
+| v2 (ask first) | 15/16 = 0.94 [0.72, 0.99] | 0 | 9 of 11 | 1.56 |
 
-v2 resolves more sessions, but the paired difference (+0.19, CI [−0.06, +0.44]) is not established with 16
-scenarios, and v2 has turn-level costs that v1 does not: three sessions where it asked for a fact the user had
-already given, two of them needless questions when the opening had everything. That is the clarification
-trade-off: asking fixes assumed details and adds friction.
+"Resolved" in this table is the lab's code check: the final answer names the scenario's cause. On these sessions
+the code check points the wrong way. It disagrees with the labels on 4 of 32 sessions. Three are v1 sessions
+(`c05-v1`, `c06-v1`, `c13-v1`) that answered without asking and listed several possible causes. The list contains
+the right cause, so the regex counts the session as resolved. The labels count it as no diagnosis and as giving up
+early. The fourth, `c16-v2`, names the cause (1.5 Mbps CBR is far too low for 1080p60) in words the regex does not
+match. By the labels, v1 resolves 13 of 16 and v2 all 16. By the code check, v1 looks better (paired difference
+−0.06, CI [−0.19, 0.00]). With 16 scenarios neither difference is established, but the lesson is clear: validate the
+session-level check against labels before you compare prompts with it. Here a keyword match rewards hedging.
+
+At the turn level, neither prompt re-asked a fact the user had given, asked a needless question, or asked more than
+one thing at once. v2's cost is only the extra turn: 0.56 more user turns per session. With a weaker agent the same
+turn checks would show the other side of the clarification trade-off, where asking fixes assumed details and adds
+friction (re-asked facts, questions about things the opening already said).
 
 "Gave up early" is a session-level property. No single turn shows it; you have to see that the assistant ended the
 conversation ("I can't tell from this description; contact the vendor") when one question would have unlocked it.
-The lab's `gave-up-early` judge reads the whole transcript; against labels it has TPR 0.92 and TNR 0.86 (6 of 7 give-ups
-caught), on a small sample.
+The lab's `gave-up-early` judge reads the whole transcript. Against labels it passes every session: TPR 1.00 (29/29)
+and TNR 0.00. It catches none of the 3 give-ups, because they do not read like give-ups. They are confident-sounding
+hedges that offer a list of causes and a diagnostic step instead of asking. A judge prompt written for the
+"contact the vendor" kind of give-up misses this kind, and on 3 positives you cannot tell how well any fix works.
 
 ### Step 8: check the simulator before blaming the agent
 
-A simulated user is a model too, and it fails. Two planted faults in the lab:
+A simulated user is a model too, and it can fail in two ways:
 
-- in `c07-v2` it volunteered a second fact nobody asked for, so the agent never had to ask, and the session looks
-  better than a real one would;
-- in `c13-v2` it contradicted its own facts ("It supports everything we've tried, Main10 included") and the agent's
-  wrong answer follows from that.
+- it volunteers a fact nobody asked for, so the agent never has to ask, and the session looks better than a real one
+  would;
+- it contradicts its own facts ("It supports everything we've tried, Main10 included"), and the agent's wrong answer
+  follows from that.
 
-Code checks on the simulator's turns (did it answer what was asked, did it add facts) flag both. Count simulator
-faults as eval-harness bugs, exclude or fix those sessions, and report how many you dropped.
+Code checks on the simulator's turns (did it answer what was asked, did it add facts) look for both. In the lab's
+recorded sessions they flag nothing, and the labels record no simulator fault either. The simulated users, generated
+by Claude subagents, kept to their rules. To see that the check works, give `c07-v2`'s simulated user a reply that
+states every fact it knows. The agent asked only for the log, and the check reports
+`turn 3: volunteered 'code' without being asked` (the test suite does exactly this). A clean result means something
+only if the check is known to catch faults. When it does flag sessions, count those faults as eval-harness bugs,
+exclude or fix the sessions, and report how many you dropped.
 
 Those checks catch a simulator that breaks its rules; they do not show that it talks like your users. A simulator
 that is too cooperative (answers every question fully, never gets annoyed, never pastes the wrong log) makes every
@@ -279,9 +307,14 @@ A run of a tool-using agent is a trajectory: the ordered steps it took. Evaluate
    errors), a sensible order (expected steps appear as a subsequence), and no wasted steps
    (**step efficiency** = minimal steps / steps taken).
 
-Scored this way, module 5's traces (the 100 outside the missing-detail slice, where the right move is to ask) show the pattern that makes process metrics useful but
-not sufficient: every run that skipped an expected tool failed (4 of 4), but runs that called every expected tool
-still failed 65% of the time, on the answer. Process metrics locate problems; the outcome decides.
+Scored this way, module 5's traces (the 108 outside the missing-detail slice, where the right move is to ask) fail
+so rarely that the process metrics have little to locate. Only 2 of the 108 runs failed. 104 called every expected
+tool and 102 of those passed. The 4 that skipped an expected tool all passed too: they were expected to grep a log
+and answered from the knowledge base instead. 7 runs called an unexpected tool, and 6 of them passed. Here a
+trajectory deviation is not a failure. It marks a different path that a person should look at once, and it may mean
+the expected tools in the dataset are too narrow. On a system that fails more often, the same columns show whether
+skipped tools go with failed answers, which is how process metrics help locate problems. Either way, the outcome
+decides.
 
 **Agents that change things: grade the final state.** MediaDoctor mostly answers questions, so its outcome is an
 answer. Agents that act (file a ticket, edit a config, book a refund, drive a browser) have a better outcome to
@@ -316,23 +349,24 @@ against the reference trajectory, and record two things: the **last state that s
 that failed**. Count the pairs in a matrix: rows are the last success, columns the first failure. The technique is
 from [Husain and Shankar's FAQ on multi-step workflows](https://hamel.dev/blog/posts/evals-faq/how-do-i-evaluate-complex-multi-step-workflows.html).
 
-On 53 dev and test queries the team passed 35 (0.66 [0.53, 0.77]). The 18 failures:
+On 47 dev and test queries the team passed 45 (0.96 [0.86, 0.99]). The 2 failures:
 
 ```text
-last ok \ failed        answer  codec_caps     handoff        plan
-start                        .           .           .           4
-evidence                     6           .           .           .
-handoff                      .           5           .           .
-logcat_grep                  .           1           .           .
-plan                         .           .           2           .
+last ok \ failed        answer
+evidence                     2
 ```
 
-Read it by columns. Six runs first failed at `codec_caps`: the device specialist wrote the device's display name
-("Lumen L3") instead of its id (`lumen-l3`), and did not retry. Two more runs made the same mistake and recovered on
-a retry, as did three runs with other bad arguments; those five pass, but at a mean step efficiency of 0.83, which a
-pass rate alone never shows. One fix (normalise
-device names in the tool, or tell the specialist the id format) addresses a third of all failures. Six failures are
-synthesis (evidence complete, answer wrong); four are routing; two are lost details in the handoff.
+Read it by columns. There is one column: both failures are synthesis. The evidence was complete, and the planner
+wrote a generic answer that restates the knowledge base's audio-focus note without answering what was asked
+(`m4q028`, `m4q081`). No run failed at routing, at a handoff, or on a tool argument. A matrix this small says only
+"look at the synthesis step". On a team that fails more often, the columns spread out and show which boundary to fix.
+
+The states that did not fail are still worth a look. The planner chose a route different from the reference 11
+times, usually by adding a knowledge or device specialist, and all 11 runs passed, at a mean step efficiency of 0.77:
+extra specialists cost model calls but did not hurt the answer. Three passing runs (`m4q052`, `m4q163`, `m4q192`)
+never gathered the reference's expected evidence (for example, no ffprobe call), and the labeller still passed them.
+The reference trajectory is one good path, not the only one. When a run passes on another path, update the reference
+before you count that deviation as an error.
 
 Fix upstream first: a routing or handoff failure makes everything after it fail too, so the first failure is the one
 to count and fix, as in module 3's error analysis.
@@ -358,17 +392,20 @@ muted for 300 ms or 100 ms, gain past full scale before 16-bit conversion). The 
 
 | Judge | severe detected | mild detected | false alarms |
 |---|---|---|---|
-| frame-blocking | 3/3 | 1/3 | 1/10 (a severely banded frame) |
-| frame-banding | 3/3 | 1/3 | 1/10 (a severely blocked gradient) |
+| frame-blocking | 3/3 | 3/3 | 4/10 (all four banded frames) |
+| frame-banding | 3/3 | 3/3 | 2/10 (two severely blocked frames) |
 
-Report by severity: an overall "detects 4 of 6" hides that the judge is useful for gross artifacts and unproven for
-subtle ones. With three frames per cell the intervals are very wide ([0.44, 1.00] for 3/3), so the real result is
-"needs about 30 to 40 frames per severity" (exercise 5). And read the disagreements: the "false alarm" on the
-severely blocked gradient is arguably correct, because heavy quantisation of a gradient also produces bands. Recipe
-labels can be incomplete; disagreement review (module 5) applies to images too.
+Both judges detect every artifact at both severities, and an overall "detects 6 of 6" is all you would see without
+the false alarms. The blocking judge flags all four banded frames (`banding_severe_a/b/c`, `banding_mild_a`), so as
+it stands it cannot tell banding from blocking. Report by severity and with intervals: three frames per cell give
+very wide intervals ([0.44, 1.00] for 3/3, and the 4/10 false alarms come from just 10 clean frames), so the real
+result is "needs about 30 to 40 frames per severity" (exercise 5). Then read the disagreements. The banding judge's
+alarm on the severely blocked gradient is arguably correct, because heavy quantisation of a gradient also produces
+bands. The blocking judge's alarms on 3-bit and 5-bit gradients are harder to defend and point at its criterion.
+Recipe labels can be incomplete; disagreement review (module 5) applies to images too.
 
 Keep the fixtures small: `evalkit` now replaces base64 image data in a request with its SHA-256 and length before
-hashing and storing it. A changed image still changes the key, but the 38 vision records take 59 KB instead of
+hashing and storing it. A changed image still changes the key, but the 38 vision records take 65 KB instead of
 repeating every image.
 
 ## Checklist

@@ -19,7 +19,7 @@ def v2():
 
 def test_splits():
     s = lab08.golden_splits()
-    assert (len(s["gate"]), len(s["judges"]), len(s["holdout"])) == (108, 37, 29)
+    assert (len(s["gate"]), len(s["judges"]), len(s["holdout"])) == (119, 30, 28)
 
 
 def test_replay_matches_modules_5_and_6(v1, v2):
@@ -34,32 +34,39 @@ def test_release_v1_matches_the_committed_baseline(v1):
     assert lab08.baseline_problems(v1, lab08.load_baseline().run) == []
 
 
-def test_v2_is_blocked_on_format_only(v1, v2):
+def test_v2_passes_with_a_citations_warning(v1, v2):
     code = lab08.compare(v1, v2, "code")
+    assert not code.blocked
     status = {m.metric: m.status for m in code.metrics}
     assert status == {
-        "format": Status.FAIL,
-        "citations": Status.PASS,
+        "format": Status.PASS,
+        "citations": Status.WARN,
         "investigated": Status.PASS,
-        "all-code-checks": Status.FAIL,
+        "all-code-checks": Status.PASS,
     }
-    fmt = next(m for m in code.metrics if m.metric == "format")
-    assert (fmt.result.a_only, fmt.result.b_only) == (16, 0)
+    flips = {m.metric: (m.result.a_only, m.result.b_only) for m in code.metrics}
+    assert flips == {
+        "format": (0, 0),
+        "citations": (3, 0),  # too few flips to block, too many to rule out a 0.05 drop
+        "investigated": (3, 9),
+        "all-code-checks": (5, 9),
+    }
     judges = lab08.compare(v1, v2, "judges")
     assert not judges.blocked
-    assert {m.metric: m.result.n for m in judges.metrics} == {
-        "false-premise": 37,
-        "tool-grounding": 33,
-        "next-step": 37,
+    assert {m.metric: (m.result.n, m.result.a_only, m.result.b_only) for m in judges.metrics} == {
+        "false-premise": (30, 0, 0),
+        "tool-grounding": (30, 0, 0),
+        "next-step": (30, 0, 0),
     }
 
 
 def test_report_markdown(v1, v2):
     gates = {t: lab08.compare(v1, v2, t) for t in lab08.TIERS}
     md = lab08.report_markdown(v1, v2, gates, "base ref")
-    assert md.startswith("## Eval gate: ❌ blocked")
-    assert "| format | 108 | 0.972 | 0.824 |" in md
-    assert "Premise check:" in md  # the flips show the head's answers
+    assert md.startswith("## Eval gate: ⚠️ passed with warnings")
+    assert "| citations | 119 | 1.000 | 0.975 |" in md
+    assert "cannot rule out a drop larger than 0.05" in md
+    assert "| citations | m4q003 | newly failing | Likely cause:" in md  # flips show head answers
     assert "### Cost and time" in md
 
 
@@ -71,7 +78,7 @@ def test_prompt_text_change_is_a_replay_miss(monkeypatch):
     assert lab08.preflight("v1", ids) == ids
     with pytest.raises(lab08.ReplayMissError) as exc:
         lab08.run_suite("v1", ("code",))
-    assert len(exc.value.missing) == 108
+    assert len(exc.value.missing) == 119
 
 
 def test_fingerprint_tracks_prompt_and_model(monkeypatch):
@@ -95,14 +102,14 @@ def test_gate_tiers_do_not_touch_the_holdout():
     with pytest.raises(HoldoutAccessError):
         g.check(lab08.holdout_ids(), "tuning")
     rel = lab08.run_suite("v1", ("code",), release=True, holdout_guard=g)
-    assert g.looks == 1 and len(rel.outcomes["code"]["format"]) == 29
+    assert g.looks == 1 and len(rel.outcomes["code"]["format"]) == 28
 
 
 def test_manifest_and_hygiene_are_clean():
     assert lab08.manifest_problems() == []
     h = lab08.hygiene()
     assert h.problems == []
-    assert len(h.contamination) == 5 and not h.unreviewed_contamination
+    assert h.contamination == [] and not h.unreviewed_contamination
     assert h.closest[0][2] < 0.35
 
 
@@ -115,11 +122,11 @@ def test_cli_gate_exit_codes(tmp_path, capsys):
         lab08.main(
             ["gate", "--prompt", "v2", "--out", str(out), "--json", str(tmp_path / "h.json")]
         )
-        == 1
+        == 0  # a warning does not fail the job; only a block (exit 1) does
     )
-    assert "❌ blocked" in out.read_text()
+    assert "⚠️ passed with warnings" in out.read_text()
     saved = json.loads((tmp_path / "h.json").read_text())
-    assert saved["config"]["prompt"] == "v2" and len(saved["tiers"]["code"]["format"]) == 108
+    assert saved["config"]["prompt"] == "v2" and len(saved["tiers"]["code"]["format"]) == 119
 
 
 def test_cli_run_and_diff(tmp_path):
@@ -143,7 +150,7 @@ def test_cli_run_and_diff(tmp_path):
         == 0
     )
     md = (tmp_path / "d.md").read_text()
-    assert md.startswith("## v1 → v2: ❌ blocked") and "LLM judges" in md
+    assert md.startswith("## v1 → v2: ⚠️ passed with warnings") and "LLM judges" in md
 
 
 def test_baseline_from_a_ref_without_one_falls_back():

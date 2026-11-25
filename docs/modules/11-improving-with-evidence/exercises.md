@@ -212,7 +212,7 @@ when it is not identical, and why is it a problem even if it only matches a trai
 
 ## Exercise 4: When does prompt caching pay, and what does batch save?
 
-A MediaDoctor call has a 1,029-token cacheable prefix, about 400 other input tokens, and about 120 output tokens.
+A MediaDoctor call has a 1,033-token cacheable prefix, about 400 other input tokens, and about 120 output tokens.
 Using `Price.cost_usd` with the prices in `config/models.toml`, compute the cost per call with caching when the
 cache is used by 1, 2, 3, and 10 calls before it expires, for Sonnet 5.5 and Haiku 5.5, and compare it with no
 caching. Then compute what three dev-suite runs of v3-cache cost through the standard API and the
@@ -224,7 +224,7 @@ Batch API.
     from evalkit import load_prices
     from mediadoctor import lab11
 
-    PREFIX, REST, OUT = 1029, 400, 120  # tokens: cached prefix, rest of the input, output (per call)
+    PREFIX, REST, OUT = 1033, 400, 120  # tokens: cached prefix, rest of the input, output (per call)
 
     for model in ("claude-sonnet-5-5", "claude-haiku-5-5"):
         p = load_prices()[model]
@@ -240,10 +240,10 @@ Batch API.
                 f"vs ${plain:.6f}/call  ({cached / calls / plain - 1:+.0%})"
             )
 
-    # The nightly eval: 108 dev tasks, standard vs Batch API (50% off, results within 24 h).
+    # The nightly eval: the dev tasks, standard vs Batch API (50% off, results within 24 h).
     s = lab11.summary("v3-cache")
     print(
-        f"dev suite, 3 runs: standard ${3 * 108 * s.cost_per_task:.2f}, batch ${1.5 * 108 * s.cost_per_task:.2f}"
+        f"dev suite, 3 runs: standard ${3 * s.n * s.cost_per_task:.2f}, batch ${1.5 * s.n * s.cost_per_task:.2f}"
     )
     ```
 

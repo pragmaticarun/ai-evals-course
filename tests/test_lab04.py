@@ -48,15 +48,22 @@ def test_replay_regenerates_frozen_dataset(generated, dataset, tmp_path):
     out = write_jsonl(tmp_path / "v1.jsonl", ds)
     manifest = json.loads(lab04.manifest_path().read_text())
     assert file_sha256(out) == manifest["sha256"] == file_sha256(lab04.dataset_path())
-    assert manifest["count"] == len(ds) == 182
-    assert len(report["dropped_as_duplicates"]) == 18 and report["leakage_pairs"] == []
-    assert Counter(r["split"] for r in ds) == {"train": 88, "test": 49, "dev": 45}
+    assert manifest["count"] == len(ds) == 200
+    # The subagent-written queries are varied enough that none is a near-duplicate of another.
+    assert report["dropped_as_duplicates"] == [] and report["leakage_pairs"] == []
+    assert Counter(r["split"] for r in ds) == {"train": 120, "test": 38, "dev": 42}
+
+
+PREMISE_UNSTATED = {
+    "m4q029", "m4q030", "m4q066", "m4q074", "m4q132", "m4q146", "m4q149", "m4q154", "m4q178"
+}  # fmt: skip
 
 
 def test_dataset_rows_are_well_formed(dataset, space):
+    unstated = set()
     for r in dataset:
         assert space.valid({k: r[k] for k in space.names})
-        assert r["source"] == "synthetic-authored"
+        assert r["source"] in {"synthetic-authored", "subagent-authored"}
         assert ("premise" in r) == (r["ambiguity"] == "false-premise")
         if r["ambiguity"] == "clear":
             for k in ("file", "device"):
@@ -64,15 +71,22 @@ def test_dataset_rows_are_well_formed(dataset, space):
                     assert r[k] in r["question"]
         if r["ambiguity"] == "missing-detail":
             assert not any(r.get(k, "\0") in r["question"] for k in ("file", "device"))
-        if r.get("premise"):
-            assert r["premise"].lower().split()[-1] in r["question"].lower()
+        if r.get("premise") and r["premise"].lower().split()[-1] not in r["question"].lower():
+            unstated.add(r["id"])
+    # The cheap last-word check misses 9 of the 78 premises: mostly paraphrases ("delay" for
+    # "offset"), two real mismatches (m4q030, m4q132). `check` reports exactly these.
+    assert sum(r["ambiguity"] == "false-premise" for r in dataset) == 78
+    assert unstated == PREMISE_UNSTATED
 
 
-def test_naive_baseline_misses_slices(space):
+def test_naive_baseline_is_thin_on_slices(space):
     qs = lab04.naive_queries()
     assert len(qs) == 50
     cov = lab04.topic_coverage(qs)
-    assert cov["audio-focus"] == 0
+    # Every topic is mentioned, but the small ones barely: 1 live-stream, 2 audio-focus, 2 DRM.
+    assert (cov["live-stream"], cov["audio-focus"], cov["drm-resolution"]) == (1, 2, 2)
+    assert sum(not lab04.tag_topics(q) for q in qs) == 22
+    # And none gives the agent anything to inspect.
     assert not any(lab04.NAMES.search(q) for q in qs)
 
 
@@ -89,24 +103,26 @@ def m4_traces(dataset):
 
 
 def test_agent_slice_runs_and_module3_tools_read_it(m4_traces, dataset):
-    assert len(m4_traces) == 37
+    assert len(m4_traces) == 30
     cases = {c["id"]: c for c in dataset}
     table = lab03.signal_table(m4_traces, cases)
     flagged = {cid for cid, s in table.items() if s}
     ref = {a.case_id: a for a in load_annotations(lab04.dev_reference_path())}
+    assert set(ref) == set(m4_traces)
     failing = {cid for cid, a in ref.items() if a.failed}
-    assert len(failing) == 12
-    # The automatic signals flag only the runs that asked for details (which pass); none of the
-    # premise or assumption failures trip a signal. That is the point of reading traces.
-    assert flagged and not flagged & failing
+    assert failing == {"m4q021"} and ref["m4q021"].modes == ["redundant-steps"]
+    # No automatic signal fires on any trace, so the one failure (a repeated search) is found only
+    # by reading traces.
+    assert flagged == set()
     assert all(r["hit"] for r in lab03.retrieval_report(m4_traces, cases))
 
 
 def test_failure_by_dimension(dataset):
     res = lab04.failure_by_dimension(lab04.dev_reference_path(), dataset, "ambiguity")
     assert res["clear"][:2] == (0, 13)
-    assert res["false-premise"][:2] == (9, 18)
-    assert res["missing-detail"][:2] == (3, 6)
+    assert res["false-premise"][:2] == (1, 12)
+    assert res["false-premise"][2] == {"redundant-steps": 1}  # not a repeated premise
+    assert res["missing-detail"][:2] == (0, 5)
 
 
 def test_cli_smoke(capsys):
@@ -127,11 +143,16 @@ def test_cli_smoke(capsys):
 def test_synth_fixtures_are_labelled():
     llm = LLM(namespace=SYNTH_NAMESPACE)
     recs = llm.store.records()
-    assert len(recs) == 201 and all(r["source"] == "synthetic-authored" for r in recs)
+    assert len(recs) == 201 and all(r["source"] == "subagent-authored" for r in recs)
 
 
-def test_check_finds_the_known_defect(dataset):
-    assert lab04.check_queries(dataset) == [("m4q022", "does not mention hdr10_hevc_1080p.mp4")]
+def test_check_flags_unstated_premises_and_a_missing_file(dataset):
+    problems = lab04.check_queries(dataset)
+    assert len(problems) == 10
+    assert {rid for rid, p in problems if p == "does not state its premise"} == PREMISE_UNSTATED
+    assert [p for p in problems if p[1] != "does not state its premise"] == [
+        ("m4q132", "does not mention hdr10_hevc_1080p.mp4")
+    ]
     bad = dict(dataset[0], ambiguity="missing-detail")
     assert any("should leave it unstated" in p for _, p in lab04.check_queries([bad]))
 
@@ -149,10 +170,10 @@ def test_lab03_reads_other_case_files(tmp_path, capsys):
         )
         == 0
     )
-    assert "flagged 3/37 traces" in capsys.readouterr().out
+    assert "flagged 0/30 traces" in capsys.readouterr().out
     ref = str(lab04.dev_reference_path())
     assert lab03.main(["compare", "--labels", ref, "--reference", ref]) == 0
-    assert "37 traces in common; pass/fail agreement 100%" in capsys.readouterr().out
+    assert "30 traces in common; pass/fail agreement 100%" in capsys.readouterr().out
 
 
 def _write_traces(tmp_path):

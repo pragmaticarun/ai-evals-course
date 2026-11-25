@@ -137,8 +137,7 @@ def test_ppi_comparison_matches_module_6():
 
     res = lab05.ppi_comparison()
     pp = res["PPI++"]
-    assert res["n"] == 89 and round(res["truth"], 3) == 0.876
-    assert (
-        round(pp.estimate, 3) == 0.891 and round(pp.low, 3) == 0.806 and round(pp.high, 3) == 0.975
-    )
-    assert pp.low < res["truth"] < pp.high
+    # The module 3 traces now have no tool-grounding failures: truth, judge, and PPI++ all say 1.0.
+    assert res["n"] == 100 and res["truth"] == 1.0 and res["judge raw"] == 1.0
+    assert pp.estimate == 1.0 and pp.lam == 0.0
+    assert pp.low <= res["truth"] <= pp.high

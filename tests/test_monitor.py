@@ -173,4 +173,4 @@ def test_queue_estimate_has_an_interval_that_contains_the_truth():
     lo, hi = ci["queue, weighted by 1/p"]
     assert lo < est["queue, weighted by 1/p"] < hi
     assert lo < est["week (truth)"] < hi
-    assert round(lo, 3) == 0.270 and round(hi, 3) == 0.475  # quoted in module 9, Step 3
+    assert round(lo, 3) == 0.010 and round(hi, 3) == 0.096  # quoted in module 9, Step 3

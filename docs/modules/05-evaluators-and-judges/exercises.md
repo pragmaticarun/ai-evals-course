@@ -69,66 +69,93 @@ matters, and fix it.
 
 `mediadoctor-lab05 likert` runs a judge that scores how actionable the next step is, from 1 to 5. Choose the
 threshold that best matches the human labels on dev, apply it to test, and compare with the binary next-step judge.
-Which numbers would have misled you, and why?
+What can these numbers tell you, and what can they not?
 
 ??? success "Solution"
     ```python
     # exercise-solution
-    from evalkit.judge import confusion
-    from mediadoctor import lab05
+    from itertools import combinations
 
-    dev, test = lab05.likert_scores("dev"), lab05.likert_scores("test")
-    human_dev = lab05.human_pass("vague-next-step", list(dev))
-    human_test = lab05.human_pass("vague-next-step", list(test))
+    from evalkit.synth import dedup, similarity
+    from mediadoctor import lab04
 
-
-    def binarise(scores, t):
-        return {c: s >= t for c, s in scores.items()}
+    rows = lab04.generate_queries(lab04.make_tuples(lab04.load_default_space()))
+    by_id = {r["tuple_id"]: r for r in rows}
+    items = [(r["tuple_id"], r["query"]) for r in rows]
 
 
-    # Choose the threshold on dev only.
-    best = max((3, 4, 5), key=lambda t: confusion(human_dev, binarise(dev, t)).agreement)
-    print(f"best threshold on dev: score >= {best}")
-    for split, scores, human in (("dev", dev, human_dev), ("test", test, human_test)):
-        print(f"{split:<4} likert>={best}: {confusion(human, binarise(scores, best))}")
-    for split in ("dev", "test"):
-        print(f"{split:<4} binary:    {lab05.validate('next-step', None, split).result}")
+    def same_case(i):
+        return tuple(by_id[i][k] for k in lab04.DEDUP_WITHIN)
 
-    assert best == 3
-    assert confusion(human_test, binarise(test, best)).tnr == 0.0
+
+    kept = {t: dedup(items, t, key=same_case) for t in (0.1, 0.15, 0.2, 0.3, 0.4, 0.6, 0.9)}
+    for t, res in kept.items():
+        print(f"threshold {t}: keep {len(res.kept)}")
+
+    # The pairs a threshold could act on: the most similar queries within the same test case.
+    pairs = sorted(
+        (
+            (similarity(qa, qb), a, b)
+            for (a, qa), (b, qb) in combinations(items, 2)
+            if same_case(a) == same_case(b)
+        ),
+        reverse=True,
+    )
+    print("\n--- the three most similar pairs ---")
+    for s, a, b in pairs[:3]:
+        print(f"{s:.2f} {a} {by_id[a]['persona']:<14} {by_id[a]['query'][:70]!r}")
+        print(f"     {b} {by_id[b]['persona']:<14} {by_id[b]['query'][:70]!r}")
+
+    assert [len(r.kept) for r in kept.values()] == [184, 195, 199, 200, 200, 200, 200]
+    assert round(pairs[0][0], 2) == 0.20
     ```
 
     Output:
 
     ```text
     best threshold on dev: score >= 3
-    dev  likert>=3: n=37 (human pass 33, fail 4)  TPR 1.00 (33/33)  TNR 0.75 (3/4)  agreement 0.97
-    test likert>=3: n=29 (human pass 25, fail 4)  TPR 1.00 (25/25)  TNR 0.00 (0/4)  agreement 0.86
-    dev  binary:    n=37 (human pass 33, fail 4)  TPR 0.97 (32/33)  TNR 0.75 (3/4)  agreement 0.95
-    test binary:    n=29 (human pass 25, fail 4)  TPR 0.92 (23/25)  TNR 1.00 (4/4)  agreement 0.93
+    dev  likert>=3: n=30 (human pass 30, fail 0)  TPR 1.00 (30/30)  TNR nan (0/0)  agreement 1.00
+    test likert>=3: n=28 (human pass 28, fail 0)  TPR 1.00 (28/28)  TNR nan (0/0)  agreement 1.00
+    dev  likert>=4: n=30 (human pass 30, fail 0)  TPR 0.97 (29/30)  TNR nan (0/0)  agreement 0.97
+    test likert>=4: n=28 (human pass 28, fail 0)  TPR 1.00 (28/28)  TNR nan (0/0)  agreement 1.00
+    dev  likert>=5: n=30 (human pass 30, fail 0)  TPR 0.53 (16/30)  TNR nan (0/0)  agreement 0.53
+    test likert>=5: n=28 (human pass 28, fail 0)  TPR 0.82 (23/28)  TNR nan (0/0)  agreement 0.82
+    dev  binary:    n=30 (human pass 30, fail 0)  TPR 1.00 (30/30)  TNR nan (0/0)  agreement 1.00
+    test binary:    n=28 (human pass 28, fail 0)  TPR 1.00 (28/28)  TNR nan (0/0)  agreement 1.00
+    share scored 5: dev 0.53, test 0.82
     ```
 
-    On dev, "PASS if score >= 3" agrees with the labels on 97% of traces, better than the binary judge. On test the
-    same threshold agrees on 86% and catches **none** of the 4 failures (TNR 0.00): every vague next step scored 3
-    or 4 on test. The binary judge keeps TNR 1.00 (4/4).
+    No dev or test trace is labelled `vague-next-step`: every next step the agent wrote was judged actionable. So
+    "agreement" here is just TPR, TNR is undefined (0/0) for every threshold and for the binary judge, and **no
+    number in this table says whether either judge catches a vague next step.** Choosing "score >= 3" because it
+    agrees 100% on dev is choosing the threshold that fails nothing; it would choose the same on traffic where half
+    the next steps were vague.
 
-    What went wrong: the scale has no agreed meaning between 2, 3, and 4, so the judge's scores for "partly
-    actionable" drift between splits, and the threshold you fitted to one split's drift does not transfer. Agreement
-    hides it because most traces pass. The fix is not a better threshold but a better question: write down what
-    makes a next step actionable (names an API, a setting, a measurement, or the specific information to send) and
-    ask for PASS or FAIL against that. If you want to see gradual progress, track several such binary criteria.
+    What the data does show is the scale drifting. All 58 next steps are acceptable to a human, yet the judge gives
+    53% of the dev ones a 5 and 82% of the test ones. A threshold of 5 would fail 14 good answers on dev and 5 on
+    test; a threshold fitted where such a move happens does not transfer, because nothing anchors what a 4 means
+    against a 5. On data with real failures, the same drift can push vague answers above whatever threshold you
+    fitted on dev, and the threshold would then catch none of them.
+
+    The fix is not a better threshold but a better question: write down what makes a next step actionable (names
+    an API, a setting, a measurement, or the specific information to send) and ask for PASS or FAIL against that.
+    Then validate it on labelled **failures**; if your traffic has none, collect or write some before you trust the
+    judge's TNR. If you want to see gradual progress, track several such binary criteria.
 
 ## Exercise 3: Show how judge error moves a pass rate, and why the interval is wide
 
 1. A judge has TPR 0.9 and TNR 0.6. The true pass rate of the traffic is 0.70. What pass rate does the judge
    report? Check that `corrected_pass_rate` recovers 0.70.
-2. The lab's corrected estimate has a 95% interval of about [0.24, 1.00]. Explain why, and show how the interval
-   would change with 4 and 16 times as many labelled test traces (assume the extra traces behave like the ones
-   you have).
+2. Can the course's test split support a correction at all? Then, for a hypothetical labelled set with 5 failures
+   (TPR 18/20, TNR 3/5) and traffic the judge passes 73 of 89 times, compute the corrected rate and its bootstrap
+   interval, and show how the interval would change with 4 and 16 times as many labelled traces (assume the extra
+   traces behave like the ones you have).
 
 ??? success "Solution"
     ```python
     # exercise-solution
+    import math
+
     from evalkit.judge import bootstrap_corrected, corrected_pass_rate
     from mediadoctor import lab05
 
@@ -139,30 +166,33 @@ Which numbers would have misled you, and why?
     assert round(observed, 2) == 0.75
     assert abs(corrected_pass_rate(observed, tpr, tnr) - true) < 1e-9
 
-    # 2. Why the course's interval is so wide, and what more labels would do.
-    est, _, test = lab05.estimate()
-    spec = lab05.load_spec("tool-grounding")
-    test_run = lab05.validate("tool-grounding", None, "test")
-    labelled = [(test_run.human[c], bool(v.passed)) for c, v in test_run.verdicts.items()]
-    unl = [
-        bool(v.passed)
-        for v in lab05.run_spec(spec, list(lab05.m3_items()), pool=lab05.m3_items()).values()
-    ]
-    print(f"25 labelled ({test.tn + test.fp} failures): CI [{est.low:.2f}, {est.high:.2f}]")
+    # 2a. The course's own test split cannot estimate TNR at all.
+    test = lab05.validate("tool-grounding", None, "test").result
+    print(f"course test split: {test}")
+    assert test.tn + test.fp == 0 and math.isnan(test.tnr)
+
+    # 2b. A hypothetical labelled set with 5 failures (TPR 18/20 = 0.90, TNR 3/5 = 0.60) and
+    # hypothetical traffic the judge passes 73 of 89 times. These counts are made up for the
+    # thought experiment; they are not course data.
+    labelled = [(True, True)] * 18 + [(True, False)] * 2 + [(False, False)] * 3 + [(False, True)] * 2
+    unl = [True] * 73 + [False] * 16
+    base = bootstrap_corrected(labelled, unl, draws=1000, seed=5)
+    print(f"25 labelled (5 failures): corrected {base.corrected:.2f}, CI [{base.low:.2f}, {base.high:.2f}]")
+    assert round(base.corrected, 2) == 0.84
     for k in (4, 16):
-        # Pretend each labelled trace had k independent twins with the same outcome. This is a
-        # thought experiment about sample size, not something to do with real data.
+        # Pretend each labelled trace had k independent twins with the same outcome.
         narrower = bootstrap_corrected(labelled * k, unl, draws=1000, seed=5)
         print(f"{25 * k} labelled ({5 * k} failures): CI [{narrower.low:.2f}, {narrower.high:.2f}]")
-        assert narrower.high - narrower.low < est.high - est.low
+        assert narrower.high - narrower.low < base.high - base.low
     ```
 
     Output:
 
     ```text
     observed 0.75 for a true rate of 0.70
-    25 labelled (5 failures): CI [0.24, 1.00]
-    100 labelled (20 failures): CI [0.56, 1.00]
+    course test split: n=28 (human pass 28, fail 0)  TPR 1.00 (28/28)  TNR nan (0/0)  agreement 1.00
+    25 labelled (5 failures): corrected 0.84, CI [0.12, 1.00]
+    100 labelled (20 failures): CI [0.57, 1.00]
     400 labelled (80 failures): CI [0.65, 1.00]
     ```
 
@@ -170,123 +200,130 @@ Which numbers would have misled you, and why?
        the dashboard shows 75% when the truth is 70%. The judge's 10% false fails pull the other way, but there are
        fewer bad answers than good ones, so the false passes win. Correcting divides out both:
        (0.75 + 0.6 − 1) / (0.9 + 0.6 − 1) = 0.35 / 0.5 = 0.70.
-    2. The denominator TPR + TNR − 1 is the judge's informativeness. With 5 labelled failures, the bootstrap often
-       draws resamples where TNR is 0.2 or 0.4, the denominator gets close to 0, and the corrected rate swings to
-       the extremes. Uncertainty about TNR, not about the traffic, dominates. With 20 labelled failures the lower
-       bound rises to about 0.56, and with 80 to about 0.65. (The upper bound stays at 1.00 because the estimate is
-       clipped and the point estimate is high.) The lesson: **label failures, not just traces**. If failures are
-       rare, oversample them for labelling (from judge-failed or signal-flagged traces), since TNR is estimated
-       only from them.
+    2. The course's test split has no human failures for the tool-grounding mode, so TNR is 0/0 and the correction
+       cannot be computed: there is nothing to say how often the judge passes a bad answer. With the hypothetical 5
+       failures, the point estimate is (0.82 + 0.6 − 1) / 0.5 = 0.84, but the interval runs from about 0.12 to
+       1.00. The denominator TPR + TNR − 1 is the judge's informativeness; with 5 failures, resamples often have
+       TNR 0.2 or 0.4, the denominator gets close to 0, and the corrected rate swings to the extremes. Uncertainty
+       about TNR, not about the traffic, dominates. With 20 labelled failures the lower bound rises to about 0.57,
+       and with 80 to about 0.65. (The upper bound stays at 1.00 because the estimate is clipped and the point
+       estimate is high.) The lesson: **label failures, not just traces**. If failures are rare, as they are in
+       this course's data, oversample them for labelling (from judge-failed or signal-flagged traces), since TNR
+       is estimated only from them.
 
 ## Exercise 4: Validate a code check, then fix it
 
-`check_investigated` has TNR 0.75 (3 of 4) against the `skipped-investigation` labels. Find the trace it misses,
-explain why the check passed it, and write a better check. Measure the new one on all 137 traces.
-
-??? success "Solution"
-    ```python
-    # exercise-solution
-    from evalkit.judge import confusion
-    from mediadoctor import lab05
-
-    rows = {r["id"]: r for r in lab05.label_rows()}
-    ids = list(lab05.items())
-    human = lab05.human_pass("skipped-investigation", ids)
-
-
-    def old(cid):
-        return lab05.check_investigated(lab05.traces()[cid], rows[cid])
-
-
-    missed = [c for c in ids if not human[c] and old(c)]
-    print("missed:", missed, rows[missed[0]]["evidence"], lab05.items()[missed[0]].question[:60])
-
-
-    def investigated_v2(cid):
-        """Some investigation happened (any tool, including search_kb), or the agent asked for details."""
-        it = lab05.items()[cid]
-        return bool(it.tools) or bool(lab05.ASKS.search(it.answer))
-
-
-    for name, fn in (("v1", old), ("v2", investigated_v2)):
-        print(name, confusion(human, {c: fn(c) for c in ids}))
-    assert confusion(human, {c: investigated_v2(c) for c in ids}).agreement == 1.0
-    ```
-
-    Output:
-
-    ```text
-    missed: ['m4q039'] none customer report - audio from our app continues over incoming
-    v1 n=137 (human pass 133, fail 4)  TPR 1.00 (133/133)  TNR 0.75 (3/4)  agreement 0.99
-    v2 n=137 (human pass 133, fail 4)  TPR 1.00 (133/133)  TNR 1.00 (4/4)  agreement 1.00
-    ```
-
-    The missed trace is an audio-focus question with `evidence=none`: nothing to inspect with ffprobe, codec_caps,
-    or logcat, so the old check returned True without looking. But the agent did not search the knowledge base
-    either; it answered from memory and cited `[kb:audio-focus]` without retrieving it. The expert's definition of
-    "skipped investigation" was "did not look anything up", while the check's was "did not inspect the named
-    evidence".
-
-    The new check passes a trace if any tool ran (including `search_kb`) or the agent asked for details, and
-    agrees with all 137 labels. Two cautions: 4 failures is a small validation set for a check too; and a
-    deterministic check can still encode the wrong definition, so it needs labels just like a judge does, though
-    only once rather than after every model update.
-
-## Exercise 5: Diagnose the false-premise judge
-
-On dev, the false-premise judge has TNR 0.44 (4 of 9). Group its disagreements, decide what a v2 should change,
-and choose few-shot examples for it from the train split.
+`check_investigated` has TPR 0.78 (115 of 147) against the `skipped-investigation` labels: it fails 32 traces
+that the expert passed. Find them, explain why the check failed them, and write a better check. Measure the new
+one on all 147 traces, and say what the measurement cannot tell you.
 
 ??? success "Solution"
     ```python
     # exercise-solution
     from collections import Counter
 
+    from evalkit.synth import assign_splits, leakage_pairs
+    from mediadoctor.lab04 import GROUP_THRESHOLD, load_dataset
+
+    v1 = load_dataset()
+    items = [(r["tuple_id"], r["question"]) for r in v1]
+    by_tid = {r["tuple_id"]: r for r in v1}
+
+    grouped = assign_splits(items, salt="mediadoctor-v1", group_threshold=GROUP_THRESHOLD)
+    naive = assign_splits(items, salt="mediadoctor-v1", group_threshold=1.01)  # no grouping
+    for name, splits in (("grouped", grouped), ("independent", naive)):
+        leaks = leakage_pairs(items, splits, GROUP_THRESHOLD)
+        print(f"{name:<12} {dict(Counter(splits.values()))}  leaking pairs: {len(leaks)}")
+    print(f"same assignment either way: {grouped == naive}")
+
+    # Nothing reaches 0.35. Lower the bar to see the closest pairs that do cross splits.
+    close = sorted(leakage_pairs(items, naive, 0.15), key=lambda x: -x[2])
+    print(f"{len(close)} cross-split pairs at similarity >= 0.15:")
+    for a, b, s in close:
+        print(f"  {s:.2f} [{naive[a]}] {by_tid[a]['question'][:60]!r}")
+        print(f"       [{naive[b]}] {by_tid[b]['question'][:60]!r}")
+    assert len(leakage_pairs(items, grouped, GROUP_THRESHOLD)) == 0 and grouped == naive
+    assert len(close) == 3
+    ```
+
+    Output:
+
+    ```text
+    32 false alarms; tools used: Counter({('search_kb',): 31, ('search_kb', 'search_kb'): 1})
+    m4q003 device DRM playback is capped at a lower rendition on one of the bu
+    v1 n=147 (human pass 147, fail 0)  TPR 0.78 (115/147)  TNR nan (0/0)  agreement 0.78
+    v2 n=147 (human pass 147, fail 0)  TPR 1.00 (147/147)  TNR nan (0/0)  agreement 1.00
+    ```
+
+    The false alarms are mostly `missing-detail` questions (28 of the 32): the dataset row says there is a device,
+    file, or log to inspect, but the question only says "one of the budget test phones" or "the log they sent".
+    The agent searched the knowledge base, answered from it, and said what it had not checked ("I haven't inspected
+    the asset (no file name given)"). The old check wants an inspecting tool, or a request matching its narrow
+    `send me` / `which device` pattern, so it fails these. The expert's definition of "skipped investigation" was
+    "did not look anything up and did not say what it could not check"; the check's was "did not run the tool the
+    dataset expected".
+
+    The new check passes a trace if any tool ran (including `search_kb`) or the agent asked for details, and
+    agrees with all 147 labels. But read that 1.00 carefully: **no trace in this set is a human FAIL for
+    skipped-investigation**, so TNR is 0/0 and a check that always returned True would also score 1.00. The labels
+    show v2 stops the false alarms; they cannot show it still catches a real skipped investigation, and v2 is
+    looser than v1 (a lone `search_kb` call now passes a question that pasted a log). Before trusting it, add
+    labelled failures: traces where the agent answered an inspectable question without looking, written or
+    collected for the purpose. A deterministic check can encode the wrong definition, so it needs labels just like
+    a judge does, though only once rather than after every model update.
+
+## Exercise 5: Diagnose the false-premise judge
+
+On dev, the false-premise judge agrees with every label. Find out what that result rests on: how many dev
+questions carry a false premise, what the judge did with them, and whether the train split offers a FAIL example
+for a v2.
+
+??? success "Solution"
+    ```python
+    # exercise-solution
     from evalkit.judge import disagreements
     from mediadoctor import lab05
 
     v = lab05.validate("false-premise", None, "dev")
     labels = lab05.annotations()
     rows = {r["id"]: r for r in lab05.label_rows()}
-    kinds = Counter()
-    for cid, kind in disagreements(v.human, {k: x.passed for k, x in v.verdicts.items()}):
-        if kind.startswith("judge PASS"):
-            # Where did the agent use the false premise? With ignored-tool-output it is in the cause.
-            where = "cause" if "ignored-tool-output" in labels[cid].modes else "next step"
-            kinds[f"missed, premise used in the {where}"] += 1
-        else:
-            kinds[f"false alarm, {rows[cid]['ambiguity']} question"] += 1
-    for k, n in kinds.most_common():
-        print(f"{n}  {k}")
+    print(v.result)
+    dis = disagreements(v.human, {k: x.passed for k, x in v.verdicts.items()})
+    print("disagreements:", dis)
 
-    # A train example of the missed kind, to add as a few-shot FAIL in false-premise v2:
-    train_next = [
-        c
-        for c in lab05.ids_in("train")
-        if "accepted-false-premise" in labels[c].modes and "ignored-tool-output" not in labels[c].modes
-    ]
-    print("train candidates:", train_next)
-    assert kinds["missed, premise used in the next step"] == 5
+    # Where could the judge have failed? On questions that carry a false premise.
+    fp_dev = [c for c in v.verdicts if rows[c]["ambiguity"] == "false-premise"]
+    print(f"{len(fp_dev)} dev questions with a false premise; judge passed {sum(v.verdicts[c].passed for c in fp_dev)}")
+
+    # A FAIL few-shot example for v2 would have to come from train:
+    by_split = {s: sum("accepted-false-premise" in labels[c].modes for c in lab05.ids_in(s))
+                for s in ("train", "dev", "test")}
+    print("accepted-false-premise labels by split:", by_split)
+    assert dis == [] and len(fp_dev) == 12
+    assert all(v.verdicts[c].passed for c in fp_dev)
+    assert by_split == {"train": 0, "dev": 0, "test": 0}
     ```
 
     Output:
 
     ```text
-    5  missed, premise used in the next step
-    1  false alarm, false-premise question
-    1  false alarm, missing-detail question
-    train candidates: ['m4q073', 'm4q176']
+    n=30 (human pass 30, fail 0)  TPR 1.00 (30/30)  TNR nan (0/0)  agreement 1.00
+    disagreements: []
+    12 dev questions with a false premise; judge passed 12
+    accepted-false-premise labels by split: {'train': 0, 'dev': 0, 'test': 0}
     ```
 
-    All five misses are answers that used the false premise in the **Next step** rather than in the cause, for
-    example the audio-focus answers that recommend `AudioFocusRequest` "available from API 21" (it needs API 26).
-    The judge's critiques say so themselves: "The answer does not repeat the user's claim in its cause". The v1
-    FAIL definition says "repeats it or builds its cause or next step on it", but both FAIL examples show the
-    premise in the cause, and the examples won.
+    There is nothing to group: the judge has no disagreements on dev. Twelve dev questions carry a false premise
+    (for example "AudioFocusRequest works from API 21", or "lumen-l3 decodes HEVC Main 10 in hardware"), the agent
+    corrected every one, and the judge's critiques say so ("The answer corrects this to API 26+ from the knowledge
+    base"). That is worth knowing: on these 12 the judge does not raise false alarms on an answer that pushes back
+    on the user. It is TPR evidence only.
 
-    A v2 would add one sentence to FAIL ("this includes a next step that relies on the claim, such as an API level
-    the user gave"), and one train example of exactly this kind: `m4q176` (the same audio-focus premise) or
-    `m4q073` (`Display.isHdr()` from API 21). Check it with `leakage_problems`, rerun on **dev**, and read the
-    disagreements again. The two false alarms are a separate issue (the judge failed an answer that does say "That
-    premise does not hold here"), worth one PASS example if they persist. The test split has been used for v1; a
-    v2 needs new test labels before you can report it.
+    No trace in any split was labelled `accepted-false-premise`, so TNR is undefined and the train split has no
+    FAIL example to add; that is why every few-shot example in `false-premise.v1.toml` is a PASS. A v2 cannot be
+    diagnosed from these labels. To validate the judge's TNR you need failing traces: collect them from real
+    traffic, ask the agent the same false-premise questions under a weaker prompt or model, or write a few answers
+    that accept the premise by hand (labelled as written, kept out of dev and test, or in a new test set). Check
+    any new example with `leakage_problems`, rerun on **dev**, and read the disagreements. With data where the
+    agent does accept premises, the method above is what would show whether the judge misses premises used in the
+    Next step rather than in the cause.

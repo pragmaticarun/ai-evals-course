@@ -92,13 +92,17 @@ def test_call_usage_prices_cache_reads():
     assert u.cost_usd == pytest.approx((400 * 2 + 100 * 10 + 1000 * 0.1) / 1e6)
 
 
-def test_reference_grader_agrees_with_the_labels():
+def test_reference_grader_fails_every_labelled_failure_but_rejects_most_good_answers():
+    # The regenerated answers are natural prose; the regex reference check (`check_correct`) and the
+    # code checks still fail every answer the labels call defective, but they also reject most of the
+    # answers the labels call correct. Measure the grader against the labels before trusting it.
     labels = lab11.reference_labels()
-    assert len(labels) == 7 * 137
+    assert len(labels) == 7 * 147
+    agree = {(True, True): 0, (True, False): 0, (False, True): 0, (False, False): 0}
     for name in X.variants():
         for row in lab11.run_rows(name):
             mode = labels[(name, row.case_id)]
-            assert row.graded == (mode == "none"), (name, row.case_id, mode, row.checks)
+            agree[(row.graded, mode == "none")] += 1
             checks = dict(row.checks)
             if mode in ("premise", "ignored"):
                 assert not checks["correct"] and checks["citations"]
@@ -106,12 +110,18 @@ def test_reference_grader_agrees_with_the_labels():
                 assert not checks["investigated"] or not checks["citations"]
             if mode == "format":
                 assert not checks["format"]
+    assert agree[(True, False)] == 0  # the grader never passes a labelled failure (15 on dev)
+    assert agree == {(True, True): 198, (True, False): 0, (False, True): 620, (False, False): 15}
 
 
-def test_caching_changes_cost_and_latency_not_answers():
+def test_caching_cuts_cost_and_the_no_change_rule_flags_the_resampled_answers():
     a, b = lab11.task_results("v3"), lab11.task_results("v3-cache")
-    assert [t.answer for t in a] == [t.answer for t in b]
-    assert sum(t.usage.cost_usd for t in b) < 0.5 * sum(t.usage.cost_usd for t in a)
+    # The two configurations' answers were generated in separate runs, so none is word-for-word
+    # equal and 25 of 119 tasks grade differently: the no-change rule's identity check catches it.
+    assert sum(x.answer == y.answer for x, y in zip(a, b, strict=True)) == 0
+    assert sum(x.checks == y.checks for x, y in zip(a, b, strict=True)) == 94
+    assert "graded answers identical: NO" in lab11.decide().verdicts["v3-cache"][1]
+    assert sum(t.usage.cost_usd for t in b) < 0.55 * sum(t.usage.cost_usd for t in a)  # -46%
     first = b[0].attempts[0].usage
     assert first.cache_read_tokens + first.cache_write_tokens > 0
     assert sum(t.usage.cache_write_tokens > 0 for t in b) <= 1  # only the very first call writes
@@ -145,17 +155,17 @@ def test_cascade_and_retry_add_up_their_attempts():
 
 def test_dev_and_holdout_splits():
     dev, hold = lab11.split_cases("dev"), lab11.split_cases("holdout")
-    assert (len(dev), len(hold)) == (108, 29)
+    assert (len(dev), len(hold)) == (119, 28)
     assert not {c["id"] for c in dev} & {c["id"] for c in hold}
 
 
 def test_summary_numbers():
     s = lab11.summary("v1")
-    assert (s.n, s.successes, s.timeouts) == (108, 72, 1)
+    assert (s.n, s.successes, s.timeouts) == (119, 28, 7)
     assert s.cost_per_success == pytest.approx(s.cost_per_task * s.n / s.successes)
     assert s.cps_low < s.cost_per_success < s.cps_high
     assert s.p50_ms < s.p95_ms and s.cache_hit_rate == 0
-    assert lab11.summary("v3-cache").successes == 92 and lab11.summary("retry").successes == 97
+    assert lab11.summary("v3-cache").successes == 23 and lab11.summary("retry").successes == 24
     assert lab11.summary("v3-cache").cache_hit_rate > 0.7
 
 
@@ -167,17 +177,19 @@ def test_cost_per_success_with_no_successes_is_infinite():
 
 def test_pareto_front_and_cheapest_within():
     pts = [lab11.summary(n) for n in X.variants()]
-    assert [p.variant for p in lab11.pareto_front(pts)] == ["haiku", "cascade", "v3-cache", "retry"]
-    assert lab11.cheapest_within(pts, 0.02).variant == "retry"
-    assert lab11.cheapest_within(pts, 0.05).variant == "v3-cache"
+    assert [p.variant for p in lab11.pareto_front(pts)] == ["haiku", "cascade", "v2"]
+    assert lab11.cheapest_within(pts, 0.02).variant == "v2"
+    assert lab11.cheapest_within(pts, 0.03).variant == "cascade"
 
 
 def test_decision_follows_the_preregistered_rule():
     d = lab11.decide()
-    assert d.kept == ["v1", "v2", "v3", "v3-cache", "retry"]
-    assert d.chosen == d.best == "retry"
-    assert d.verdicts["haiku"][0] == d.verdicts["cascade"][0] == "reject"
-    assert "graded answers identical: yes" in d.verdicts["v3-cache"][1]
+    # No change on the v1 -> v2 -> v3 -> v3-cache path passes its rule, so the chain stops at v1;
+    # haiku and cascade pass theirs, but their parent (v3-cache) was rejected, so neither is kept.
+    assert d.kept == ["v1"]
+    assert d.chosen == "v1" and d.best == "cascade"
+    assert [n for n, (v, _) in d.verdicts.items() if v == "keep"] == ["haiku", "cascade"]
+    assert "graded answers identical: NO" in d.verdicts["v3-cache"][1]
 
 
 def test_report_log_and_memo():
@@ -188,8 +200,9 @@ def test_report_log_and_memo():
     memo = lab11.memo_markdown(today="2026-11-23")
     for section in ("## Decision requested", "## How sure we are", "## What we are not saying"):
         assert section in memo
-    assert "**retry on judge FAIL**" in memo and "(-51%)" in memo
-    assert "thinnest step is retry on judge FAIL" in memo and "p=0.06" in memo
+    assert "from **v1 (release)** to **v1 (release)**" in memo and "(+0%)" in memo
+    assert "No kept change moved any task's outcome." in memo
+    assert "**Haiku → Sonnet cascade** scored higher" in memo
     assert len(memo.splitlines()) < 60  # one page
 
 
@@ -208,9 +221,10 @@ def test_latency_breakdown_names_the_retry():
 
 def test_ev_ranks_by_value():
     fv = lab11.fix_values()
-    assert [f.mode for f in fv[:2]] == ["ignored-tool-output", "fabricated-evidence"]
+    assert fv[0].mode == "fabricated-evidence" and fv[0].count == 3
+    assert all(f.count == 0 and f.value == 0 for f in fv[1:])  # the only mode left in module 3
     assert max(fv, key=lambda f: f.per_day).mode == "fabricated-evidence"
-    assert fv[0].ci[0] < fv[1].rate < fv[0].ci[1]  # the top two are not separable at n=100
+    assert fv[1].ci[1] > fv[0].ci[0]  # 3/100 is not separable from 0/100 at n=100
 
 
 def test_holdout_is_guarded_and_logged(tmp_path):
@@ -220,9 +234,9 @@ def test_holdout_is_guarded_and_logged(tmp_path):
     with pytest.raises(HoldoutAccessError):
         lab11.confirm_holdout("v3-cache", release=False, guard=guard, log_path=tmp_path / "h.csv")
     sa, sb, p = lab11.confirm_holdout("v3-cache", True, guard, tmp_path / "h.csv")
-    assert sa.n == sb.n == 29 and guard.looks == 1
+    assert sa.n == sb.n == 28 and guard.looks == 1
     rows = list(csv.DictReader((tmp_path / "h.csv").open()))
-    assert rows[0]["variant"] == "v3-cache" and rows[0]["n"] == "29"
+    assert rows[0]["variant"] == "v3-cache" and rows[0]["n"] == "28"
     with pytest.raises(HoldoutAccessError):
         lab11.trace_text("v1", lab11.split_cases("holdout")[0]["id"])
 
@@ -244,8 +258,10 @@ def test_guard_type_is_evalkits():
 
 def test_selfcheck_confusion():
     sc = lab11.selfcheck_stats()
-    assert sc.tp + sc.fn + sc.tn + sc.fp == 108 and sc.retried == sc.tp + sc.fp
+    assert sc.tp + sc.fn + sc.tn + sc.fp == 119 and sc.retried == sc.tp + sc.fp
     assert sc.fixed <= sc.retried
+    # The judge caught none of the 3 defective first answers and sent 6 good ones back.
+    assert (sc.tp, sc.fn, sc.tn, sc.fp, sc.fixed) == (0, 3, 110, 6, 6)
 
 
 def test_docs_frontier_chart_is_current():
