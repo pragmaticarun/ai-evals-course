@@ -9,9 +9,9 @@ Write what you expect to go wrong, before choosing dimensions. Each dimension sh
 
 | # | Hypothesis | Evidence so far | Dimension(s) that test it |
 |---|---|---|---|
-| H1 | The agent answers from memory when the question names a file or device | module 3: skipped-investigation | `evidence` |
+| H1 | The agent answers from memory when the question names a file or device | module 3: fabricated-evidence (3 of 100 traces state details no tool returned) | `evidence` |
 | H2 | The agent repeats wrong beliefs stated by the user | none yet (guess) | `ambiguity` |
-| H3 | Vague, misspelt questions retrieve the wrong note | module 3: retrieval-miss | `expertise` |
+| H3 | Vague, misspelt questions retrieve the wrong note | none in module 3's 100 traces (guess) | `expertise` |
 
 ## Part 2: dimensions
 

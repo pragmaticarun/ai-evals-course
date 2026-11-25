@@ -1,5 +1,5 @@
-# Judge for the failure mode "ignored-tool-output" (module 3's top mode). Version 2.
-# Change from v1 (after reading dev disagreements): v1 passed answers that repeated a wrong claim the
+# Judge for the failure mode "ignored-tool-output". Version 2.
+# Change from v1 (written when the course's original planted traces showed it): v1 passed answers that repeated a wrong claim the
 # USER had made, as if agreeing with the user made it true. v2 says so in the FAIL definition and adds
 # two few-shot examples of exactly that kind: the user asserts a claim the tool output contradicts and
 # the answer sides with the tools (PASS). No train trace repeats such a claim, so there is no negative.

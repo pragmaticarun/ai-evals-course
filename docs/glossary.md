@@ -93,7 +93,7 @@ Seeded in module 1; each later module adds its terms. The module that introduces
 : Agreement between two annotators corrected for chance: (p_o − p_e) / (1 − p_e). 1 is perfect, 0 is chance level; low for rare categories even when raw agreement is high.
 
 **Common random numbers** [11]
-: Using the same random draws for every configuration in a simulation, so differences between configurations are not swamped by sampling noise; the lab's synthetic fixtures use them per query and failure mode.
+: Using the same random draws for every configuration in a simulation, so differences between configurations are not swamped by sampling noise. Module 11's configurations were generated in separate runs without them, which is why two configurations' answers to the same query are independent samples.
 
 **Compounding failure** [3]
 : An early mistake in a multi-step run that causes later symptoms, such as a bad tool argument followed by an answer citing the failed tool. Label the first one.
