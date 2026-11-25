@@ -36,11 +36,14 @@ saturated? (≥100 read and ~20 in a row with nothing new) ── no ──► r
 
 ## Good notes vs weak notes
 
+The first two rows are illustrations of the note style, not cases from the course data; the third is the module 3
+reference note on `m3t010`.
+
 | Weak | Better |
 |---|---|
 | hallucination | says lumen-l3 supports Main 10; codec_caps profiles = [Main] |
 | bad retrieval | 'sound continues when phone rings' → av-sync, needed audio-focus |
-| wrong | ffprobe('late_moov.mp4') failed; answer cites [tool:ffprobe] |
+| made it up | says lumen-l3 AV1 is software-only, 1080p30; no tool queried lumen-l3 |
 
 ## Special cases
 
