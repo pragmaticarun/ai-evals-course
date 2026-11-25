@@ -43,13 +43,14 @@ failures?**
     judge and read disagreements. Test: held out, run once when you have stopped changing the judge, and reported.
     If you change the judge after looking at test, test is no longer a held-out estimate; you need new test labels.
 
-**7. Your tool-grounding judge has TPR 0.90 and TNR 0.60, and reports a pass rate of 0.82 on new traffic. What is
-the corrected pass rate, and why does it need an interval?**
+**7. A judge has TPR 0.90 and TNR 0.60, measured on 20 labelled passes and 5 labelled failures, and reports a pass
+rate of 0.82 on new traffic. What is the corrected pass rate, and why does it need an interval?**
 
 ??? question "Answer"
     (0.82 + 0.60 − 1) / (0.90 + 0.60 − 1) = 0.42 / 0.50 = 0.84 (Rogan-Gladen). TPR and TNR are estimates from a
-    small labelled set (here 20 passes and 5 failures), so the correction is uncertain too; a bootstrap that
-    resamples both the labelled set and the traffic gives an interval that includes the judge's uncertainty.
+    small labelled set (20 passes and 5 failures), so the correction is uncertain too; a bootstrap that
+    resamples both the labelled set and the traffic gives an interval that includes the judge's uncertainty. With
+    no labelled failures at all, as in this course's test split, TNR is 0/0 and no correction is possible.
 
 **8. Give two ways a judge prompt can leak evaluation data.**
 

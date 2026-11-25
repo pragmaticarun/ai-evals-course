@@ -70,7 +70,8 @@ do you do about it?**
     Where runs break. For each failed run it records the last state that succeeded and the first that failed (route,
     handoff, a specific tool call, evidence, answer), and counts the pairs. Hot cells show which component to fix
     first, and upstream failures (routing, handoffs) are counted once instead of being blamed on everything after
-    them. In the lab, a third of failures were one tool-argument mistake by one specialist.
+    them. In the lab, both failures sat in one cell (evidence complete, answer wrong), which points at the synthesis
+    step, not at routing or tools; with only two failures, that is a place to look, not a measured hotspot.
 
 **9. In a planner-and-specialists system, what is a handoff error, and how can you detect it with code?**
 

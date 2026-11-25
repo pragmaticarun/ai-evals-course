@@ -135,30 +135,39 @@ The lab's `gave-up-early` judge reads whole transcripts. Write a cheap alternati
     Output:
 
     ```text
-    regex: n=32 (human pass 25, fail 7)  TPR 0.92 (23/25)  TNR 1.00 (7/7)  agreement 0.94
-    judge: n=32 (human pass 25, fail 7)  TPR 0.92 (23/25)  TNR 0.86 (6/7)  agreement 0.91
-      regex wrong on c01-v1: Likely cause: Hard to say for sure, but network throughput is probably too low f
-      regex wrong on c13-v2: Likely cause: Since the decoder supports these clips, the files themselves are p
-    regex AND judge: n=32 (human pass 25, fail 7)  TPR 0.92 (23/25)  TNR 1.00 (7/7)  agreement 0.94
+    regex: n=32 (human pass 29, fail 3)  TPR 1.00 (29/29)  TNR 0.00 (0/3)  agreement 0.91
+    judge: n=32 (human pass 29, fail 3)  TPR 1.00 (29/29)  TNR 0.00 (0/3)  agreement 0.91
+      regex wrong on c05-v1: Likely cause: The audio and video timestamps are offset, commonly from mismatche
+      regex wrong on c06-v1: Likely cause: The HDR video is probably being rendered without HDR-to-SDR tone m
+      regex wrong on c13-v1: Likely cause: The phone likely lacks a hardware decoder profile for that HDR for
+    regex AND judge: n=32 (human pass 29, fail 3)  TPR 1.00 (29/29)  TNR 0.00 (0/3)  agreement 0.91
     ```
 
-    On these 32 sessions the regex looks better than the judge (TNR 1.00 vs 0.86), and that is exactly the trap: the
-    phrases came from reading these same sessions, so the regex is fitted to its test set. Its two errors are
-    hedges, not give-ups ("hard to say for sure, but..." and "if it persists, contact the device vendor"), which
-    any phrase list will keep tripping on. The judge's miss is the polite give-up after a question (`c06-v2`). To
-    choose, write the regex on half the sessions, measure both on the other half (module 5's dev/test split), and
-    expect the regex to drop. In production, a cheap regex can pre-filter and the judge can confirm; note that the
-    "AND" combination only helps if the two make different mistakes, which needs more than 7 positives to show.
+    Neither check catches a single give-up. The regex looks for phrases like "can't tell", "contact the vendor",
+    and "many possible causes", and the judge was written for the same kind of give-up. The three labelled give-ups
+    (`c05-v1`, `c06-v1`, `c13-v1`) are none of these. They are v1 answers given without asking for the missing
+    fact, and they sound confident ("The audio and video timestamps are offset, commonly from...") but hedge across
+    several causes and offer only a diagnostic step. The 0.91 agreement is just the base rate: a check that never
+    flags anything agrees on the 29 sessions that did not give up. Combining the two changes nothing, because both
+    fail the same way.
+
+    Before choosing between the regex and the judge, fix the definition. Read the three positives, write down what
+    makes them give-ups ("answers a question it should have asked, with a list of hedged causes"), and rewrite the
+    judge prompt or the regex to match. Develop on half the sessions, measure on the other half (module 5's dev/test
+    split), and expect too few positives to say much: with 3 give-ups in 32, you need more sessions, or a weaker
+    prompt that gives up more often, before any TNR means anything.
 
 ## Exercise 3: Retrieval fix or generation fix?
 
 For each RAG system, compute (a) the pass rate now, (b) the pass rate if retrieval were perfect (every query gets
 an answering passage, and the generator does as well as it does on hits today), and (c) the pass rate if the
-generator never failed when it had the answer. Then break the improved system's generation failures down by cause.
+generator never failed when it had the answer. Then break the improved system's failures down by component.
 
 ??? success "Solution"
     ```python
     # exercise-solution: which fix is worth more, retrieval or generation?
+    from collections import defaultdict
+
     from mediadoctor import lab07
 
     for system in ("baseline", "improved"):
@@ -174,34 +183,36 @@ generator never failed when it had the answer. Then break the improved system's 
             f"(+{perfect_generation - now:.2f})"
         )
 
-    why = {}
+    failures = defaultdict(list)
     for r in lab07.rag_runs().values():
         lab = lab07.rag_labels()[r.id]
-        if r.system == "improved" and r.hit and not (lab["correct"] and lab["faithful"]):
-            why[lab["note"]] = why.get(lab["note"], 0) + 1
-    print("improved, generation failures by cause:", why)
+        if r.system == "improved" and not (lab["correct"] and lab["faithful"]):
+            failures["generation failure" if r.hit else "retrieval failure"].append(r.query.id)
+    print("improved, failures by component:", dict(failures))
     ```
 
     Output:
 
     ```text
-    baseline  now 0.56 | perfect retrieval 0.75 (+0.19) | perfect generation on hits 0.75 (+0.19)
-    improved  now 0.60 | perfect retrieval 0.72 (+0.12) | perfect generation on hits 0.83 (+0.23)
-    improved, generation failures by cause: {'correct core, plus a specific claim the passages do not contain': 8, 'answers from an unrelated passage in the context': 3}
+    baseline  now 0.75 | perfect retrieval 1.00 (+0.25) | perfect generation on hits 0.75 (+0.00)
+    improved  now 0.83 | perfect retrieval 1.00 (+0.17) | perfect generation on hits 0.83 (+0.00)
+    improved, failures by component: {'retrieval failure': ['r06', 'r07', 'r11', 'r13', 'r22', 'r23', 'r45', 'r46']}
     ```
 
-    For the baseline both fixes are worth the same (+0.19). After the retrieval improvement, perfect retrieval
-    would add only 12 points but a perfect generator 23: the bottleneck has moved. Eight of the 11 generation
-    failures add a specific claim that is not in the passages, so the next change is in the prompt or the
-    generation step (quote the passage, forbid unsupported specifics), measured with a validated faithfulness
-    judge. Both ceilings are estimates: "perfect retrieval" assumes the newly retrieved queries behave like the
-    current hits, which is optimistic, because the hard-to-retrieve queries are often hard to answer too.
+    In this data the question has a one-sided answer. The generator passed every query where an answering passage
+    reached it, so a perfect generator would add nothing (+0.00), and every remaining failure is retrieval: all
+    eight of the improved system's failures are queries where no answering passage was in the top 3, and the
+    generator declined or hedged instead of guessing. The next change is in search: query rewriting or embeddings
+    for the vocabulary gaps (r07, r11, r13 are the codec misses from the lab), not the prompt. Treat the
+    "perfect retrieval 1.00" ceiling as optimistic. It assumes the newly retrieved queries behave like the current
+    hits, but the hard-to-retrieve queries are often hard to answer too. On a system whose generator also fails, the
+    same three numbers show how much each fix is worth, and the bottleneck can move after a retrieval fix.
 
 ## Exercise 4: Find the transition-matrix hotspot and price the fix
 
-From the multi-agent runs: (1) list the hottest cells; (2) for runs that first fail at `codec_caps`, show the device
-arguments that failed; (3) count passing runs that hit a tool error and recovered, and their step efficiency;
-(4) estimate the pass rate if `codec_caps` accepted display names.
+From the multi-agent runs: (1) list the hottest cells and read the notes of the runs in the hottest one; (2) count
+the runs whose route differed from the reference, their verdicts and step efficiency; (3) list passing runs that
+never gathered the reference's expected evidence; (4) estimate the pass rate if the hottest cell were fixed.
 
 ??? success "Solution"
     ```python
@@ -216,48 +227,50 @@ arguments that failed; (3) count passing runs that hit a tool error and recovere
     cells = Counter(f for f in fails.values() if f)
     cell, count = cells.most_common(1)[0]
     print(f"hottest cells: {cells.most_common(3)}")
-
-    # Who fails at codec_caps, and with what arguments?
-    args = Counter()
     for cid, f in fails.items():
-        if f and f[1] == "codec_caps":
-            bad = next(s for s in runs[cid].tool_steps if s.name == "codec_caps" and not s.ok)
-            args[bad.args["device"]] += 1
-    print("failed codec_caps device arguments:", dict(args))
+        if f == cell:
+            print(f"  {cid}: {refs[cid]['note'][:90]}")
 
-    # The same mistake also happens in runs that recovered: they pass, but pay for it.
-    recovered = [
+    # Upstream deviations that did not fail the run: wrong routes, and passes without the expected evidence.
+    wrong_route = [cid for cid, r in runs.items() if not lab07.states(r)[0][1]]
+    passed = Counter(refs[c]["verdict"] for c in wrong_route)
+    print(f"wrong route: {len(wrong_route)} runs, verdicts {dict(passed)}")
+    no_evidence = [
         cid
         for cid, r in runs.items()
-        if refs[cid]["verdict"] == "pass" and any(not s.ok for s in r.tool_steps)
+        if refs[cid]["verdict"] == "pass" and lab07.states(r)[-2] != ("evidence", True)
     ]
-    eff = [step_efficiency(lab07.minimal_calls(c), runs[c].model_calls) for c in recovered]
-    print(
-        f"passed after a failed tool call: {len(recovered)} runs, mean step efficiency {sum(eff) / len(eff):.2f}"
-    )
+    print(f"passed without the expected evidence: {no_evidence}")
+    eff = [step_efficiency(lab07.minimal_calls(c), runs[c].model_calls) for c in wrong_route]
+    print(f"wrong-route runs, mean step efficiency {sum(eff) / len(eff):.2f}")
 
     n = len(runs)
     k = sum(refs[c]["verdict"] == "pass" for c in runs)
-    fixable = sum(1 for f in fails.values() if f and f[1] == "codec_caps")
-    print(f"pass rate now {k / n:.2f}; if codec_caps accepted display names: {(k + fixable) / n:.2f}")
+    print(f"pass rate now {k / n:.2f}; if every {cell} failure were fixed: {(k + count) / n:.2f}")
     ```
 
     Output:
 
     ```text
-    hottest cells: [(('evidence', 'answer'), 6), (('handoff', 'codec_caps'), 5), (('start', 'plan'), 4)]
-    failed codec_caps device arguments: {'Lumen L3': 5, 'Atlas A1': 1}
-    passed after a failed tool call: 5 runs, mean step efficiency 0.83
-    pass rate now 0.66; if codec_caps accepted display names: 0.77
+    hottest cells: [(('evidence', 'answer'), 2)]
+      m4q028: Generic answer: it restates the KB's audio-focus note but does not answer what was asked (
+      m4q081: Generic answer: it restates the KB ('handleAudioFocus should pause for you'), admits it ca
+    wrong route: 11 runs, verdicts {'pass': 11}
+    passed without the expected evidence: ['m4q052', 'm4q163', 'm4q192']
+    wrong-route runs, mean step efficiency 0.77
+    pass rate now 0.96; if every ('evidence', 'answer') failure were fixed: 1.00
     ```
 
-    Three cells tie for attention: synthesis (`evidence → answer`, 6), routing (`start → plan`, 4), and the tool
-    argument problem (`handoff → codec_caps` plus `logcat_grep → codec_caps`, 6 together). The tool problem is the
-    cheapest to fix and the most certain: every one of those failures is a display name ("Lumen L3", "Atlas A1")
-    passed as a device id, and the same mistake shows up in runs that recovered, costing them an extra model call.
-    Normalising names in the tool (or listing the valid ids in the specialist's tool description) would lift the
-    pass rate from 0.66 to about 0.77 on this set, if nothing else changes. Re-run the matrix after the fix:
-    failures that were hidden behind the first one may surface.
+    The matrix has one hot cell, and it holds both failures: synthesis (`evidence → answer`). In both runs the
+    knowledge specialist found only a general audio-focus note, and the planner restated it instead of answering
+    the specific question. The fix is in the planner's answer step: say what the knowledge base does not cover
+    instead of padding with what it does. That would lift the pass rate from 0.96 to 1.00 on this set, but two runs
+    are far too few to price a fix (module 6). The upstream deviations matter more for the eval itself. The planner
+    picked a different route from the reference 11 times, every one of those runs passed, and the extra specialists
+    cost about a quarter of the model calls (mean step efficiency 0.77). Three runs passed without the reference's
+    expected evidence. Before you count either as an error, check whether the reference trajectory is too strict.
+    Re-run the matrix on a harder set or a weaker model: the method only shows hotspots when there are failures to
+    spread across it.
 
 ## Exercise 5: The vision judge by severity, and how many frames you need
 
@@ -290,19 +303,21 @@ interval.
 
     ```text
     frame-blocking  severe  detected 3/3  95% CI [0.44, 1.00]
-    frame-blocking  mild    detected 1/3  95% CI [0.06, 0.79]
-                    false alarms 1/10: ['banding_severe_b.png']
+    frame-blocking  mild    detected 3/3  95% CI [0.44, 1.00]
+                    false alarms 4/10: ['banding_severe_a.png', 'banding_severe_b.png', 'banding_severe_c.png', 'banding_mild_a.png']
     frame-banding   severe  detected 3/3  95% CI [0.44, 1.00]
-    frame-banding   mild    detected 1/3  95% CI [0.06, 0.79]
-                    false alarms 1/10: ['blocking_severe_gradient.png']
+    frame-banding   mild    detected 3/3  95% CI [0.44, 1.00]
+                    false alarms 2/10: ['blocking_severe_mandelbrot.png', 'blocking_severe_gradient.png']
     frames per severity for +/-0.15 around 0.5: 43
     frames per severity for +/-0.15 around 0.8: 28
     ```
 
-    "Detects 3 of 3 severe artifacts" sounds perfect and is compatible with a true rate of 0.44; "1 of 3 mild" is
-    compatible with anything from 0.06 to 0.79. Sixteen frames are enough to see how the judge behaves, not to
-    certify it: for ±0.15 you need 30 to 45 frames per severity and artifact, which `make_module07_images.sh` can
-    generate cheaply by varying sources, quantisers, and bit depths (the labels come with the recipe). Before
-    scaling up, look at the false alarms: the banding judge's alarm on `blocking_severe_gradient.png` is arguably
-    right, because heavy quantisation of a gradient also produces bands. Decide whether the label or the judge is
-    wrong (module 5's alignment step), then fix the label set or the criterion.
+    "Detects 3 of 3" at both severities sounds perfect and is compatible with a true rate of 0.44. Sixteen frames
+    are enough to see how the judge behaves, not to certify it: for ±0.15 you need 30 to 45 frames per severity and
+    artifact, which `make_module07_images.sh` can generate cheaply by varying sources, quantisers, and bit depths
+    (the labels come with the recipe). Here the false alarms are the bigger problem. The blocking judge flags all
+    four banded frames, so as it stands it says "compression artifact", not "blocking". The banding judge flags two
+    severely blocked frames. Its alarm on `blocking_severe_gradient.png` is arguably right, because heavy
+    quantisation of a gradient also produces bands. Decide frame by frame whether the label or the judge is wrong
+    (module 5's alignment step), then fix the label set or sharpen the criterion (for example, tell the blocking
+    judge that smooth horizontal steps are banding, not blocks), and measure again on fresh frames.

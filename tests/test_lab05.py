@@ -75,10 +75,11 @@ def test_corrected_estimate_is_undefined_without_labelled_failures():
     assert len(unl) == 100 and all(v.passed for v in unl.values())  # observed pass rate 1.000
     test = lab05.validate("tool-grounding", None, "test").result
     assert test.tn + test.fp == 0 and math.isnan(test.tnr)
-    # With no labelled failures, TNR and so the Rogan-Gladen correction cannot be estimated.
-    # (The lab currently surfaces this as an IndexError from an empty bootstrap; see the report.)
-    with pytest.raises((ValueError, IndexError)):
-        lab05.estimate()
+    # With no labelled failures, TNR and so the Rogan-Gladen correction cannot be estimated: the
+    # estimate reports the observed rate and says so (nan corrected rate and interval, 0 draws).
+    est, _truth, _test = lab05.estimate()
+    assert est.observed == 1.0 and est.draws == 0
+    assert math.isnan(est.corrected) and math.isnan(est.low) and math.isnan(est.high)
 
 
 def test_likert_scores():

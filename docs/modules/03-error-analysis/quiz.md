@@ -11,9 +11,11 @@ Ten questions. Answer each, then expand to check.
 **2. Why not start from a standard list of failure categories such as "hallucination" or "helpfulness"?**
 
 ??? question "Answer"
-    Generic categories may not match your system's real problems and are too broad to act on. "Hallucination" covered
-    several different MediaDoctor failures (contradicting a tool, citing a failed tool, a wrong API level) with
-    different fixes. Categories should come from your traces.
+    Generic categories may not match your system's real problems and are too broad to act on. "Hallucination" would
+    cover several different failures (contradicting a tool, citing a failed tool, a wrong API level, adding one
+    detail no tool returned to a correct answer) that have different fixes and need different detectors. In this
+    module's traces the only failure was the last kind, which a citation check cannot see. Categories should come
+    from your traces.
 
 **3. A trace's tool call fails, the agent retries with the right argument, and the answer is correct. Pass or fail?**
 
@@ -47,8 +49,10 @@ rule?**
 
 ??? question "Answer"
     Saturation is the point where reading more traces stops revealing new failure modes or changing definitions. A
-    short window is weak because rare, severe modes appear late: in the module's set, a 10-trace gap occurred before
-    the rank 2 mode was first seen at trace 33. Use a minimum (about 100) plus a longer window (about 20).
+    short window is weak because rare, severe modes appear late: in the module's set the only mode first appears at
+    trace 10, so a reviewer who stopped at trace 9 would have seen no failure at all, and in a shuffled order it
+    first appears anywhere from trace 6 to 19. When failures are rare, a flat curve mostly means "rare", not
+    "complete". Use a minimum (about 100) plus a longer window (about 20).
 
 **8. Who should own the labels and the definitions, and why one person?**
 
@@ -56,12 +60,12 @@ rule?**
     A domain expert who knows what a good answer looks like for your users (a "benevolent dictator"). One owner
     keeps verdicts and definitions consistent; others can contribute and challenge, but one person decides.
 
-**9. The automatic signals flagged 34 of 100 traces. Why not just label those and skip the rest?**
+**9. The automatic signals flagged 1 of 100 traces. Why not just label that one and skip the rest?**
 
 ??? question "Answer"
-    22 of the 52 failing traces had no signal, including every case of the top-ranked mode (answers that contradict
-    the tools). Signals help you choose what to read first; they cannot replace reading. Also, 4 flagged traces were
-    passes.
+    None of the 3 failing traces had a signal: each is a well-formed answer whose citations are real, with one
+    detail that no tool returned. And the one flagged trace (a format slip) is a pass. Signals help you choose what
+    to read first; they cannot replace reading.
 
 **10. Your Pareto chart is flat: the top three modes cover 45% of failures. What does that tell you, and how does it
 change prioritisation?**

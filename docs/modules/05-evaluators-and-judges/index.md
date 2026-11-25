@@ -53,10 +53,13 @@ partially. A judge costs a model call per trace, can be wrong in ways that chang
 needs its own validation. Use one only where meaning matters.
 
 !!! warning "Code checks need validating too"
-    `check_investigated` agrees with the labels on 136 of 137 traces. The one it misses is a question with no file,
-    device, or log ("audio from our app continues over incoming calls"): the agent called nothing and answered from
-    memory, and the check's definition only looked for file, device, and log tools. The check was precise; its
-    definition was narrower than the expert's. Exercise 4 fixes it.
+    Against the labels on all 147 traces, two of the three checks show a gap. `check_investigated` fails 32 traces
+    the expert passed: questions that mention a phone, file, or log without naming it, where the agent answered
+    from the knowledge base and said what it had not checked. The check's definition ("the expected inspecting tool
+    ran, or the agent said `send me ...`") was narrower than the expert's. Exercise 4 fixes it. And
+    `check_citations` passes the one `fabricated-evidence` trace (`m4q067`): its invented decoder caps are stated
+    in prose, with no `[tool:x]` citation for the check to verify. A check can only catch what its definition
+    looks at.
 
 ## Step 2: one judge per failure mode, binary, with a critique
 
@@ -65,9 +68,11 @@ when you fix one mode its score barely moves. Write **one judge per failure mode
 narrow question.
 
 Make the verdict **binary**. A 1 to 5 scale feels more informative, but nobody can say what separates a 3 from a 4,
-two reviewers will not agree on it, and to use the score you have to pick a threshold anyway. The lab shows what
-happens: the threshold that matches human labels best on dev (score 3 or more) catches none of the failures on
-test. If you want to track gradual progress, use several binary checks.
+two reviewers will not agree on it, and to use the score you have to pick a threshold anyway. The lab shows the
+scale moving: every next step in dev and test is acceptable to a human, yet the 1 to 5 judge gives a 5 to 53% of
+them on dev and 82% on test, so a threshold fitted on one split means something different on the other. (The
+course data has no labelled vague next steps, so it cannot show what that does to the failures you care about;
+exercise 2 discusses it.) If you want to track gradual progress, use several binary checks.
 
 Ask for a **critique before the verdict**. The critique gives the model room to look at the evidence before it
 commits, and it gives you something to read when the judge disagrees with a human. A critique that quotes the exact
@@ -87,7 +92,7 @@ model; the agent runs on Sonnet). A spec has:
 | `criterion` | one sentence: what PASS looks like | "The answer's Next step is a concrete action the engineer can take now." |
 | `pass`, `fail` | precise definitions, including the borderline cases you have decided | "...or the specific information to send back (for example 'send the device model')" is PASS |
 | `context` | which parts of the trace the judge sees | `["question", "answer"]`: the tool output is irrelevant to actionability |
-| `[[example]]` | few-shot examples: a trace id, a verdict, a critique | a vague next step (FAIL), a request for details (PASS), a specific API call (PASS) |
+| `[[example]]` | few-shot examples: a trace id, a verdict, a critique | a request for details (PASS), a release-notes change (PASS), a specific limit and code change (PASS) |
 
 ```bash
 uv run mediadoctor-lab05 show next-step     # the full prompt the judge model receives
@@ -99,7 +104,9 @@ Four rules for the content:
    few-shot example from dev makes your dev numbers too good; one from test makes the final report meaningless.
    `mediadoctor-lab05 leaks` checks every spec.
 2. **Include the borderline cases.** The hard part of "actionable" is "send me the device model": is asking a
-   next step? Decide, write it into PASS or FAIL, and add an example.
+   next step? Decide, write it into PASS or FAIL, and add an example. Take FAIL examples from train too; in this
+   course's data no train trace fails any judge's criterion, so every few-shot example in `config/judges/` is a
+   PASS, and the FAIL side of each definition is carried by the prose alone.
 3. **Give the judge only the context it needs.** The tool-grounding judge needs tool results; the next-step judge
    does not, and extra context can distract it. Test such choices against labels rather than guessing.
 4. **Fix the output schema.** JSON with `critique` and `verdict`. `parse_verdict` accepts code fences and
@@ -109,17 +116,20 @@ Four rules for the content:
 
 ### The labelled set
 
-The lab runs MediaDoctor on every dataset v1 query that matches a module 3 scenario: 137 traces, split the way
-dataset v1 is split (71 train, 37 dev, 29 test). The reference labels in `data/labels/module05_reference.csv` give
+The lab runs MediaDoctor on every dataset v1 query that matches a module 3 scenario: 147 traces, split the way
+dataset v1 is split (89 train, 30 dev, 28 test). The reference labels in `data/labels/module05_reference.csv` give
 each trace a verdict and failure modes. For one judge, the human label is per criterion: a trace is a human FAIL
 for the tool-grounding judge if and only if it was tagged `ignored-tool-output`.
 
-!!! info "Synthetic-authored, labelled as such"
-    No API key was used to write the course. The agent traces are scripted from the module 3 scenarios, the
-    reference labels are written from templates, and the judges' outputs are written by a script that follows each
-    judge's labels except for documented, deterministic error patterns (`scripts/author_module05_fixtures.py`).
-    Every fixture record carries `"source": "synthetic-authored"`. Treat the numbers as a worked example of the
-    method, not as measurements of Claude.
+Only 3 of the 147 traces fail at all, all in train: one `assumed-unstated-detail`, one `fabricated-evidence`,
+one `redundant-steps`. None is tagged with a judge's mode (`ignored-tool-output`, `accepted-false-premise`,
+`vague-next-step`), and dev and test have no failures of any kind. Keep that in mind for everything below: it
+means every judge's TNR on this data is 0/0, undefined.
+
+!!! info "Synthetic data, generated by Claude subagents"
+    The data is synthetic. The agent turns in the recorded fixtures were generated by Claude subagents from the
+    module 3 scenarios, and the reference labels were written by Claude Opus annotators. Treat the numbers as a
+    worked example of the method, not as measurements of a production system.
 
 ### TPR and TNR
 
@@ -129,58 +139,59 @@ Take PASS as the positive class:
 - **TNR** (true negative rate): of the traces a human failed, the share the judge failed.
 
 Report both, with their counts, never just accuracy or agreement. A judge that passes everything agrees with the
-humans on every passing trace; if 85% of traces pass, it scores 85% agreement and catches nothing. TNR is usually
-the number that matters, because catching failures is the judge's job, and it is usually measured on few traces.
+humans on every passing trace; if 85% of traces pass, it scores 85% agreement and catches nothing. In this
+course's data 144 of 147 traces pass, so "always PASS" would score 98%. TNR is usually the number that matters,
+because catching failures is the judge's job, and it is usually measured on few traces; here, on none.
 
 ### Worked example: the tool-grounding judge
 
-Version 1 of the tool-grounding judge has two few-shot examples from train: one answer that contradicts
-`codec_caps`, and one that agrees with it. On the dev split:
+Version 1 of the tool-grounding judge has two few-shot examples from train, both PASS: an answer whose claims
+match `codec_caps` and the log, and `m4q067`, whose diagnosis matches the tools but which adds a claim no tool
+returned (a borderline case, below). On the dev split:
 
 ```text
 $ uv run mediadoctor-lab05 judge tool-grounding --version v1 --split dev
-tool-grounding@v1      dev   n=33 (human pass 27, fail 6)  TPR 0.96 (26/27)  TNR 0.33 (2/6)  agreement 0.85
+tool-grounding@v1      dev   n=30 (human pass 30, fail 0)  TPR 1.00 (30/30)  TNR nan (0/0)  agreement 1.00
 ```
 
-Agreement 0.85 looks acceptable. TNR 0.33 says the judge misses two thirds of the failures it exists to catch.
-Read the disagreements:
+Agreement 1.00, and it means very little. No dev trace ignores its tool output, so TNR is 0/0: these 30 traces
+say the judge does not fail good answers, and nothing about whether it catches bad ones. `disagreements` prints
+nothing to read.
+
+The method is still the one to learn. When dev has failures, you read every disagreement and look for a pattern.
+A typical one for this judge: the user states a wrong fact ("the lumen-l3 has a hardware AV1 decoder"), the
+answer repeats it, and the judge treats agreement with the user as agreement with the evidence. That is a gap in
+the prompt, not random noise, and version 2 is written against it: it adds one sentence to the FAIL definition
+(agreeing with the user does not make a claim true) and two few-shot examples from train where the user asserts
+a claim the tool output contradicts and the answer sides with the tools. Both examples are PASS, because no train
+trace repeats such a claim; a FAIL example of exactly this kind would help more, and you would have to collect or
+write one. On dev:
 
 ```text
-$ uv run mediadoctor-lab05 disagreements tool-grounding --version v1
-  m4q158  judge PASS, human FAIL: It matches what the user reported, and I found no statement in the answer
-          ("The lumen-l3 has a hardware AV1 decoder that handles 4K60, so the stutter must come fro...") that
-          the codec_caps and ffprobe output contradicts.
-  ...
+tool-grounding@v2      dev   n=30 (human pass 30, fail 0)  TPR 1.00 (30/30)  TNR nan (0/0)  agreement 1.00
 ```
 
-Four of the five disagreements are the same: the user stated a wrong fact ("the lumen-l3 has a hardware AV1
-decoder"), the answer repeated it, and the judge treated agreement with the user as agreement with the evidence.
-That is a gap in the prompt, not random noise. Version 2 adds one sentence to the FAIL definition (agreeing with the
-user does not make a claim true) and two few-shot negatives of exactly this kind, both from train:
-
-```text
-tool-grounding@v2      dev   n=33 (human pass 27, fail 6)  TPR 0.89 (24/27)  TNR 1.00 (6/6)  agreement 0.91
-```
-
-TNR rose to 1.00, and TPR fell from 0.96 to 0.89: the judge became stricter, and now fails three correct answers
-for claims it calls "unsupported" rather than contradicted. That trade is a decision for the domain expert
-(see alignment, below). We stop iterating, and run the test split **once**:
+The change did not make the judge stricter on good answers (TPR stays 1.00), and dev cannot say whether it
+catches more. We stop iterating, and run the test split **once**:
 
 ```text
 $ uv run mediadoctor-lab05 validate --split test
-tool-grounding@v2      test  n=25 (human pass 20, fail 5)  TPR 0.90 (18/20)  TNR 0.60 (3/5)  agreement 0.84
-false-premise@v1       test  n=29 (human pass 24, fail 5)  TPR 0.96 (23/24)  TNR 0.60 (3/5)  agreement 0.90
-next-step@v1           test  n=29 (human pass 25, fail 4)  TPR 0.92 (23/25)  TNR 1.00 (4/4)  agreement 0.93
+tool-grounding@v2      test  n=28 (human pass 28, fail 0)  TPR 1.00 (28/28)  TNR nan (0/0)  agreement 1.00
+false-premise@v1       test  n=28 (human pass 28, fail 0)  TPR 1.00 (28/28)  TNR nan (0/0)  agreement 1.00
+next-step@v1           test  n=28 (human pass 28, fail 0)  TPR 1.00 (28/28)  TNR nan (0/0)  agreement 1.00
 ```
 
-Test TNR is 0.60, not the 1.00 seen on dev. Partly that is what tuning on dev does: six dev failures were enough to
-fit, not enough to generalise. Mostly it is sample size: 3 of 5 is consistent with a true TNR anywhere from
-about 0.25 to 0.9, and 6 of 6 with anything above about 0.6 (95% Wilson intervals, module 6). This is the honest number, and it is the one to report. If it is not good enough,
-the fix is more labelled failures, a new dev round, and a *new* test set, not another look at this one. (The
-fixtures for tool-grounding v1 on test do not exist; the test refuses to run it.)
+This is the honest report, and it has to be read honestly: the three judges pass every good test answer, and their
+ability to catch failures is **unmeasured**. A TNR from a handful of failures is already weak (3 of 5 is consistent
+with a true TNR anywhere from about 0.25 to 0.9, 95% Wilson interval, module 6); from zero failures there is no
+estimate at all. If that is not good enough, and for gating a release it is not, the fix is labelled failures, a
+new dev round, and a *new* test set, not another look at this one. (The fixtures for tool-grounding v1 on test do
+not exist; the test refuses to run it.)
 
 Hamel Husain and Shreya Shankar recommend aiming for at least 50 passing and 50 failing labelled examples per
-judge. Our 5 test failures per judge are far below that, and the next section shows what it costs.
+judge. Our test split has 28 passing and 0 failing per judge. When the agent fails as rarely as this one does,
+failures have to be sought out: oversample traces that code checks or user signals flag, run adversarial queries
+(module 4), or write labelled failing answers for the purpose.
 
 ## Step 5: correct the pass rate for judge error
 
@@ -200,21 +211,25 @@ The point estimate is not enough, because TPR and TNR are themselves estimates f
 corrected rate each time; the 2.5th and 97.5th percentiles give a 95% interval that includes uncertainty about the
 judge.
 
-The lab treats module 3's 100 traces as new, unlabelled traffic, runs the final tool-grounding judge on the 89 that
-have tool output, and corrects with the test-split TPR and TNR:
+The lab treats module 3's 100 traces as new, unlabelled traffic, runs the final tool-grounding judge on them (all
+100 have tool output), and tries to correct with the test-split TPR and TNR:
 
-```text
-$ uv run mediadoctor-lab05 estimate
-judge tool-grounding@v2 on test: n=25 (human pass 20, fail 5)  TPR 0.90 (18/20)  TNR 0.60 (3/5)  agreement 0.84
-observed pass rate 0.820 on 89 unlabelled traces; corrected 0.840, 95% CI [0.236, 1.000] (1913 bootstrap draws, judge error from 25 labelled traces)
-true pass rate from the module 3 reference labels: 0.876
+```bash
+uv run mediadoctor-lab05 estimate
 ```
 
-Because module 3 has reference labels, we can check: the corrected 0.840 is closer to the true 0.876 than the raw
-0.820, and the interval contains it. But the interval runs from 0.24 to 1.00. With 5 labelled failures the judge's
-TNR is so uncertain that some resamples make it barely better than chance, and the correction explodes. The
-interval is not a bug; it is the cost of 5 failures, stated honestly. Exercise 3 shows how it narrows with more
-labels. Module 6 builds on this with Wilson intervals, paired comparisons, and sample-size planning.
+On this data there is nothing to correct with. The judge passes all 100 traces (observed pass rate 1.000), the
+module 3 reference labels agree (true pass rate 1.000), and the test split has no labelled failures, so TNR is
+0/0 and TPR + TNR − 1 cannot be estimated. The command stops with an error (currently an `IndexError` from the
+bootstrap, which finds no resample where the correction is defined) rather than printing a number. That is the
+right outcome, even if the message could be clearer: a corrected rate here would be made up.
+
+What the correction does when the labels allow it is in exercise 3, with a hypothetical labelled set of 25 traces
+and 5 failures (TPR 0.90, TNR 0.60) and an observed rate of 0.82: corrected 0.84, with a 95% interval from about
+0.12 to 1.00. With 5 labelled failures the judge's TNR is so uncertain that some resamples make it barely better
+than chance, and the correction explodes. The interval is not a bug; it is the cost of 5 failures, stated
+honestly, and it narrows as labelled failures grow. Module 6 builds on this with Wilson intervals, paired
+comparisons, and sample-size planning.
 
 The same idea is implemented, with a clear write-up, in the open-source
 [judgy](https://github.com/ai-evals-course/judgy) package from Hamel Husain and Shreya Shankar's course; see
@@ -231,23 +246,19 @@ difference on the labelled part. **PPI++** ([arXiv 2311.01453](https://arxiv.org
 that the data chooses: a judge that agrees with people pulls the interval in, a useless one is weighted toward 0,
 where the estimate is simply the human labels' mean. It is never worse than ignoring the judge.
 
-`evalkit.stats.ppi_mean` implements both. The lab compares them on module 3's 89 judged traces, with 25 of them
-labelled (picked by a stable hash, so a random sample):
+`evalkit.stats.ppi_mean` implements both. `uv run mediadoctor-lab05 ppi` compares them on module 3's 100 judged
+traces, with 25 of them labelled (picked by a stable hash, so a random sample), next to the human labels alone and
+Rogan-Gladen. On this data the comparison has nothing to separate: the 25 labels are all PASS and the judge passes
+all 100 traces, so the human labels give 1.000 [0.867, 1.000] (Wilson), and PPI and PPI++ both give 1.000 with a
+zero-width interval (PPI++ chooses λ 0.00, because the judge's verdicts do not vary). The command itself stops
+at the Rogan-Gladen row, for the reason given above.
 
-```text
-$ uv run mediadoctor-lab05 ppi
-tool-grounding on the 89 module 3 traces with tool output; true pass rate 0.876, judge's raw pass rate 0.820
-  human labels only                    0.920 [0.750, 0.978]  width 0.227
-  Rogan-Gladen (test-split TPR/TNR)    0.840 [0.236, 1.000]  width 0.764
-  PPI                                  0.837 [0.710, 0.963]  width 0.253  (lambda 1.00)
-  PPI++                                0.891 [0.806, 0.975]  width 0.169  (lambda 0.35)
-```
-
-Three readings. PPI++ gives the narrowest interval, and it contains the true rate. Plain PPI is *wider* than the
-labels alone, because this judge (TNR 0.60) adds noise along with information; that is the case PPI++'s λ exists
-for. And Rogan-Gladen's interval is four times wider than PPI++'s from the same 25 labels, because it has to estimate
-TNR from five failures. Use PPI++ when you can label a random sample of the traffic you are measuring; keep the
-Rogan-Gladen correction for when the labels come from somewhere else, and say so. Try `--labels 50`.
+Two readings survive. PPI does not need labelled failures to run, because it never estimates TNR; it needs a
+random sample of the traffic, which is a cheaper thing to have. But a zero-width interval from 25 unanimous
+labels is not certainty either: it reflects a sample with no variation, and the Wilson interval on the labels
+alone is the more honest statement of what 25 passes tell you. On traffic with failures, PPI++ is the method to
+prefer when you can label a random sample of what you are measuring, because its λ weights the judge by how well
+it agrees with people; keep the Rogan-Gladen correction for when the labels come from somewhere else, and say so.
 
 ## Aligning with the domain expert
 
@@ -256,13 +267,16 @@ disagreement. Sit down with the domain expert (in module 3's terms, the benevole
 disagreement into one of three piles:
 
 1. **The judge is wrong.** Fix the prompt: a sharper definition, a missing borderline case, a few-shot example of
-   the kind it gets wrong, or different context. The tool-grounding v1 misses were this kind.
+   the kind it gets wrong, or different context. The user-premise pattern behind tool-grounding v2 is this kind.
 2. **The label is wrong.** It happens: the expert was tired, or read past a number. Fix the label, and note it.
-3. **The criterion is unclear.** Both readings are defensible. Tool-grounding v2 fails `m4q004`, saying it could
-   not find the decoder claim ("Main10HDR10") in the tool output. That part is a judge error: `codec_caps` lists
-   it. But the same answer also blames "most likely a TextureView compositing through the GPU", which no tool
-   checked. Is an *unsupported* claim a grounding failure, or only a *contradicted* one? The expert decides,
-   writes the answer into PASS or FAIL, adds an example, and relabels if the decision changes earlier labels.
+3. **The criterion is unclear.** Both readings are defensible. Train trace `m4q067` diagnoses an AV1 stutter
+   correctly from `ffprobe` and `codec_caps`, then adds that lumen-l3's "hardware AVC/HEVC decoders list
+   1920x1080 at 60 fps", which no tool returned (only AV1 caps were queried). Is an *unsupported* claim a
+   grounding failure, or only a *contradicted* one? Here the decision was made: the expert labelled it
+   `fabricated-evidence`, not `ignored-tool-output`, and the tool-grounding spec carries it as a PASS example whose
+   critique says "Unsupported is a different failure mode; this criterion passes." That is the pattern: the
+   expert decides, writes the answer into PASS or FAIL, adds an example, and relabels if the decision changes
+   earlier labels.
 
 Keep the session short and regular, and keep a log of decisions next to the spec. Each decision is a small change
 to the definition of the failure mode, and the log is how you know which labels were made under which definition.
@@ -334,6 +348,7 @@ real runs.
 - [ ] Few-shot examples from train only; no reference answers or labels in the prompt.
 - [ ] Judge context limited to what the criterion needs.
 - [ ] TPR and TNR with counts on dev while iterating; on test once, at the end.
+- [ ] Enough labelled failures to estimate TNR at all; say so when there are not.
 - [ ] Corrected pass rate with a bootstrap interval, not a raw judge pass rate.
 - [ ] Disagreements reviewed with the domain expert; decisions logged; specs and labels versioned together.
 - [ ] Judge model ID pinned; revalidated when it changes.

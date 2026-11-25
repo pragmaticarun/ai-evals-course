@@ -27,7 +27,7 @@ counts tell you that the difference does not?**
     Most queries come out the same under both configurations; they carry no information about the difference, but
     in an unpaired comparison their variation is noise. Pairing removes it, so the same number of queries detects
     much smaller differences. The discordant counts (fixed by the change, broken by the change) show what the
-    difference is made of: +4.6 points can be 5 fixed and 0 broken, or 25 fixed and 20 broken. The second is a
+    difference is made of: +4.2 points can be 5 fixed and 0 broken, or 25 fixed and 20 broken. The second is a
     different change, with more risk of regressing someone's case, even at the same net number.
 
 **4. Why does module 11 run experiments on dev and touch the held-out split only once, through `confirm --release`?
@@ -46,12 +46,13 @@ suggest, how would you confirm it from traces, and why is "average latency rose 
 ??? question "Answer"
     A change that adds a lot of time to a minority of tasks (a retry, an escalation, an extra tool call on some
     inputs) and little or nothing to the rest. Confirm it by splitting latency per task into spans (model calls,
-    self-checks, tools) and listing the tasks that slowed most: in the lab, every task in the slowest 5% was a
-    retried one. The average blends a big delay for a few users with nothing for most; the people waiting 10 s
-    are the ones who notice. Report p50 and p95 (with intervals; p95 on 108 tasks rests on about five of them) and
-    count tasks past the timeout as failures.
+    self-checks, tools) and listing the tasks that slowed most: in the lab, the slowest tasks under `retry` are the
+    retried ones (up to 10.8 s slower), and two of them climb into the slowest 5%. Also check which slow tasks were
+    slow before the change: there, the four slowest were already slow without the retry. The average blends a big
+    delay for a few users with nothing for most; the people waiting 10 s are the ones who notice. Report p50 and
+    p95 (with intervals; p95 on 119 tasks rests on about six of them) and count tasks past the timeout as failures.
 
-**6. Prompt caching cut cost per success by 59% in the lab. Name two conditions under which the saving in
+**6. Prompt caching cut cost per task by 46% in the lab. Name two conditions under which the saving in
 production would be much smaller, and how you would check.**
 
 ??? question "Answer"
@@ -62,23 +63,30 @@ production would be much smaller, and how you would check.**
     if output tokens dominate the cost, caching input saves less. Check the production cache hit rate (cache-read
     tokens over all input tokens, from the usage fields) and cost per success, not the lab's number.
 
-**7. A Haiku-first cascade that escalates to Sonnet when Haiku's answer fails the code checks was 83% cheaper per
-success but 16 points less accurate. Why, and what would you try next?**
+**7. In the lab, a Haiku-first cascade that escalates to Sonnet when Haiku's answer fails the code checks was 78%
+cheaper per success than Sonnet with caching, and the reference labels find no failure in its answers, while Haiku
+alone skipped the investigation in 7 of 119. Why does the router work here, and when would it stop working?**
 
 ??? question "Answer"
     The router decides which answers are bad, and it can only see what the code checks see (format, citations,
-    whether a tool ran). Haiku's main failures, adopting a false premise and contradicting the tool output, produce
-    well-formed, properly cited answers, so the router passes them and none were escalated. Next: a router that can
-    see those modes, such as a validated judge on the premise and the cause (with its own TPR and TNR measured on
-    labelled data), tested as a new one-change configuration with its added cost and latency.
+    whether a tool ran). Haiku's only failure in this data, answering without the investigation the question
+    needed, fails the `investigated` or `citations` check, so all 7 were escalated and Sonnet's second attempt was
+    fine. It would stop working on failures that produce well-formed, properly cited, wrong answers, such as
+    adopting a false premise or contradicting the tool output: they pass every code check and reach the user. So
+    measure the router's recall on labelled data that contains the failures that matter; if they are missing from
+    your data, you have not tested the router on them. A router that can see those modes (a validated judge on the
+    premise and the cause, with its own TPR and TNR) is a new one-change configuration with its added cost and
+    latency.
 
-**8. The experiment log says the retry configuration passed its rule (CI +0.9 to +9.3 points; 5 fixed, 0 broken),
-and the decision memo recommends it. Write the sentence about uncertainty that belongs in the memo, and one sentence
-that does not.**
+**8. In the lab, every configuration's task success is 19% to 28% by the automated grader, but the reference labels
+find a failure in only 15 of the 833 dev answers. The pre-registered rule keeps nothing and recommends staying on v1.
+Write the sentence about uncertainty that belongs in the memo, and one sentence that does not.**
 
 ??? question "Answer"
-    Belongs: "The retry step rests on five queries that changed outcome (exact McNemar p = 0.06); its gain is likely
-    but not proven, and the held-out check (29 queries) is consistent with it but too small to confirm it." Does not
-    belong: "Retry improves accuracy by 4.6%" (no interval, no n, and it reads as a production promise), or "the
-    improvement is statistically significant" on its own (which test? the bootstrap and McNemar disagree at this
-    size). Name the test you pre-registered, give the interval, and say what would change the decision.
+    Belongs: "Our automated grader fails all 15 answers the reference labels call defective, but also 620 of the
+    818 they call correct, so the success comparisons in this memo mostly reflect phrasing, not quality; we
+    recommend keeping v1, fixing the grader, and re-running the comparisons before changing the release." Does not
+    belong: "v1 is 24% accurate" or "v2 is 4.2 points better" (both read the grader's numbers as accuracy), or "the
+    configurations are equivalent" (the labels say they are close, but 7 skipped investigations for Haiku against
+    0 for v1 is a difference; and "no difference we could detect" needs the size we could detect, about 8 points).
+    Name the measurement's weakness, give the numbers that show it, and say what would change the decision.

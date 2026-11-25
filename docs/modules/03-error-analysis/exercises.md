@@ -13,7 +13,7 @@ uv run mediadoctor-lab03 review m3t061 --traces runs/m3_traces.jsonl   # ... thr
 ```
 
 ??? success "Solution"
-    The reference fails 9 of the 20 and uses 7 modes on them. You can check this with:
+    The reference fails 1 of the 20 (`m3t072`) and uses 1 mode on it. You can check this with:
 
     ```python
     # exercise-solution
@@ -25,38 +25,50 @@ uv run mediadoctor-lab03 review m3t061 --traces runs/m3_traces.jsonl   # ... thr
     failing = [a.case_id for a in batch if a.failed]
     print(failing)
     print(mode_counts(batch).most_common())
-    assert len(failing) == 9
-    assert mode_counts(batch)["skipped-investigation"] == 4
+    assert failing == ["m3t072"]
+    assert mode_counts(batch) == {"fabricated-evidence": 1}
     ```
 
-    This batch is unusual: *skipped-investigation* (4) and *fabricated-evidence* (3) dominate, while the top mode
-    overall, *ignored-tool-output*, appears once. A 20-trace sample can rank modes very differently from the full set,
-    which is why the lesson asks for at least 100.
+    Output:
+
+    ```text
+    ['m3t072']
+    [('fabricated-evidence', 1)]
+    ```
+
+    With 3 failures in 100 traces, a 20-trace batch holds 0 or 1 failures most of the time; this one holds 1. A
+    small sample says almost nothing about which modes exist or how they rank, which is why the lesson asks for at
+    least 100.
 
     Typical differences, and what they mean:
 
-    - **Verdict differences** on borderline answers such as `m3t073` (correct cause, next step "Look into the
-      rendering code."). Decide whether a weak next step is a failure *for your users*; then write it into the
-      definition so you decide the same way next time.
-    - **Grouping differences**: many people merge *skipped-investigation* and *fabricated-evidence* when the agent
-      both skipped the tools and cited them (`m3t068`, `m3t077`). The reference keeps them apart because the fixes
-      differ (prompt vs runtime guard) and tags both.
-    - **Name differences only** ("made-up-evidence" vs "fabricated-evidence"): harmless. `compare` shows them as
-      a one-to-one mapping.
+    - **Verdict differences** on `m3t072`: the cause and the suggestion to check `getVideoCapabilities()` are right,
+      and the unsupported part (that the lumen-l3 does H.264/HEVC hardware decode up to 1080p60) sits in the middle
+      of the next step. Many reviewers pass it on a first read. Decide whether an unsupported capability claim is a
+      failure *for your users* (an engineer might ship a 1080p60 HEVC rendition on that basis); then write it into
+      the definition so you decide the same way next time.
+    - **Verdict differences** on `m3t080`: its next-step label reads `Next step (standard Media3 recovery, not shown
+      in the log):`. The `format` signal flags it; the reference passes it, since the answer is right and the
+      label is honest about where the advice comes from. Either call is defensible if it is written down.
+    - **Grouping or name differences** ("made-up-evidence" or "unsupported claim" vs "fabricated-evidence"):
+      harmless. `compare` shows them as a one-to-one mapping.
 
 ## Exercise 2: Find the first upstream failure
 
-For each trace, name the first step that went wrong and say whether later problems follow from it:
-`m3t019`, `m3t050`, `m3t088`, `m3t008`, `m3t023`.
+For each trace, decide pass or fail; on a fail, name the first step that went wrong and say which earlier step
+could have supplied the missing evidence: `m3t010`, `m3t072`, `m3t088`, `m3t080`.
 
 ??? success "Solution"
     | Trace | First upstream failure | What follows from it |
     |---|---|---|
-    | `m3t019` | **retrieval** (step 5): query `'player crashes when reopened'` with `k=1` returned `audio-focus` | The log in step 2 already showed `BehindLiveWindowException`, but the answer follows the wrong document. A query using the exception name finds the right note, so this is a query-formulation miss. |
-    | `m3t050` | **execute_tool codec_caps** (step 2): device `"Lumen L3"` does not exist | The answer then quotes the lumen-l3's decoder limits anyway: fabricated evidence, downstream of the bad argument. |
-    | `m3t088` | **execute_tool logcat_grep** (step 2): log `live_resume.log` instead of `.txt` | The agent gave up on the log, found the right document, and still hedged. The retrieval was fine; the missing log evidence is what weakened the answer. |
-    | `m3t008` | **chat:plan** (step 6): a second search with almost the same query | Steps 7 to 11 repeat it; the answer is right but the trace costs about 2.5 times a normal one. |
-    | `m3t023` | **chat:answer** (step 5): reads `NO_MEMORY: max instances reached` as a Java heap problem | The tools were fine. Note the inconsistency: the next step is right (release codecs) while the cause is wrong, which a quick skim of the answer would miss. |
+    | `m3t010` | **chat:answer** (step 4): adds that the lumen-l3 has only a software AV1 decoder capped at 1080p30 | ffprobe and `codec_caps` for the atlas-a1 (steps 2 and 3) are fine and the shipping advice is right. No step queried the lumen-l3; a `codec_caps` call for it would have grounded the claim, or the answer could have left the device out. |
+    | `m3t072` | **chat:answer** (step 4): the next step says the lumen-l3 does H.264/HEVC hardware decode up to 1080p60 | Step 3 called `codec_caps` for `video/av01` only. The diagnosis is grounded; the alternative it recommends is not. A second `codec_caps` call (`video/avc` or `video/hevc`) would have checked it. |
+    | `m3t088` | **chat:answer** (step 5): states the pause time 09:15:02 and "roughly 11 minutes in the background" | The grep in step 2 did not match the `onPause` line. The tool call itself was valid, so this is not a tool error; a pattern that included `background` or `onPause` would have returned the line. |
+    | `m3t080` | none: **pass** | The same scenario and almost the same sentence as `m3t088`, but this grep pattern includes `background`, so line L1 (`onPause ... 09:15:02`) is in the tool output and the claim is grounded. |
+
+    All three failures start at the final answer, with good earlier steps; none compounds from a tool or retrieval
+    error. `m3t088` against `m3t080` is the useful pair: the same answer text is a failure in one trace and a pass in
+    the other, and only the tool output tells them apart.
 
     ```python
     # exercise-solution
@@ -65,22 +77,32 @@ For each trace, name the first step that went wrong and say whether later proble
 
     ref = {a.case_id: a for a in load_annotations(reference_labels_path())}
     expected = {
-        "m3t019": "retrieval",
-        "m3t050": "execute_tool codec_caps",
-        "m3t088": "execute_tool logcat_grep",
-        "m3t008": "chat:plan",
-        "m3t023": "chat:answer",
+        "m3t010": "chat:answer",
+        "m3t072": "chat:answer",
+        "m3t088": "chat:answer",
+        "m3t080": "",  # a pass has no first upstream failure
     }
     for cid, step in expected.items():
-        print(cid, ref[cid].first_upstream, ref[cid].modes)
+        print(cid, ref[cid].verdict, repr(ref[cid].first_upstream), ref[cid].modes)
         assert ref[cid].first_upstream == step
+    assert ref["m3t080"].verdict == "pass"
+    ```
+
+    Output:
+
+    ```text
+    m3t010 fail 'chat:answer' ['fabricated-evidence']
+    m3t072 fail 'chat:answer' ['fabricated-evidence']
+    m3t088 fail 'chat:answer' ['fabricated-evidence']
+    m3t080 pass '' []
     ```
 
 ## Exercise 3: Turn one slice of a judge-type mode into a code check
 
-*ignored-tool-output* is marked `detector = "judge"` because contradictions take many forms. But one slice is easy
-to check with code: claims about where the `moov` box is. Write `check_box_order_claim(trace)`, which fails when the
-*Likely cause* line contradicts the box order that a successful ffprobe call returned. Which traces does it flag?
+*ignored-tool-output* is marked `detector = "judge"` in the reference definitions because contradictions take many
+forms. But one slice looks easy to check with code: claims about where the `moov` box is. Write
+`check_box_order_claim(trace)`, which fails when the *Likely cause* line contradicts the box order that a successful
+ffprobe call returned. Which traces does it flag, and are they real failures?
 
 ??? success "Solution"
     ```python
@@ -112,16 +134,26 @@ to check with code: claims about where the `moov` box is. Write `check_box_order
     traces = traces_by_case(run_cases())
     flagged = sorted(cid for cid, t in traces.items() if not check_box_order_claim(t))
     print(flagged)
-    assert flagged == ["m3t003", "m3t004"]
+    assert flagged == ["m3t084"]
     ```
 
-    It flags exactly the two box-order contradictions, with no false alarms on the other 98 traces. Notice the
-    design choices: it looks only at the *Likely cause* line (correct answers say "move moov to the front" in the
-    next step), and it passes traces where ffprobe failed, which other checks already cover.
+    Output:
 
-    It catches 2 of the 11 *ignored-tool-output* traces. The rest (decoder profiles, Widevine level, decoder count,
-    `NO_MEMORY`) would each need their own rule. Narrow code checks are cheap and precise, so write them where a
-    slice is common; for the long tail, module 5 builds an LLM judge and measures it against your labels.
+    ```text
+    ['m3t084']
+    ```
+
+    It flags one trace, and that trace is a **false alarm**. In `m3t084` ffprobe shows `ftyp, moov, free, mdat`
+    (moov at the front), and the answer says so correctly, then adds that *the usual "moov at the end" cause does
+    not apply*. The phrase match sees "at the end" and fires. The reference passes `m3t084`, and no trace in this set
+    contradicts its box order, so the check has 0 true positives and 1 false positive here.
+
+    Two lessons. Phrase rules are brittle once answers explain what is *not* the cause, which good answers do; a
+    rule like this needs checking against your labels before you trust it, exactly as module 5 does for judges.
+    And the design choices still matter: looking only at the *Likely cause* line avoids firing on "move moov to the
+    front" in the next step, and passing traces where ffprobe failed leaves those to other checks. On a set where
+    the agent does contradict box order, the same rule would catch that slice cheaply; the long tail of other
+    contradictions (decoder profiles, Widevine level) would each need their own rule or a judge.
 
 ## Exercise 4: Change the priority rule
 
@@ -147,15 +179,22 @@ moves, and would you work from this list or the original one?
     order = sorted(counts, key=lambda m: (-score(m), m))
     for m in order:
         print(f"{m:<24} {score(m):5.1f}")
-    assert order[:2] == ["fabricated-evidence", "ignored-tool-output"]
-    assert order.index("wrong-api-detail") == 4
+    assert order == ["fabricated-evidence"] and score("fabricated-evidence") == 9.0
     ```
 
-    *fabricated-evidence* moves to first (severe and easy), *ignored-tool-output* drops to second, and the two
-    medium-effort modes *wrong-api-detail* and *retrieval-miss* fall behind the easy *skipped-investigation* and
-    *wrong-tool-args*.
+    Output:
 
-    Both lists are defensible; they answer different questions. Count × severity says *what hurts users most*.
+    ```text
+    fabricated-evidence        9.0
+    ```
+
+    Nothing moves: on the current labels there is one mode, so any rule ranks it first. The score is unchanged too
+    (3 traces × severity 3 ÷ effort 1), because the reference rates the mode easy. That rating is worth questioning:
+    the easy fix is a guard against citing tools that failed or never ran, and none of these three traces does that.
+    If you rate *this* form medium, the score halves to 4.5 but the order still cannot change. The rule starts to
+    matter when several modes compete, as they usually do on a first pass over a less reliable agent.
+
+    Both rules are defensible; they answer different questions. Count × severity says *what hurts users most*.
     Dividing by effort says *what to do this week*. A reasonable plan uses both: ship the easy fixes now (guard,
     tool, prompt), and start the medium-effort work on the top-hurting mode in parallel, since it needs a judge
     (module 5) before you can even measure progress. Effort estimates are guesses, so do not let a precise-looking
@@ -184,12 +223,25 @@ appears and where *fabricated-evidence* is first seen. What does this say about 
         results.append((seed, last, first_fab))
         print(f"seed {seed}: last new mode at {last:>3}, fabricated-evidence first at {first_fab:>3}")
     lasts = [r[1] for r in results]
-    assert min(lasts) == 20 and max(lasts) == 59
+    assert min(lasts) == 6 and max(lasts) == 19
+    assert all(last == first_fab for _, last, first_fab in results)  # one mode: last new = first seen
     ```
 
-    The last new mode appears anywhere from trace 20 to trace 59, depending only on order. With seed 4 you would
-    see all nine modes in 20 traces; with seed 1 you would wait until 59. A rule like "stop after 10 traces with
-    nothing new" would end some of these reviews long before saturation.
+    Output:
+
+    ```text
+    seed 0: last new mode at  18, fabricated-evidence first at  18
+    seed 1: last new mode at   8, fabricated-evidence first at   8
+    seed 2: last new mode at   6, fabricated-evidence first at   6
+    seed 3: last new mode at  19, fabricated-evidence first at  19
+    seed 4: last new mode at  13, fabricated-evidence first at  13
+    ```
+
+    With a single mode, the last new mode is simply the first failure, and it appears anywhere from trace 6 to
+    trace 19 depending only on order. A rule like "stop after 10 traces with nothing new" would end the reviews for
+    seeds 0, 3, and 4 at trace 10 with no failure found at all. Seeds 1 and 2 would stop at traces 18 and 16, with
+    2 and 1 of the 3 failures still unread. A mode that occurs in only one trace could appear anywhere from 1 to
+    100.
 
     Practical consequences: review in a **random** order (not by date or by topic, which clusters similar
     failures); use a long window (about 20 traces with nothing new) *and* a minimum (about 100); and make sure the

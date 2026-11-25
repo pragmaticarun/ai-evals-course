@@ -40,10 +40,11 @@ big a change you need to detect.
 | Run-to-run | the model's answer to the same query | repeat each query k times | repeated trials; report pass^k |
 | Evaluator | the judge's verdict on the same answer | TPR and TNR on labelled data (module 5) | better judges; correction with an interval |
 
-**Run-to-run variance is real even when nothing changed.** In the lab, prompt v2 was run 5 times on the same 37
-dev queries. Its pass rate came out 0.46, 0.49, 0.49, 0.46, and 0.38. Compare run 2 with run 5 as if they were two
-prompts and you get −11 points with a paired interval of [−0.24, 0.00]: an apparent regression between two runs
-of the *same* prompt. 19 of the 37 queries passed in some runs and failed in others.
+**Run-to-run variance is real even when nothing changed.** In the lab, prompt v2 was run 5 times on the same 30
+dev queries. Its pass rate came out 0.97, 1.00, 0.97, 0.87, and 0.97. Compare run 2 with run 4 as if they were two
+prompts and you get −13 points with a paired bootstrap interval of [−0.27, −0.03]: an apparent regression between
+two runs of the *same* prompt, which the exact McNemar test (4 discordant queries against 0, p = 0.125) rightly
+does not call significant. 6 of the 30 queries passed in some runs and failed in others.
 
 **Temperature does not make this go away, and you can no longer set it.** Lowering temperature narrowed the
 sampling, but Anthropic's API reference long noted that even temperature 0.0 was not fully deterministic. Since
@@ -70,7 +71,7 @@ at small n, and is what the rest of the course prints.
 |---|---|---|
 | 6 / 6 | 1.00 | [0.61, 1.00] |
 | 3 / 5 | 0.60 | [0.23, 0.88] |
-| 52 / 137 | 0.38 | [0.30, 0.46] |
+| 144 / 147 | 0.98 | [0.94, 0.99] |
 | 49 / 60 | 0.82 | [0.70, 0.89] |
 
 For anything that is not a simple proportion (a difference, a mean score, a corrected rate, a ratio), use the
@@ -83,20 +84,22 @@ thousand times, recompute the statistic, and take the middle 95%. Two rules:
   [Adding Error Bars to Evals](https://arxiv.org/abs/2411.00640) covers this clustering effect.
 - **Seed it.** `bootstrap_ci` takes a seed, so the report does not change between runs of the report.
 
-The module 5 judge numbers, with their intervals, show why this matters
-(`mediadoctor-lab06 judges`):
+The module 5 judge numbers, with their intervals, show why this matters (lab section 5):
 
 | Judge | Split | TPR | TNR |
 |---|---|---|---|
-| tool-grounding v2 | dev | 0.89 [0.72, 0.96] (n=27) | 1.00 [0.61, 1.00] (n=6) |
-| tool-grounding v2 | test | 0.90 [0.70, 0.97] (n=20) | 0.60 [0.23, 0.88] (n=5) |
-| false-premise v1 | test | 0.96 [0.80, 0.99] (n=24) | 0.60 [0.23, 0.88] (n=5) |
-| next-step v1 | test | 0.92 [0.75, 0.98] (n=25) | 1.00 [0.51, 1.00] (n=4) |
+| tool-grounding v2 | dev | 1.00 [0.89, 1.00] (n=30) | none (n=0) |
+| tool-grounding v2 | test | 1.00 [0.88, 1.00] (n=28) | none (n=0) |
+| false-premise v1 | test | 1.00 [0.88, 1.00] (n=28) | none (n=0) |
+| next-step v1 | test | 1.00 [0.88, 1.00] (n=28) | none (n=0) |
 
-Every TNR is estimated from 4 to 6 failures, and its interval spans most of the scale. That is the honest reading
-of module 5, and it is why the corrected pass rate there had the interval [0.24, 1.00]. The judge-error correction
-and its bootstrap now live in `evalkit.stats` (`corrected_pass_rate`, `bootstrap_corrected`); `evalkit.judge`
-re-exports them, so module 5 code is unchanged.
+A perfect TPR still has an interval: 28 of 28 is consistent with a true TPR as low as 0.88. And the labelled
+splits contain no failures at all, so the TNR, the judge's ability to catch a bad answer, has not been measured.
+That is the honest reading of module 5 on this data: the judges have never been shown a failure, so nothing says
+they would catch one, and a judge-error correction (which needs the TNR) cannot be computed. With rare failures you
+have to go looking for them (module 4's hypotheses, or sampling the traces a cheap check flags) before you can
+validate a judge. The judge-error correction and its bootstrap now live in `evalkit.stats` (`corrected_pass_rate`,
+`bootstrap_corrected`); `evalkit.judge` re-exports them, so module 5 code is unchanged.
 
 ## Step 3: how many queries do you need?
 
@@ -112,8 +115,11 @@ Decide the smallest change worth detecting first, then size the eval set for it.
   approximation (`n_paired`) with ψ = 0.15 gives 469 queries in total.
 
 Turn it around for the eval set you have: `mdd_two_proportions(n, p)` and `mdd_paired(n, ψ)` give the minimum
-detectable difference. With the lab's 137 queries, v1's pass rate of 0.38, and a discordant share of 0.33, that is
-about 17 points unpaired and 14 points paired. Anything smaller is invisible to this set, however the numbers look.
+detectable difference. The lab's numbers make the point at the extreme: 147 queries, v1's pass rate of 0.98, and a
+discordant share of 0.04 (6 queries). Unpaired, no improvement over 0.98 is detectable (there are only 2 points of
+headroom); paired, a difference can be at most the discordant share, and even 4 points would need about 190 shared
+queries, so `mdd_paired` returns nan. This set cannot show that one prompt beats the other, however the numbers
+look. It can still catch a regression: a 5-point drop from 0.98 needs 269 queries per variant unpaired.
 
 Two consequences worth remembering. The n you need grows with 1/δ²: halving the change you want to see needs four
 times the queries. And rates near 0 or 1 are cheaper: 95% → 99% needs 285 per variant, because there is less
@@ -122,21 +128,21 @@ binomial noise there.
 ## Step 4: compare two prompts on the same queries
 
 The lab compares agent prompt v1 with v2, which adds an instruction to check the user's claims before building
-on them (aimed at module 5's accepted-false-premise failures). Both ran once on the same 137 labelled queries.
+on them (aimed at accepted-false-premise failures). Both ran once on the same 147 labelled queries.
 
 ### Worked example
 
-Looked at as two separate rates, v2 is ahead: 0.38 [0.30, 0.46] for v1 against 0.43 [0.35, 0.51] for v2, about
-5 points. The intervals overlap, but overlapping intervals are not a test, and they ignore that the queries are
-shared.
+Looked at as two separate rates, the prompts tie: 0.98 [0.94, 0.99] for both, 144 of 147. Identical rates do not
+mean identical behaviour, and two rates side by side ignore that the queries are shared.
 
-Pair them. On 137 queries, 19 pass under v1 only and 26 under v2 only; the other 92 behave the same under both.
-The paired bootstrap interval for the difference is **+0.05 [−0.04, +0.15]**, and the exact McNemar test (are 19
-vs 26 more uneven than a fair coin?) gives **p = 0.37**. The difference is within what chance produces.
+Pair them. On 147 queries, 3 pass under v1 only and 3 under v2 only; the other 141 behave the same under both.
+The paired bootstrap interval for the difference is **+0.00 [−0.03, +0.03]**, and the exact McNemar test (are 3
+vs 3 more uneven than a fair coin?) gives **p = 1.00**. The prompts fail on different queries, but there is no
+evidence that either is better.
 
-Then the repeated runs: on the 37 dev queries, v1's five runs range from 0.41 to 0.46 and v2's from 0.38 to 0.49.
-Averaging five runs per query and comparing per-query means gives +0.02 [−0.14, +0.18] (exercise 4). Run-to-run
-variance is as large as the effect we were hoping to see.
+Then the repeated runs: on the 30 dev queries, both prompts' five runs range from 0.87 to 1.00. Averaging five
+runs per query and comparing per-query means gives −0.01 [−0.03, +0.00] (exercise 4). Run-to-run variance (13
+points between runs of one prompt) is larger than any difference between the prompts.
 
 ### Why pairing works
 
@@ -148,25 +154,27 @@ McNemar p over the bootstrap interval, which comes out too narrow when there are
 
 ## Step 5: per-failure-mode metrics, not one score
 
-The aggregate said "maybe +5 points". The per-mode table says something more useful
-(`mediadoctor-lab06 modes`; failure rates, lower is better, v2 minus v1 with paired intervals):
+An aggregate can blend a fix in one failure mode and a regression in another into "no change", so look per mode
+(`mediadoctor-lab06 modes`; failure rates, lower is better, v2 minus v1 with paired intervals). The table lists
+only the modes that at least one prompt failed:
 
 | Failure mode | v1 | v2 | v2 − v1 | p | Holm p |
 |---|---|---|---|---|---|
-| accepted-false-premise | 0.18 [0.12, 0.25] | 0.07 [0.03, 0.12] | −0.11 [−0.17, −0.05] | <0.001 | **0.005** |
-| ignored-tool-output | 0.16 [0.11, 0.23] | 0.08 [0.05, 0.14] | −0.08 [−0.14, −0.02] | 0.019 | 0.115 |
-| vague-next-step | 0.13 [0.08, 0.20] | 0.12 [0.08, 0.19] | −0.01 [−0.04, +0.03] | 1.000 | 1.000 |
-| assumed-unstated-detail | 0.14 [0.09, 0.21] | 0.12 [0.07, 0.18] | −0.02 [−0.07, +0.02] | 0.508 | 1.000 |
-| format-violation | 0.03 [0.01, 0.07] | 0.17 [0.11, 0.24] | +0.14 [+0.08, +0.20] | <0.001 | **<0.001** |
-| wrong-api-detail | 0.07 [0.03, 0.12] | 0.04 [0.02, 0.08] | −0.03 [−0.06, −0.01] | 0.125 | 0.625 |
+| assumed-unstated-detail | 0.01 [0.00, 0.04] | 0.01 [0.00, 0.04] | −0.00 [−0.02, +0.02] | 1.000 | 1.000 |
+| fabricated-evidence | 0.01 [0.00, 0.04] | 0.01 [0.00, 0.05] | +0.01 [−0.01, +0.03] | 1.000 | 1.000 |
 
-(Skipped-investigation and fabricated-evidence did not change: 4 of 137 each.)
+On this data the per-mode view finds no hidden fix or regression either. The six failing answers spread over
+four labels: v1 has one assumed-unstated-detail, one fabricated-evidence, and one redundant-steps; v2 has one
+assumed-unstated-detail and two fabricated-evidence (one also labelled retrieval-miss). Redundant-steps and
+retrieval-miss count against the overall pass rate but are not among the eight modes the table tests. The mode v2
+was written for, accepted-false-premise, never occurred under either prompt, so the data cannot say whether v2's
+premise check works. The decision is "no detectable difference"; to learn more you need queries on which v1
+actually accepts false premises (module 4's method), not a cleverer statistic.
 
-v2 did what it was written for: accepted false premises fell from 18% to 7%. It also broke something: in 19
-queries v2 opened its answer with a `Premise check:` line instead of `Likely cause:`, so the answer format
-check fails, and no query went the other way. The aggregate blended a real fix and a real regression into "+5,
-not significant". The decision is not "ship v2" or "keep v1"; it is "keep v2's premise check, and tell it to put the
-correction inside `Likely cause:`", then rerun.
+On data with more failures the same table earns its place. If v2 had cut false premises by 10 points while a
+side effect broke the answer format on as many queries, the aggregate would read "about zero, not significant"
+while two rows of this table showed a significant fix and a significant regression, and the right decision would be
+"keep the fix, repair the regression, rerun", which no single score can tell you.
 
 This is why the course reports one pass rate per failure mode. If someone needs a single number, use a pass-all
 rate (a query passes only if it passes every check) and keep the per-mode table one click away; Hamel Husain and
@@ -177,21 +185,24 @@ and they caution against elaborate weighted scores for the same reasons as again
 ## Step 6: multiple comparisons and slicing
 
 Each test at α = 0.05 has a 5% chance of a false alarm. Test eight failure modes, or eight topic slices, and the
-chance that at least one lights up by luck is far higher. In the per-mode table, ignored-tool-output has p = 0.019:
-"significant" alone, but not after the **Holm-Bonferroni** adjustment for the eight modes tested (0.115).
-(`stats.holm` takes a dict of p-values and returns adjusted ones; compare them with 0.05 as usual.)
+chance that at least one lights up by luck is far higher. The **Holm-Bonferroni** adjustment fixes that: sort the
+p-values, multiply the smallest by the number of tests, the next by one fewer, and so on. A mode with p = 0.019
+among eight tested would be "significant" alone but not after adjustment (0.019 × 8 = 0.15).
+(`stats.holm` takes a dict of p-values and returns adjusted ones; compare them with 0.05 as usual.) On the lab's
+data no p-value is below 0.05 even before adjustment.
 
 Slices are worse, because they are small and there are many ways to cut. `mediadoctor-lab06 slices` splits the
 v1-vs-v2 comparison by topic:
 
 ```text
-codec-limits    n=19  v1 0.47  v2 0.21  diff -0.26 [-0.47, -0.05]  p=0.062  Holm p=0.500
-live-stream     n=13  v1 0.15  v2 0.46  diff +0.31 [+0.08, +0.54]  p=0.125  Holm p=0.875
+av1-playback    n=21  v1 0.90  v2 1.00  diff +0.10 [+0.00, +0.24]  p=0.500  Holm p=1.000
+drm-resolution  n=17  v1 1.00  v2 0.94  diff -0.06 [-0.18, +0.00]  p=1.000  Holm p=1.000
 ```
 
-"v2 is much better on live streaming and much worse on codec limits" is a story the data cannot support. The
-bootstrap intervals exclude zero, but with 13 and 19 queries and a handful of discordant pairs they are too narrow;
-the exact tests give p above 0.05, and after adjusting for eight slices, p is 0.5 or more. Exercise 3 simulates the trap: with two
+"v2 fixes AV1 playback and breaks DRM" is a story the data cannot support. The av1-playback difference is two
+queries (v1 fails two, v2 none); drm-resolution's is one. The bootstrap intervals touch zero, and with so few
+discordant pairs they are too narrow anyway; the exact tests give p = 0.5 and 1.0, and after adjusting for eight
+slices, 1.0. Exercise 3 simulates the trap: with two
 *identical* prompts and eight slices, about one experiment in eight shows at least one "significant" slice.
 
 Rules: choose slices and failure modes before you look; adjust for the number you test; and treat a slice that
@@ -221,31 +232,37 @@ With k runs per query there are two different questions, and two estimators:
   for an agent: users who ask the same thing get a good answer every time. It was introduced with
   [τ-bench](https://arxiv.org/abs/2406.12045) (Yao et al.).
 
-On the 37 dev queries (`mediadoctor-lab06 variance`):
+On the 30 dev queries (`mediadoctor-lab06 variance`):
 
 | Prompt | pass^1 | pass^3 | pass^5 | pass@5 | flaky queries |
 |---|---|---|---|---|---|
-| v1 | 0.438 | 0.324 | 0.270 | 0.676 | 15 of 37 |
-| v2 | 0.454 | 0.289 | 0.189 | 0.703 | 19 of 37 |
+| v1 | 0.967 | 0.900 | 0.833 | 1.000 | 5 of 30 |
+| v2 | 0.953 | 0.870 | 0.800 | 1.000 | 6 of 30 |
 
-v2 is slightly ahead on a single run and clearly behind on consistency: its format slip happens in some runs and not
-others, so more queries are flaky. For a support tool that engineers retry, pass^k is the number to watch.
+Every query passes at least once in five runs (pass@5 is 1.000), and no query always fails. But a 0.97 single-run
+rate becomes 0.83 when you ask for five good answers in a row: one query in six fails at least once. The two
+prompts differ by one flaky query, well within noise. For a support tool that engineers retry, pass^k is the number
+to watch, and it is where rare failures show up first.
 
 ## Step 8: vanity metrics
 
 Some metrics are easy to compute and pleasant to watch, and tell you almost nothing.
 
 **A generic 1-to-10 "helpfulness" score.** The lab replays such a judge on run 1 of both prompts. Mean helpfulness
-is 7.71 for v1 and 7.66 for v2: flat, while two failure modes moved by more than 10 points each. Worse, it points
-the wrong way. Answers that correctly ask for the missing file or device (PASS) average 4.89; answers that accepted a
-false premise average 8.04, and answers contradicting the tool output 8.45. Confident, specific-sounding text
-scores well whether or not it is true. The chance that a random passing answer outscores a random failing one is
-0.42, worse than a coin.
+is 7.14 for v1 and 7.16 for v2, and 115 of v1's 147 answers score 7 or 8: the score barely varies. Does it at least
+rank failing answers low? The chance that a random passing answer outscores a random failing one is 0.22 on v1
+(its three failing answers all score 8, above the passing mean of 7.12) and 0.81 on v2 (its failing answers score
+6, 6, and 7). The same judge looks worse than a coin on one prompt and useful on the other, because each number
+rests on three failing answers. That is the real lesson of this data: you cannot validate a metric against labels
+that contain three failures.
 
 **Off-the-shelf similarity.** Word-overlap F1 against a reference answer (the kind of score used in QA benchmarks)
-does no better: 0.47. Trace m4q012 says both streams start at 0.000 s, the opposite of what ffprobe reported
-(video starts at 0.300 s), and still scores 0.77, because it shares the reference's next step word for word.
-Correct answers that ask for details or reject a premise use different words and score low.
+gives 0.28 on v1: its three failing answers score 0.39 to 0.46, and 82 of the 144 passing answers score below all
+of them. Word overlap measures how an answer is worded, not whether it is right.
+
+On data with more failures the same check is decisive. A generic judge tends to reward confident, specific-sounding
+text whether or not it is true, and word overlap rewards an answer that copies the reference's wording while
+getting a fact backwards; with dozens of labelled failures, a separation near or below 0.5 would show it.
 
 Hamel Husain and Shreya Shankar make the same point in
 [Should I use "ready-to-use" evaluation metrics?](https://hamel.dev/blog/posts/evals-faq/should-i-use-ready-to-use-evaluation-metrics.html)

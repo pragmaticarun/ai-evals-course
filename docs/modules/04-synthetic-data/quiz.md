@@ -55,14 +55,16 @@ same `evidence` and `ambiguity`?**
 ??? question "Answer"
     A test (held-out) query that is a near-copy of a train or dev query, so improving on train quietly improves on
     test and the held-out score overstates generalisation. The lab groups queries whose similarity is at least 0.35
-    and assigns each group to one split by hash, then checks with `leakage_pairs` (0 for v1; 46 if each query is
-    split independently).
+    and assigns each group to one split by hash, then checks with `leakage_pairs`. For v1 the check reports 0, and
+    independent splitting would too, because no two v1 queries reach 0.35; on a repetitive set (templates, a model
+    that reuses phrasing) grouping is what keeps near-copies out of test.
 
-**8. On the dev slice, 9 of 18 false-premise queries fail. Can you report "MediaDoctor fails on half of the false
-beliefs users bring"?**
+**8. On the dev slice, 11 of 12 false-premise queries pass. Can you report "MediaDoctor handles the false beliefs
+users bring"?**
 
 ??? question "Answer"
     No. The tuples were spread evenly on purpose, so the share of false-premise questions, and which premises appear,
-    reflect your choices, not your users. The result says the agent *has* this failure mode and roughly how
-    reliably it triggers on these premises. How often it hurts real users needs real traffic. Synthetic data finds
-    and targets failures; it does not measure their frequency.
+    reflect your choices, not your users. The result says the agent did not repeat these particular wrong beliefs
+    in 12 tries; real users bring other beliefs, phrased other ways, at rates you have not measured. How often a
+    false premise hurts real users needs real traffic. Synthetic data finds and targets failures (or shows a slice
+    holding up); it does not measure their frequency.

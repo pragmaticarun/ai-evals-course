@@ -19,14 +19,16 @@ suggests marking the gate as optional for prompt-only changes. What do you say?*
     changed, bump the golden manifest, rewrite the baseline, and push. If prompt tweaks are frequent, make recording
     cheap and routine rather than making the gate optional.
 
-**3. On 108 shared cases the baseline passes 0.972 of a check and the candidate 0.963: one case flipped from pass to
-fail, none the other way. A "no drop allowed" rule blocks. What does the paired gate do, and why?**
+**3. On 119 shared cases the baseline passes 1.000 of the citations check and the candidate 0.975: three cases
+flipped from pass to fail, none the other way. A "no drop allowed" rule blocks. What does the paired gate do, and
+why?**
 
 ??? question "Answer"
-    It passes. McNemar's test looks at the discordant cases: 1 against 0 is entirely consistent with chance
-    (p = 1.0), and the drop (0.009) is below the minimum effect. The interval (−0.028 to 0.000) also rules out a drop
-    larger than the 0.05 margin, so it does not even warn. The one flipped case is still listed in the report, so a
-    reviewer can read it.
+    It warns, and does not block. McNemar's test looks at the discordant cases: 3 against 0 is consistent with chance
+    (p = 0.75 after the Holm adjustment across the tier), so the drop (0.025), although above the 0.02 minimum
+    effect, is not shown to be real. But the 95% interval (−0.059 to 0.000) reaches below the −0.05 margin, so the
+    run cannot rule out a drop you would care about: that is a warn. The three flipped cases are listed in the
+    report, so a reviewer can read them (here, each cites a KB document that was never retrieved).
 
 **4. Why does the gate read the baseline from the base branch rather than from the pull request?**
 
@@ -36,14 +38,17 @@ fail, none the other way. A "no drop allowed" rule blocks. What does the paired 
     behaviour, so that after merging, `main`'s baseline describes what `main` ships; the diff of that file shows
     reviewers exactly which cases changed.
 
-**5. The judge tier on 37 dev cases warns on two judges after a change that the human labels say clearly improved
-false-premise handling. Name two reasons the judge tier is weak here.**
+**5. The judge tier on 30 dev cases passes all three judges on both prompts with no flips at all, yet the human
+labels fail one of the candidate's dev answers (a KB citation without a search). Name two reasons the judge tier is
+weak here.**
 
 ??? question "Answer"
-    Sample size: with 37 cases and up to 18% disagreement between the two prompts, the paired test cannot rule out a
-    5-point drop, so warns are expected. Judge error: the false-premise judge's TNR on dev is 0.44, so it misses most
-    failures in both runs and shrinks the visible improvement (human labels +0.22, judge +0.05). Gate on code checks;
-    use the judge tier for information until the judge and n are good enough.
+    Sample size: 30 cases with the 12% disagreement the code tier measures between the same two prompts cannot
+    reliably see any drop smaller than that, and with no disagreement in the judge tier itself there is no estimate
+    of its noise at all. Judge error: the tool-grounding judge passed the answer the humans failed, and because no dev
+    trace failed in module 5, the judges' TNR on dev could not even be measured, so "every judge passes" says little
+    about whether failures are absent. Gate on code checks (the citations check caught this case); use the judge tier
+    for information until the judge and n are good enough.
 
 **6. Which of these must be in the golden manifest, and why: the dataset file, the reference labels, the judge specs,
 the recorded fixtures, the workflow YAML?**

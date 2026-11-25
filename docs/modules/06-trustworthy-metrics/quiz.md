@@ -56,22 +56,26 @@ queries discordant)?**
 **8. v2's overall pass rate is +5 points with a paired interval crossing zero. Should you drop v2?**
 
 ??? question "Answer"
-    Look per failure mode first. In the lab, the aggregate hid a significant fix (accepted false premises 18% → 7%)
-    and a significant regression (format violations 3% → 17%). The right move is to keep the fix and repair the
-    regression, which a single score cannot tell you.
+    Look per failure mode first. An aggregate can blend a significant fix in one mode with a significant regression
+    in another; then the right move is to keep the fix and repair the regression, which a single score cannot tell
+    you. If the per-mode table shows nothing either (as in the lab, where v1 and v2 each fail 3 of 147 queries and no
+    mode has more than two failures), the answer is "no detectable difference", and the next step is more failing
+    queries, not a decision either way.
 
 **9. What is the difference between pass@k and pass^k, and which matters for an agent people rely on?**
 
 ??? question "Answer"
     pass@k is the chance that at least one of k attempts passes (useful when someone picks the best attempt); pass^k
-    is the chance that all k pass. For an agent users ask repeatedly, consistency matters: pass^k. In the lab v2 has
-    the higher pass^1 but the lower pass^5.
+    is the chance that all k pass. For an agent users ask repeatedly, consistency matters: pass^k. In the lab both
+    prompts pass@5 at 1.000, yet v1's pass^1 of 0.967 falls to a pass^5 of 0.833 (v2: 0.953 to 0.800): one query in
+    six fails at least once in five runs.
 
 **10. A vendor offers a "helpfulness" score from 1 to 10 and a semantic-similarity score. How do you decide whether
 to use them?**
 
 ??? question "Answer"
     Test them against your labels: does the score separate passing from failing traces (for example, the chance a
-    random passing trace outscores a random failing one)? In the lab both were at or below 0.5: helpfulness rewarded
-    confident wrong answers, and word overlap rewarded an answer contradicting ffprobe. Use binary per-failure-mode
-    evaluators as metrics; generic scores at most help you find traces to read.
+    random passing trace outscores a random failing one)? And make sure you have enough labelled failures to test
+    with: in the lab, with three failing answers per prompt, the same helpfulness judge scored 0.22 on v1 and 0.81 on
+    v2, and word overlap 0.28, so none of them can be trusted or ruled out. Use binary per-failure-mode evaluators as
+    metrics; generic scores at most help you find traces to read.

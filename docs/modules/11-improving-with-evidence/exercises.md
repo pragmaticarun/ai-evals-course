@@ -42,32 +42,38 @@ who asks "what's the cheapest option that's basically as good?"
     Output:
 
     ```text
-    best retry 0.898; point-estimate pick: retry
-      haiku     diff -0.259 [-0.352, -0.176]  not shown within 2 pts  cost/success $0.00028
-      cascade   diff -0.204 [-0.287, -0.130]  not shown within 2 pts  cost/success $0.00069
-      v3-cache  diff -0.046 [-0.093, -0.009]  not shown within 2 pts  cost/success $0.00402
-      retry     (the best)                      cost/success $0.00428
-      v2        diff -0.139 [-0.204, -0.074]  not shown within 2 pts  cost/success $0.00815
-      v1        diff -0.231 [-0.315, -0.157]  not shown within 2 pts  cost/success $0.00880
-      v3        diff -0.065 [-0.120, -0.019]  not shown within 2 pts  cost/success $0.00981
+    best v2 0.277; point-estimate pick: v2
+      haiku     diff -0.059 [-0.118, +0.000]  not shown within 2 pts  cost/success $0.00103
+      cascade   diff -0.025 [-0.084, +0.034]  not shown within 2 pts  cost/success $0.00504
+      v3-cache  diff -0.084 [-0.143, -0.025]  not shown within 2 pts  cost/success $0.02332
+      retry     diff -0.076 [-0.134, -0.017]  not shown within 2 pts  cost/success $0.02422
+      v2        (the best)                      cost/success $0.02495
+      v1        diff -0.042 [-0.092, +0.000]  not shown within 2 pts  cost/success $0.02883
+      v3        diff -0.034 [-0.092, +0.025]  not shown within 2 pts  cost/success $0.03454
     ```
 
-    On point estimates the answer is retry itself: nothing else is within 2 points of 0.898 (v3-cache is 4.6 points
-    below). With intervals, no configuration can be shown to be within 2 points of the best: even v3-cache's paired
-    CI goes down to −9.3 points. A 2-point tolerance is below what 108 queries can resolve (about 8 points when 10%
-    of queries change outcome).
+    On point estimates the answer is v2 itself: the next best, the cascade (0.252), is 2.5 points below 0.277. With
+    intervals, no configuration can be shown to be within 2 points of the best: even the cascade's paired CI goes
+    down to −8.4 points. A 2-point tolerance is below what 119 queries can resolve (about 8 points when 10% of
+    queries change outcome).
 
-    For the manager: "retry is the most accurate option we tested. v3 with caching is 6% cheaper per success and
-    4.6 points less accurate (CI 0.9 to 9.3 points); we cannot call them equivalent at a 2-point tolerance with this
-    data. If 'basically as good' means within 5 points, the pre-registered margin, v3-cache does not clear that
-    either. If the 6% matters more than the points, the decision is a business call, and here are the numbers for
-    it." Note that the cheapest option overall (Haiku) is not on the table at any tolerance anyone would accept.
+    Before you answer the manager, look at what "success" is measuring here. By the lab's grader every
+    configuration succeeds on only 19% to 28% of tasks, but the reference labels find a failure mode in just 15 of
+    the 833 dev answers (the lesson's Step 3). Most of the grader's failures are its own: its reference check looks
+    for a fixed phrase per scenario, and the regenerated answers state the same diagnosis in other words. A ranking
+    of the configurations by a grader that disagrees with the labels on most answers is a ranking of how each one
+    happens to phrase things.
+
+    For the manager: "on our labels the configurations are close to equally good, and our automated score cannot
+    tell them apart; the cascade is about 80% cheaper per success than any Sonnet-only option, and Haiku cheaper
+    again. We cannot call any of them within 2 points of another with this data and this grader. Before we trade
+    points for money, we have to fix the grader." That is a less satisfying answer than a name, and the right one.
 
 ## Exercise 2: Explain a latency regression from the traces
 
-Switching from v3-cache to retry raised p95 latency by 2.7 s but p50 by only 0.7 s. Using the traces
-(`lab11.task_results`, `lab11.spans_by_op`), explain where the extra time comes from, why p95 moved so much more
-than p50, and what you would change to keep most of the accuracy gain at a lower p95.
+Switching from v3-cache to retry raised p95 latency by 1.4 s and p50 by 0.6 s. Using the traces
+(`lab11.task_results`, `lab11.spans_by_op`), explain where the extra time comes from, which tasks sit in the slow tail, and
+what you would change to keep the self-check at a lower p95.
 
 ??? success "Solution"
     ```python
@@ -117,23 +123,26 @@ than p50, and what you would change to keep most of the accuracy gain at a lower
     Output:
 
     ```text
-    p50 5.14 -> 5.84 s;  p95 7.76 -> 10.42 s
-    mean ms per task: {'agent calls': 5701, 'self-check': 392, 'tools': 29}
-    not retried  n= 93  mean extra +0.37 s  max +1.59 s
-    retried      n= 15  mean extra +3.45 s  max +5.44 s
-    slowest 5%: m4q132 12.6s (retried), m4q081 11.6s (retried), m4q158 11.3s (retried), m4q068 10.8s (retried), m4q084 10.7s (retried)
+    p50 7.39 -> 7.97 s;  p95 13.40 -> 14.82 s
+    mean ms per task: {'agent calls': 8309, 'self-check': 490, 'tools': 20}
+    not retried  n=113  mean extra +0.48 s  max +1.86 s
+    retried      n=  6  mean extra +7.16 s  max +10.79 s
+    slowest 5%: m4q009 30.1s, m4q149 22.5s, m4q152 19.9s, m4q122 17.3s, m4q188 17.0s (retried), m4q135 14.9s (retried)
     ```
 
-    Two mechanisms, visible in the spans. Every task now makes one more call (the Haiku self-check, about 0.4 s), a
-    small, uniform shift that moves p50 by about the same amount. The 15 retried tasks also make a second agent turn
-    (3.4 s more on average, up to 5.4 s). They are 14% of tasks, so they barely touch the median, but they are
-    exactly the tasks that land in the slowest 5%: all five slowest tasks are retried ones. A regression that hits a
-    minority of tasks hard moves p95 and leaves p50 alone; that is why you always report both.
+    Two mechanisms, visible in the spans. Every task now makes one more call (the Haiku self-check, about 0.5 s), a
+    small, uniform shift that moves p50 by about the same amount. The 6 retried tasks also make a second agent turn
+    (7.2 s more on average, up to 10.8 s). They are 5% of tasks, so they barely touch the median, but two of them
+    (m4q188 and m4q135) climb into the slowest 5%, and that is what moves p95. The four slowest tasks were not
+    retried at all: they were already slow under v3-cache (the retry configuration shares v3-cache's first answer),
+    so most of the tail belongs to the agent, not the self-check. A regression that hits a minority of tasks hard
+    moves p95 and leaves p50 alone; that is why you always report both, and why you read the slow tasks one by one.
 
-    Ways to keep most of the gain at a lower p95: run the self-check in parallel with streaming the first answer to
-    the user and only retry when it fails (the user waits only on failures); give the retry a smaller step budget;
-    or retry only for the failure modes the judge catches reliably and the agent can actually fix (here, 5 of 14
-    caught defects were fixed). Each is a new configuration with one change; test it the same way, with p95 as a
+    Ways to keep the self-check at a lower p95: run it in parallel with streaming the first answer to the user and
+    only retry when it fails (the user waits only on failures); give the retry a smaller step budget; or retry only
+    for the failure modes the judge catches reliably and the agent can actually fix. Here the judge caught none of
+    the 3 answers the labels call defective and sent back 6 the labels call fine (the lesson's Step 4), so on this
+    data the retry is all cost. Each fix is a new configuration with one change; test it the same way, with p95 as a
     guardrail.
 
 ## Exercise 3: Few-shot examples that do not leak the eval set
@@ -185,22 +194,25 @@ when it is not identical, and why is it a problem even if it only matches a trai
 
     ```text
     example: In av_offset_300ms.mp4 the audio is ahead of the picture by ...
-       nearest m4q147 (train) jaccard 0.59: in av_offset_300ms.mp4 teh audio is ahead of teh picture by ...
-       nearest m4q019 (train) jaccard 0.48: Hey, in av_offset_300ms.mp4 the audio is ahead of the pictur...
+       nearest m4q174 (train) jaccard 0.37: our av_offset_300ms.mp4 the audio is ahead of the lips by li...
+       nearest m4q158 (test) jaccard 0.35: av_offset_300ms.mp4 the audio is ahead of the video by like ...
     example: Voices lead lip movement on one encoder output (av_offset_30...
-       nearest m4q161 (train) jaccard 0.14: how do we tell whether teh a/v offset in av_offset_300ms.mp4...
-       nearest m4q090 (train) jaccard 0.12: I know both streams in the file start at zero. How do we tel...
+       nearest m4q158 (test) jaccard 0.13: av_offset_300ms.mp4 the audio is ahead of the video by like ...
+       nearest m4q101 (train) jaccard 0.12: customer says one of our videos takes ages to start, just si...
     example: lumen-l3: thumbnails go blank and we get codec errors (thumb...
-       nearest m4q177 (train) jaccard 0.16: QA question: How do we find out whether the lumen-l3 will ge...
-       nearest m4q042 (dev) jaccard 0.14: qa question: is teh lumen-l3 able to decode and display hdr1...
-    draft   max overlap 0.59 -> TOO CLOSE: rewrite or pick another example
-    shipped max overlap 0.14 -> OK
-    shipped max overlap 0.16 -> OK
+       nearest m4q074 (train) jaccard 0.11: the lumen-l3 is widevine l1 right so we should be getting HD...
+       nearest m4q119 (train) jaccard 0.11: can the lumen-l3 play the 4k hdr stuff or nah. we want to kn...
+    draft   max overlap 0.37 -> OK
+    shipped max overlap 0.13 -> OK
+    shipped max overlap 0.11 -> OK
     ```
 
-    The draft shares most of its words with m4q147 and m4q019 (a typo-ed copy and a rephrasing of the same
-    question), because module 4 generated its queries from the same scenarios module 3's traces came from. The
-    shipped examples were rewritten and share at most 16% of their words with any question.
+    On the regenerated dataset the draft just passes the 0.4 threshold, but look at its two nearest questions:
+    m4q174 and m4q158 ask the same question about the same file in other words, and m4q158 is in the held-out test
+    split. That is a near-copy by any reading, and word overlap scores it below the line because the rephrasings use
+    different words ("lips", "video", "like"). The shipped examples were rewritten and share at most 13% of their
+    words with any question. This is the case for reading the pairs just below the threshold, not only the ones
+    above it.
 
     A near-copy matters because the model does not need the exact string: an example whose question and answer are
     nearly the test question hands it the answer, and the score then measures recall of the prompt, not diagnosis.
@@ -208,7 +220,8 @@ when it is not identical, and why is it a problem even if it only matches a trai
     be inflated exactly on the queries the examples resemble. Word overlap is a crude detector (it misses
     paraphrases with different words), so treat it as a floor: also keep a list of the sources of every example
     (`FEW_SHOT_SOURCES`), and check that the scenario-level gain holds on queries from scenarios the examples do not
-    cover. The threshold (0.4 here) is a choice; set it by looking at the pairs just above and below it.
+    cover. The threshold (0.4 here) is a choice; set it by looking at the pairs just above and below it (on this
+    dataset, a threshold of 0.3 would flag the draft and pass both shipped examples).
 
 ## Exercise 4: When does prompt caching pay, and what does batch save?
 
@@ -250,37 +263,37 @@ Batch API.
     Output:
 
     ```text
-    claude-sonnet-5-5: one call without caching $0.004058
-       1 calls per cache lifetime: cached $0.004573/call vs $0.004058/call  (+13%)
-       2 calls per cache lifetime: cached $0.003338/call vs $0.004058/call  (-18%)
-       3 calls per cache lifetime: cached $0.002926/call vs $0.004058/call  (-28%)
-      10 calls per cache lifetime: cached $0.002350/call vs $0.004058/call  (-42%)
+    claude-sonnet-5-5: one call without caching $0.004066
+       1 calls per cache lifetime: cached $0.004582/call vs $0.004066/call  (+13%)
+       2 calls per cache lifetime: cached $0.003343/call vs $0.004066/call  (-18%)
+       3 calls per cache lifetime: cached $0.002930/call vs $0.004066/call  (-28%)
+      10 calls per cache lifetime: cached $0.002351/call vs $0.004066/call  (-42%)
     claude-haiku-5-5: one call without caching $0.000203
        1 calls per cache lifetime: cached $0.000229/call vs $0.000203/call  (+13%)
-       2 calls per cache lifetime: cached $0.000169/call vs $0.000203/call  (-16%)
+       2 calls per cache lifetime: cached $0.000170/call vs $0.000203/call  (-17%)
        3 calls per cache lifetime: cached $0.000150/call vs $0.000203/call  (-26%)
       10 calls per cache lifetime: cached $0.000122/call vs $0.000203/call  (-40%)
-    dev suite, 3 runs: standard $1.11, batch $0.55
+    dev suite, 3 runs: standard $1.61, batch $0.80
     ```
 
     Caching costs 25% extra on the prefix for the write, so a cache that is written and never read (one call per
     five-minute window) makes every call 13% more expensive. It breaks even before the second call and saves
     about 40% per call at ten calls per lifetime, where the remaining cost is mostly output tokens and the uncached
-    part of the input. The lab's 59% saving per success is larger because each MediaDoctor task makes two or three
-    calls in quick succession and the replay is one continuous batch. At low traffic (a request every ten
+    part of the input. The lab's 46% saving per task is larger because each MediaDoctor task makes two calls in
+    quick succession and the replay is one continuous batch (only one task in the whole run writes the cache). At low traffic (a request every ten
     minutes) each task's first call writes the cache again, only its second and third calls read it, and the
     saving shrinks. So state cache savings with the traffic they assume,
     and measure the real cache hit rate (`cache_read_input_tokens` over all input tokens) in production.
 
-    Batch halves everything (the caching multipliers stack with it), so the nightly suite drops from $1.11 to $0.55
+    Batch halves everything (the caching multipliers stack with it), so the nightly suite drops from $1.61 to $0.80
     for three runs; users cannot wait 24 hours, so it is for evals and backfills only.
 
 ## Exercise 5: Is the next experiment worth running?
 
-The recommended configuration succeeds on 97 of 108 dev tasks. Suppose your next idea would remove a third of the
-remaining failures and break almost nothing. Estimate how many paired tasks you need to detect that gain with 80%
-power, what the current dev set can detect, and what a perfect system would save in cost per success. Should you
-run the experiment now?
+The reference labels find a failure mode in only 3 of the retry configuration's 119 dev answers (the grader fails
+far more; see Step 3 of the lesson). Suppose your next idea would remove a third of the labelled failures and break
+almost nothing. Estimate how many paired tasks you need to detect that gain with 80% power, what the current dev set
+can detect, and what a perfect score would save in cost per success. Should you run the experiment now?
 
 ??? success "Solution"
     ```python
@@ -289,11 +302,12 @@ run the experiment now?
     from mediadoctor import lab11
 
     s = lab11.summary("retry")
-    remaining = 1 - s.rate
-    print(f"retry: success {s.rate:.3f}; failures left {s.n - s.successes}/{s.n} = {remaining:.3f}")
+    labels = lab11.reference_labels()
+    bad = sum(labels[("retry", c["id"])] != "none" for c in lab11.split_cases("dev"))
+    print(f"retry on dev: the grader fails {s.n - s.successes}/{s.n}; the labels find {bad} defective answers")
 
-    # A plausible next fix removes a third of the remaining failures and breaks almost nothing.
-    gain = remaining / 3
+    # A plausible next fix removes a third of the labelled failures and breaks almost nothing.
+    gain = bad / 3 / s.n
     discordant = gain + 0.01  # tasks that change outcome: the fixed ones plus a few broken
     print(f"hoped-for gain {gain:+.3f}; discordant share {discordant:.3f}")
     print(f"tasks needed to see it (80% power, paired): {n_paired(discordant, gain)}")
@@ -302,7 +316,7 @@ run the experiment now?
         f"change outcome: {mdd_paired(s.n, 0.10):.3f}"
     )
 
-    # What a perfect fix is worth in money: cost per success if every task succeeded.
+    # What a perfect score is worth in money, by the grader: cost per success if every task succeeded.
     print(
         f"cost/success now ${s.cost_per_success:.5f}; at 100% success ${s.cost_per_task:.5f} "
         f"({s.cost_per_task / s.cost_per_success - 1:+.0%})"
@@ -312,19 +326,22 @@ run the experiment now?
     Output:
 
     ```text
-    retry: success 0.898; failures left 11/108 = 0.102
-    hoped-for gain +0.034; discordant share 0.044
-    tasks needed to see it (80% power, paired): 297
-    dev tasks we have: 108; the largest gain 108 tasks can reliably see when 10% of tasks change outcome: 0.084
-    cost/success now $0.00428; at 100% success $0.00384 (-10%)
+    retry on dev: the grader fails 95/119; the labels find 3 defective answers
+    hoped-for gain +0.008; discordant share 0.018
+    tasks needed to see it (80% power, paired): 2044
+    dev tasks we have: 119; the largest gain 119 tasks can reliably see when 10% of tasks change outcome: 0.080
+    cost/success now $0.02422; at 100% success $0.00489 (-80%)
     ```
 
-    Not on this dev set. The hoped-for gain is about 3.4 points; detecting it reliably needs about 300 paired tasks,
-    nearly three times what you have, and 108 tasks can only reliably see gains of about 8 points. Running it anyway
-    produces a coin-flip "result" that you will be tempted to believe if it comes out positive. The money is also
-    small: a perfect system would cut cost per success by 10%.
+    Not on this dev set, and not for the usual reason. By the labels there is almost nothing left to fix: removing
+    one of three failures is a gain of under one point, and seeing it reliably would take about 2,000 paired tasks,
+    while 119 tasks can only see gains of about 8 points. Running it anyway produces a coin-flip "result" that you
+    will be tempted to believe if it comes out positive.
 
-    Better options, in order: grow the dev set from production traffic (module 9's sampling) so future experiments
-    have the power they need; re-run error analysis on the 11 remaining failures to see whether they share a cause
-    worth a larger fix; and spend the effort on the latency side (exercise 2), where the retry's p95 cost is easier
-    to measure. Stopping here is a decision, and it goes in the experiment log with these numbers.
+    The last line is the trap. By the grader, a perfect system would cut cost per success by 80%, which looks like
+    the biggest prize in the module. But almost all of the grader's 95 failures are answers the labels call
+    correct: the money is not in the agent, it is in the measurement. The experiment worth running now is on the
+    grader: measure its agreement with the labels (it fails every labelled defect but also rejects most good
+    answers), fix its reference check, and re-run the comparisons. Then re-run error analysis on a larger, harder
+    sample (module 9's production sampling) to find failures worth a fix. Stopping the agent work here is a
+    decision, and it goes in the experiment log with these numbers.

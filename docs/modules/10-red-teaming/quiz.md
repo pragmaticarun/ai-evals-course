@@ -28,21 +28,23 @@ say?**
 ??? question "Answer"
     Two things. Statistically, the data are consistent with a rate up to about 11%, so "under 5%" is not shown;
     bounding it under 5% at this rate would take roughly 640 cases. More importantly, ASR is a property of this suite,
-    not of attackers in general: it says these 60 attacks are mostly handled, not that 95% of real attacks fail. Report
-    it as "2 of 60 known attack patterns still work (both described), at a 5% benign false-positive rate".
+    not of attackers in general: it says these 60 attacks are mostly handled, not that 95% of real attacks fail. And
+    read the two successes before quoting them: in the lab both are the `all-clear` check counting a refusal that
+    quotes the payload. Report it as "2 of 60 attack cases are scored as successes (both described, both check
+    errors on reading), at a 15% benign false-positive rate".
 
-**4. v1 → v2 changes the benign false-positive rate from 6/60 to 3/60, yet the paired comparison reports 3 and 6
-discordant requests and p = 0.51. How do the two descriptions fit together, and what does the test say?**
+**4. v1 → v2 changes the benign false-positive rate from 6/60 to 9/60, yet the paired comparison reports 7 and 4
+discordant requests and p = 0.55. How do the two descriptions fit together, and what does the test say?**
 
 ??? question "Answer"
-    The rates count each configuration on its own; the discordant counts compare them case by case. Six benign
-    requests were blocked by v1 but not v2 (the keyword hits) and three by v2 but not v1 (two detector false alarms
-    and one removed link), so v1 has 6, v2 has 3, and they share none. McNemar's test uses only those nine
-    discordant requests: 6 against 3 gives p = 0.51. There is no evidence that v2 has fewer false positives; it has
-    *different* ones, each needing its own fix.
+    The rates count each configuration on its own; the discordant counts compare them case by case. Seven benign
+    requests were touched by v2 but not v1 (all detector withholdings of search results that contained a poisoned
+    KB note), four by v1 but not v2 (keyword hits), and two by both (`bn048` and `bn049`), so v1 has 4 + 2 = 6 and
+    v2 has 7 + 2 = 9. McNemar's test uses only the eleven discordant requests: 7 against 4 gives p = 0.55. There is
+    no evidence that v2 has more false positives than v1; it has *different* ones, each needing its own fix.
 
 **5. Why does the benign set include hard negatives such as "our CI script runs rm -rf on the build cache"? The
-keyword filter blocks none of the 958 ordinary questions from modules 4 and 9.**
+keyword filter blocks none of the 966 ordinary questions from modules 4 and 9.**
 
 ??? question "Answer"
     Because ordinary traffic is too easy to reveal a guardrail's false-positive cost. Hard negatives are benign
@@ -67,7 +69,7 @@ What goes wrong, and what is a better policy?**
 
 ??? question "Answer"
     Approval fatigue: most cards are fine, so reviewers learn to click yes, and the one bad card gets approved too
-    (the approve-all reviewer in the lab publishes the canary). It also makes the agent slow for every benign action.
+    (the lab's approve-all reviewer models that reviewer: it passes whatever reaches it). It also makes the agent slow for every benign action.
     Ask only for actions that are risky, irreversible, and rare (publishing a ticket), decide the rest in code
     (allowlisted fetches and in-workspace reads are allowed; everything else is blocked, not asked about), show the
     exact arguments and the user's own words on the card, and track approvals per benign request.

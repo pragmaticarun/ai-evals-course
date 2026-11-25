@@ -45,7 +45,10 @@ def test_v2_changes_no_check_outcome_but_shortens_answers():
     assert fa - fb == set() and fb - fa == set()
     assert a["summary"] == b["summary"] and b["summary"]["all_pass"] == (19, 20)
     # the per-case diff is empty, yet v2 did change every answer: all 20 got shorter
-    words = {v: {cid: len(out.split()) for cid, out in r["outputs"].items()} for v, r in (("v1", a), ("v2", b))}
+    words = {
+        v: {cid: len(out.split()) for cid, out in r["outputs"].items()}
+        for v, r in (("v1", a), ("v2", b))
+    }
     assert all(words["v2"][cid] < words["v1"][cid] for cid in words["v1"])
     assert max(words["v1"].values()) == 90 and max(words["v2"].values()) == 51
 
