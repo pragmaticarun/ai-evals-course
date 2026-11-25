@@ -14,7 +14,8 @@ Eight questions. Answer each, then expand to check.
     The Messages API is stateless: every call resends the system prompt, the tool schemas, and the whole conversation,
     including all previous tool results.
 
-**3. m2q03's answer was correct. Why is it still counted as a failure?**
+**3. An answer is correct and cites `[tool:ffprobe]`, but the trace shows the ffprobe call failed. Why is it still
+counted as a failure?**
 
 ??? question "Answer"
     It cites ffprobe evidence that does not exist: the tool call failed. Being right by luck or prior knowledge does not

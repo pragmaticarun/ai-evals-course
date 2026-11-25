@@ -118,74 +118,99 @@ durations in replay come from the latency stored with each fixture, and tool dur
 The data model matches OpenTelemetry's, and `evalkit otlp` converts traces to OTLP/JSON. See
 [Sending traces to Phoenix, Langfuse, and Braintrust](backends.md).
 
-## Worked example 1: the answer that cited evidence it never saw
+## Worked example 1: does the answer's evidence exist?
 
 Question m2q03: *"progressive_late_moov.mp4 takes about 10 seconds to start over HTTP but plays fine once it starts.
 Why?"* The answer:
 
 ```text
-Likely cause: ffprobe shows the moov atom is written after the mdat box at the end of the file, ...
-Next step: Remux with ffmpeg -i in.mp4 -c copy -movflags +faststart out.mp4 ...
-Sources: [tool:ffprobe]
+Likely cause: The MP4's top-level box order is ftyp, free, mdat, moov, so the moov index is at the end of the
+file. ...
+Next step: Remux with the index at the front: ffmpeg -i progressive_late_moov.mp4 -c copy -movflags +faststart ...
+Sources: [tool:ffprobe] [kb:mp4-faststart]
 ```
 
-It is well formatted, technically plausible, and in this case even correct: the file *does* have its `moov` box at
-the end. A module 1 style check passes it. The trace tells a different story:
+It is well formatted and technically plausible, so a module 1 style check passes it. But a format check cannot tell
+whether the answer *saw* that box order or only claims to. The trace can:
 
 ```text
-invoke_agent MediaDoctor  [+0ms, 2.81s]
-├─ chat claude-sonnet-5-5  [+0ms, 1.05s]
-├─ execute_tool ffprobe  [+1.05s, 45ms]  !! ERROR: media file not found: 'late_moov.mp4'. Available: ...
-│      · gen_ai.tool.call.arguments = {"file": "late_moov.mp4"}
-└─ chat claude-sonnet-5-5  [+1.09s, 1.72s]
+invoke_agent MediaDoctor  [+0ms, 4.49s]
+├─ chat claude-sonnet-5-5  [+0ms, 1.96s]
+├─ execute_tool ffprobe  [+1.96s, 45ms]
+│      · gen_ai.tool.call.arguments = {"file": "progressive_late_moov.mp4"}
+│      · gen_ai.tool.call.result = {"bit_rate": 732132, "duration_s": 2.0, "file": "progressive_late_moov.mp4", ...
+├─ execute_tool search_kb  [+2.00s, 10ms]
+│  └─ retrieval  [+2.00s, 6ms]
+│         · mediadoctor.retrieval.doc_ids = ["mp4-faststart", "widevine-levels"]
+└─ chat claude-sonnet-5-5  [+2.01s, 2.48s]
 ```
 
-The agent asked for the wrong file name, the tool failed, and the model answered anyway while claiming the tool showed
-something. It was right by prior knowledge, not by evidence. Next time, with a file that is *not* laid out that way,
-the same behaviour produces a confident wrong answer with a fake citation.
+The agent asked for the right file, the ffprobe span succeeded, and its result contains
+`"mp4_top_level_boxes": ["ftyp", "free", "mdat", "moov"]`, exactly what the answer quotes. The citation is backed by
+evidence.
 
-A trace check catches it without any model judge: every `[tool:X]` in the answer must correspond to a *successful*
-`execute_tool X` span. That is `check_evidence_is_real` in the lab, and m2q03 is the only case that fails it.
+The failure this guards against is the near miss: an agent that asks for `late_moov.mp4`, gets
+`media file not found: 'late_moov.mp4'. Available: ...` back as an `ERROR` span, and answers "ffprobe shows the moov
+atom is at the end" anyway. That answer could even be right by prior knowledge, and the next time, with a file that is
+*not* laid out that way, the same behaviour produces a confident wrong answer with a fake citation. A trace check
+catches it without any model judge: every `[tool:X]` in the answer must correspond to a *successful*
+`execute_tool X` span. That is `check_evidence_is_real` in the lab. In the recorded runs no tool call fails and all
+eight cases pass it; the lab tests also run it on a copy of the m2q03 trace with the ffprobe span marked `ERROR`,
+where it fails as it should.
 
-## Worked example 2: the question that cost 30% of the budget
+## Worked example 2: where the time and money go
 
-The trace table for all eight questions (replay mode, synthetic latencies):
+The trace table for all eight questions (replay mode, modelled latencies):
 
 ```text
 case       time llm tools err  in_tok out_tok   cost $
-m2q01     3.95s   2     2   0    1500     195   0.0049
-m2q02     5.23s   3     3   0    2992     245   0.0084
-m2q03     2.81s   2     1   1    1315     120   0.0038
-m2q04     4.26s   3     2   0    2751     184   0.0073
-m2q05     2.82s   2     1   0    1404     120   0.0040
-m2q06     4.19s   3     2   0    2801     179   0.0074
-m2q07     3.30s   2     2   0    1509     152   0.0045
-m2q08     5.51s   5     4   0    7708     189   0.0173
-8 traces, total time 32.07s, total cost $0.0578
+m2q01     7.01s   2     3   0    2070     247   0.0066
+m2q02     6.56s   2     3   0    2118     292   0.0072
+m2q03     4.49s   2     2   0    1917     204   0.0059
+m2q04     6.25s   2     3   0    2097     286   0.0071
+m2q05    12.48s   2     2   0    1953     217   0.0061
+m2q06     8.86s   2     2   0    2096     244   0.0066
+m2q07     4.84s   2     2   0    1604     209   0.0053
+m2q08     6.78s   2     1   0    1930     200   0.0059
+8 traces, total time 57.27s, total cost $0.0506
 ```
 
-m2q08 (*"Our podcast app keeps playing during phone calls"*) is one of the easiest questions, yet it costs $0.0173 of
-$0.0578, about 30% of the total. The tree shows why: four `search_kb` calls with reworded queries, three of which
-returned exactly the same two documents. Input tokens per call climb from 590 to 2,494 because each call resends the
-growing conversation. Neither problem is visible in the answer, which is fine.
+Every case follows the same shape: one model call that requests all the tools it wants at once, then one model call
+that answers. Costs are flat, from $0.0053 (m2q07, 10.5% of the total) to $0.0072 (m2q02, 14.2%), with no question
+standing out. Two things are still only visible in the trace:
 
-Two more trace checks catch this pattern: `no_repeat_retrieval` (no two retrievals return the same documents) and
-`step_budget` (at most 4 model calls per question).
+- **Input tokens double on the second call.** In m2q08 (*"Our podcast app keeps playing during phone calls"*) the
+  first call sends 620 input tokens and the second 1,310, although the agent only ran one search: each call resends
+  the system prompt, the tool schemas, and the whole conversation, including every tool result. An agent that loops,
+  rewording the same search four times, would pay that growing price on every step.
+- **Latency is model time.** Tool spans take 2 to 45 ms; the model calls take the rest. m2q05 is the slowest trace at
+  12.48 s because its second call took 9.43 s for 136 output tokens: a slow-tail latency (the recorded latencies
+  are modelled, including an occasional slow call), not extra work. Without the per-span timings you would not know
+  which.
+
+Two more trace checks catch the looping pattern: `no_repeat_retrieval` (no two retrievals return the same documents)
+and `step_budget` (at most 4 model calls per question).
 
 | Check | Looks at | Passes |
 |---|---|---|
 | `format` | final answer | 8/8 |
-| `evidence_is_real` | answer citations against tool spans | 7/8 (m2q03 fails) |
-| `no_repeat_retrieval` | retrieval spans | 7/8 (m2q08 fails) |
-| `step_budget` | number of chat spans | 7/8 (m2q08 fails) |
+| `evidence_is_real` | answer citations against tool spans | 8/8 |
+| `no_repeat_retrieval` | retrieval spans | 8/8 |
+| `step_budget` | number of chat spans | 8/8 |
+
+All four checks pass on all eight recorded traces, so here they confirm the path was clean rather than find a
+failure. That is still worth having: the checks are code, they run on every future run, and on data where the agent
+does misbehave (a wrong file name, a retrieval loop) they flag the case without anyone reading the trace. Module 3
+turns this kind of reading into a systematic error analysis.
 
 !!! info "About the recorded responses"
-    As in module 1, no API key was used to write this module. The model side of each conversation was written by hand,
-    but the requests were produced by running the real agent loop against a scripted client, so the recorded
-    requests contain the real tool schemas and real tool results. Records are labelled
-    `"source": "synthetic-authored"`, and their token counts and latencies come from simple formulas. Re-record with
-    your own key (`EVALS_LLM_MODE=record uv run mediadoctor-lab02 run`) to see what Claude actually does; the
-    numbers above will change.
+    As in module 1, no API key was used to write this module. The model side of each conversation was generated by
+    Claude subagents standing in for the model, and the requests were produced by running the real agent loop, so
+    the recorded requests contain the real tool schemas and real tool results. Records are labelled
+    `"source": "subagent-authored"`, and their token counts and latencies come from simple formulas (tokens are
+    characters / 4; latency is modelled, with an occasional slow tail). Re-record with your own key
+    (`EVALS_LLM_MODE=record uv run mediadoctor-lab02 run`) to see what Claude actually does; the numbers above will
+    change.
 
 ## What to trace, as a checklist
 
@@ -200,9 +225,11 @@ Two more trace checks catch this pattern: `no_repeat_retrieval` (no two retrieva
 
 - An agent's answer hides its path. Traces make the path inspectable and checkable.
 - Use shared attribute names (OpenTelemetry GenAI conventions) so any backend can read your traces.
-- Put tokens, cost, and latency on every model call. The expensive questions are often the easy ones.
+- Put tokens, cost, and latency on every model call. Input tokens grow with every step, and latency is mostly
+  model time.
 - Deterministic tools plus recorded model responses give reproducible traces with no API key.
-- Checks over traces catch failures that checks over answers cannot: fabricated evidence, wasted steps.
+- Checks over traces catch failures that checks over answers cannot: fabricated evidence, wasted steps. On clean
+  runs, like the recorded ones here, they confirm the path rather than flag it.
 
 The [tracing cheat sheet](../../cheatsheets/tracing.md) puts this module on one page.
 
