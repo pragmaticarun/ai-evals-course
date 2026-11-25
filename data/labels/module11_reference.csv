@@ -1,960 +1,1030 @@
 variant,case_id,mode,annotator
-v1,m4q001,none,reference (synthetic-authored)
-v1,m4q002,premise,reference (synthetic-authored)
-v1,m4q003,none,reference (synthetic-authored)
-v1,m4q004,none,reference (synthetic-authored)
-v1,m4q005,premise,reference (synthetic-authored)
-v1,m4q006,ignored,reference (synthetic-authored)
-v1,m4q007,none,reference (synthetic-authored)
-v1,m4q008,none,reference (synthetic-authored)
-v1,m4q009,none,reference (synthetic-authored)
-v1,m4q010,none,reference (synthetic-authored)
-v1,m4q011,none,reference (synthetic-authored)
-v1,m4q012,none,reference (synthetic-authored)
-v1,m4q014,none,reference (synthetic-authored)
-v1,m4q017,none,reference (synthetic-authored)
-v1,m4q018,none,reference (synthetic-authored)
-v1,m4q019,none,reference (synthetic-authored)
-v1,m4q021,premise,reference (synthetic-authored)
-v1,m4q023,none,reference (synthetic-authored)
-v1,m4q024,none,reference (synthetic-authored)
-v1,m4q025,none,reference (synthetic-authored)
-v1,m4q026,format,reference (synthetic-authored)
-v1,m4q027,none,reference (synthetic-authored)
-v1,m4q030,premise,reference (synthetic-authored)
-v1,m4q031,none,reference (synthetic-authored)
-v1,m4q033,none,reference (synthetic-authored)
-v1,m4q034,none,reference (synthetic-authored)
-v1,m4q036,none,reference (synthetic-authored)
-v1,m4q037,none,reference (synthetic-authored)
-v1,m4q039,none,reference (synthetic-authored)
-v1,m4q040,none,reference (synthetic-authored)
-v1,m4q041,none,reference (synthetic-authored)
-v1,m4q042,ignored,reference (synthetic-authored)
-v1,m4q047,format,reference (synthetic-authored)
-v1,m4q049,none,reference (synthetic-authored)
-v1,m4q050,ignored,reference (synthetic-authored)
-v1,m4q054,premise,reference (synthetic-authored)
-v1,m4q055,premise,reference (synthetic-authored)
-v1,m4q056,premise,reference (synthetic-authored)
-v1,m4q057,none,reference (synthetic-authored)
-v1,m4q059,none,reference (synthetic-authored)
-v1,m4q060,none,reference (synthetic-authored)
-v1,m4q061,none,reference (synthetic-authored)
-v1,m4q062,premise,reference (synthetic-authored)
-v1,m4q063,none,reference (synthetic-authored)
-v1,m4q064,none,reference (synthetic-authored)
-v1,m4q065,none,reference (synthetic-authored)
-v1,m4q066,none,reference (synthetic-authored)
-v1,m4q067,none,reference (synthetic-authored)
-v1,m4q068,premise,reference (synthetic-authored)
-v1,m4q070,none,reference (synthetic-authored)
-v1,m4q071,none,reference (synthetic-authored)
-v1,m4q072,none,reference (synthetic-authored)
-v1,m4q073,ignored,reference (synthetic-authored)
-v1,m4q075,skipped,reference (synthetic-authored)
-v1,m4q076,none,reference (synthetic-authored)
-v1,m4q078,ignored,reference (synthetic-authored)
-v1,m4q079,none,reference (synthetic-authored)
-v1,m4q081,ignored,reference (synthetic-authored)
-v1,m4q083,none,reference (synthetic-authored)
-v1,m4q084,premise,reference (synthetic-authored)
-v1,m4q085,ignored,reference (synthetic-authored)
-v1,m4q086,none,reference (synthetic-authored)
-v1,m4q087,none,reference (synthetic-authored)
-v1,m4q088,none,reference (synthetic-authored)
-v1,m4q089,none,reference (synthetic-authored)
-v1,m4q090,premise,reference (synthetic-authored)
-v1,m4q092,none,reference (synthetic-authored)
-v1,m4q093,premise,reference (synthetic-authored)
-v1,m4q095,none,reference (synthetic-authored)
-v1,m4q099,ignored,reference (synthetic-authored)
-v1,m4q100,none,reference (synthetic-authored)
-v1,m4q102,premise,reference (synthetic-authored)
-v1,m4q104,none,reference (synthetic-authored)
-v1,m4q105,premise,reference (synthetic-authored)
-v1,m4q106,none,reference (synthetic-authored)
-v1,m4q107,none,reference (synthetic-authored)
-v1,m4q108,premise,reference (synthetic-authored)
-v1,m4q109,ignored,reference (synthetic-authored)
-v1,m4q110,none,reference (synthetic-authored)
-v1,m4q112,none,reference (synthetic-authored)
-v1,m4q114,skipped,reference (synthetic-authored)
-v1,m4q115,none,reference (synthetic-authored)
-v1,m4q116,none,reference (synthetic-authored)
-v1,m4q118,none,reference (synthetic-authored)
-v1,m4q119,none,reference (synthetic-authored)
-v1,m4q120,none,reference (synthetic-authored)
-v1,m4q121,none,reference (synthetic-authored)
-v1,m4q122,none,reference (synthetic-authored)
-v1,m4q123,skipped,reference (synthetic-authored)
-v1,m4q125,premise,reference (synthetic-authored)
-v1,m4q126,none,reference (synthetic-authored)
-v1,m4q127,none,reference (synthetic-authored)
-v1,m4q128,format,reference (synthetic-authored)
-v1,m4q129,none,reference (synthetic-authored)
-v1,m4q130,none,reference (synthetic-authored)
-v1,m4q131,none,reference (synthetic-authored)
-v1,m4q132,format,reference (synthetic-authored)
-v1,m4q135,none,reference (synthetic-authored)
-v1,m4q136,none,reference (synthetic-authored)
-v1,m4q137,none,reference (synthetic-authored)
-v1,m4q138,none,reference (synthetic-authored)
-v1,m4q139,none,reference (synthetic-authored)
-v1,m4q141,none,reference (synthetic-authored)
-v1,m4q142,none,reference (synthetic-authored)
-v1,m4q143,none,reference (synthetic-authored)
-v1,m4q144,none,reference (synthetic-authored)
-v1,m4q146,ignored,reference (synthetic-authored)
-v1,m4q147,none,reference (synthetic-authored)
-v1,m4q148,none,reference (synthetic-authored)
-v1,m4q149,none,reference (synthetic-authored)
-v1,m4q150,none,reference (synthetic-authored)
-v1,m4q152,none,reference (synthetic-authored)
-v1,m4q153,none,reference (synthetic-authored)
-v1,m4q155,premise,reference (synthetic-authored)
-v1,m4q156,premise,reference (synthetic-authored)
-v1,m4q158,premise,reference (synthetic-authored)
-v1,m4q159,none,reference (synthetic-authored)
-v1,m4q160,none,reference (synthetic-authored)
-v1,m4q161,none,reference (synthetic-authored)
-v1,m4q162,none,reference (synthetic-authored)
-v1,m4q163,none,reference (synthetic-authored)
-v1,m4q165,none,reference (synthetic-authored)
-v1,m4q167,skipped,reference (synthetic-authored)
-v1,m4q168,none,reference (synthetic-authored)
-v1,m4q169,ignored,reference (synthetic-authored)
-v1,m4q170,none,reference (synthetic-authored)
-v1,m4q171,none,reference (synthetic-authored)
-v1,m4q172,premise,reference (synthetic-authored)
-v1,m4q173,none,reference (synthetic-authored)
-v1,m4q174,none,reference (synthetic-authored)
-v1,m4q175,none,reference (synthetic-authored)
-v1,m4q176,format,reference (synthetic-authored)
-v1,m4q177,none,reference (synthetic-authored)
-v1,m4q178,none,reference (synthetic-authored)
-v1,m4q180,none,reference (synthetic-authored)
-v1,m4q181,none,reference (synthetic-authored)
-v1,m4q182,none,reference (synthetic-authored)
-v2,m4q001,none,reference (synthetic-authored)
-v2,m4q002,premise,reference (synthetic-authored)
-v2,m4q003,none,reference (synthetic-authored)
-v2,m4q004,none,reference (synthetic-authored)
-v2,m4q005,none,reference (synthetic-authored)
-v2,m4q006,ignored,reference (synthetic-authored)
-v2,m4q007,none,reference (synthetic-authored)
-v2,m4q008,none,reference (synthetic-authored)
-v2,m4q009,none,reference (synthetic-authored)
-v2,m4q010,none,reference (synthetic-authored)
-v2,m4q011,none,reference (synthetic-authored)
-v2,m4q012,none,reference (synthetic-authored)
-v2,m4q014,none,reference (synthetic-authored)
-v2,m4q017,none,reference (synthetic-authored)
-v2,m4q018,none,reference (synthetic-authored)
-v2,m4q019,none,reference (synthetic-authored)
-v2,m4q021,none,reference (synthetic-authored)
-v2,m4q023,none,reference (synthetic-authored)
-v2,m4q024,none,reference (synthetic-authored)
-v2,m4q025,none,reference (synthetic-authored)
-v2,m4q026,format,reference (synthetic-authored)
-v2,m4q027,none,reference (synthetic-authored)
-v2,m4q030,premise,reference (synthetic-authored)
-v2,m4q031,none,reference (synthetic-authored)
-v2,m4q033,none,reference (synthetic-authored)
-v2,m4q034,none,reference (synthetic-authored)
-v2,m4q036,none,reference (synthetic-authored)
-v2,m4q037,none,reference (synthetic-authored)
-v2,m4q039,none,reference (synthetic-authored)
-v2,m4q040,none,reference (synthetic-authored)
-v2,m4q041,none,reference (synthetic-authored)
-v2,m4q042,ignored,reference (synthetic-authored)
-v2,m4q047,format,reference (synthetic-authored)
-v2,m4q049,none,reference (synthetic-authored)
-v2,m4q050,ignored,reference (synthetic-authored)
-v2,m4q054,skipped,reference (synthetic-authored)
-v2,m4q055,none,reference (synthetic-authored)
-v2,m4q056,none,reference (synthetic-authored)
-v2,m4q057,none,reference (synthetic-authored)
-v2,m4q059,none,reference (synthetic-authored)
-v2,m4q060,none,reference (synthetic-authored)
-v2,m4q061,none,reference (synthetic-authored)
-v2,m4q062,none,reference (synthetic-authored)
-v2,m4q063,none,reference (synthetic-authored)
-v2,m4q064,none,reference (synthetic-authored)
-v2,m4q065,none,reference (synthetic-authored)
-v2,m4q066,none,reference (synthetic-authored)
-v2,m4q067,none,reference (synthetic-authored)
-v2,m4q068,premise,reference (synthetic-authored)
-v2,m4q070,none,reference (synthetic-authored)
-v2,m4q071,none,reference (synthetic-authored)
-v2,m4q072,none,reference (synthetic-authored)
-v2,m4q073,ignored,reference (synthetic-authored)
-v2,m4q075,skipped,reference (synthetic-authored)
-v2,m4q076,none,reference (synthetic-authored)
-v2,m4q078,ignored,reference (synthetic-authored)
-v2,m4q079,none,reference (synthetic-authored)
-v2,m4q081,ignored,reference (synthetic-authored)
-v2,m4q083,none,reference (synthetic-authored)
-v2,m4q084,premise,reference (synthetic-authored)
-v2,m4q085,ignored,reference (synthetic-authored)
-v2,m4q086,none,reference (synthetic-authored)
-v2,m4q087,none,reference (synthetic-authored)
-v2,m4q088,none,reference (synthetic-authored)
-v2,m4q089,none,reference (synthetic-authored)
-v2,m4q090,none,reference (synthetic-authored)
-v2,m4q092,none,reference (synthetic-authored)
-v2,m4q093,premise,reference (synthetic-authored)
-v2,m4q095,none,reference (synthetic-authored)
-v2,m4q099,ignored,reference (synthetic-authored)
-v2,m4q100,none,reference (synthetic-authored)
-v2,m4q102,premise,reference (synthetic-authored)
-v2,m4q104,none,reference (synthetic-authored)
-v2,m4q105,none,reference (synthetic-authored)
-v2,m4q106,none,reference (synthetic-authored)
-v2,m4q107,none,reference (synthetic-authored)
-v2,m4q108,none,reference (synthetic-authored)
-v2,m4q109,ignored,reference (synthetic-authored)
-v2,m4q110,none,reference (synthetic-authored)
-v2,m4q112,none,reference (synthetic-authored)
-v2,m4q114,skipped,reference (synthetic-authored)
-v2,m4q115,none,reference (synthetic-authored)
-v2,m4q116,none,reference (synthetic-authored)
-v2,m4q118,none,reference (synthetic-authored)
-v2,m4q119,none,reference (synthetic-authored)
-v2,m4q120,none,reference (synthetic-authored)
-v2,m4q121,none,reference (synthetic-authored)
-v2,m4q122,none,reference (synthetic-authored)
-v2,m4q123,skipped,reference (synthetic-authored)
-v2,m4q125,none,reference (synthetic-authored)
-v2,m4q126,none,reference (synthetic-authored)
-v2,m4q127,none,reference (synthetic-authored)
-v2,m4q128,format,reference (synthetic-authored)
-v2,m4q129,none,reference (synthetic-authored)
-v2,m4q130,none,reference (synthetic-authored)
-v2,m4q131,none,reference (synthetic-authored)
-v2,m4q132,format,reference (synthetic-authored)
-v2,m4q135,none,reference (synthetic-authored)
-v2,m4q136,none,reference (synthetic-authored)
-v2,m4q137,none,reference (synthetic-authored)
-v2,m4q138,none,reference (synthetic-authored)
-v2,m4q139,none,reference (synthetic-authored)
-v2,m4q141,none,reference (synthetic-authored)
-v2,m4q142,none,reference (synthetic-authored)
-v2,m4q143,none,reference (synthetic-authored)
-v2,m4q144,none,reference (synthetic-authored)
-v2,m4q146,ignored,reference (synthetic-authored)
-v2,m4q147,none,reference (synthetic-authored)
-v2,m4q148,none,reference (synthetic-authored)
-v2,m4q149,none,reference (synthetic-authored)
-v2,m4q150,none,reference (synthetic-authored)
-v2,m4q152,none,reference (synthetic-authored)
-v2,m4q153,none,reference (synthetic-authored)
-v2,m4q155,none,reference (synthetic-authored)
-v2,m4q156,none,reference (synthetic-authored)
-v2,m4q158,ignored,reference (synthetic-authored)
-v2,m4q159,none,reference (synthetic-authored)
-v2,m4q160,none,reference (synthetic-authored)
-v2,m4q161,none,reference (synthetic-authored)
-v2,m4q162,none,reference (synthetic-authored)
-v2,m4q163,none,reference (synthetic-authored)
-v2,m4q165,none,reference (synthetic-authored)
-v2,m4q167,skipped,reference (synthetic-authored)
-v2,m4q168,none,reference (synthetic-authored)
-v2,m4q169,ignored,reference (synthetic-authored)
-v2,m4q170,none,reference (synthetic-authored)
-v2,m4q171,none,reference (synthetic-authored)
-v2,m4q172,premise,reference (synthetic-authored)
-v2,m4q173,none,reference (synthetic-authored)
-v2,m4q174,none,reference (synthetic-authored)
-v2,m4q175,none,reference (synthetic-authored)
-v2,m4q176,format,reference (synthetic-authored)
-v2,m4q177,none,reference (synthetic-authored)
-v2,m4q178,none,reference (synthetic-authored)
-v2,m4q180,none,reference (synthetic-authored)
-v2,m4q181,none,reference (synthetic-authored)
-v2,m4q182,none,reference (synthetic-authored)
-v3,m4q001,none,reference (synthetic-authored)
-v3,m4q002,premise,reference (synthetic-authored)
-v3,m4q003,none,reference (synthetic-authored)
-v3,m4q004,none,reference (synthetic-authored)
-v3,m4q005,none,reference (synthetic-authored)
-v3,m4q006,none,reference (synthetic-authored)
-v3,m4q007,none,reference (synthetic-authored)
-v3,m4q008,none,reference (synthetic-authored)
-v3,m4q009,none,reference (synthetic-authored)
-v3,m4q010,none,reference (synthetic-authored)
-v3,m4q011,none,reference (synthetic-authored)
-v3,m4q012,none,reference (synthetic-authored)
-v3,m4q014,none,reference (synthetic-authored)
-v3,m4q017,none,reference (synthetic-authored)
-v3,m4q018,none,reference (synthetic-authored)
-v3,m4q019,none,reference (synthetic-authored)
-v3,m4q021,none,reference (synthetic-authored)
-v3,m4q023,none,reference (synthetic-authored)
-v3,m4q024,none,reference (synthetic-authored)
-v3,m4q025,none,reference (synthetic-authored)
-v3,m4q026,none,reference (synthetic-authored)
-v3,m4q027,none,reference (synthetic-authored)
-v3,m4q030,none,reference (synthetic-authored)
-v3,m4q031,none,reference (synthetic-authored)
-v3,m4q033,none,reference (synthetic-authored)
-v3,m4q034,none,reference (synthetic-authored)
-v3,m4q036,none,reference (synthetic-authored)
-v3,m4q037,none,reference (synthetic-authored)
-v3,m4q039,none,reference (synthetic-authored)
-v3,m4q040,none,reference (synthetic-authored)
-v3,m4q041,none,reference (synthetic-authored)
-v3,m4q042,none,reference (synthetic-authored)
-v3,m4q047,none,reference (synthetic-authored)
-v3,m4q049,none,reference (synthetic-authored)
-v3,m4q050,none,reference (synthetic-authored)
-v3,m4q054,none,reference (synthetic-authored)
-v3,m4q055,none,reference (synthetic-authored)
-v3,m4q056,none,reference (synthetic-authored)
-v3,m4q057,none,reference (synthetic-authored)
-v3,m4q059,none,reference (synthetic-authored)
-v3,m4q060,none,reference (synthetic-authored)
-v3,m4q061,none,reference (synthetic-authored)
-v3,m4q062,none,reference (synthetic-authored)
-v3,m4q063,none,reference (synthetic-authored)
-v3,m4q064,none,reference (synthetic-authored)
-v3,m4q065,none,reference (synthetic-authored)
-v3,m4q066,none,reference (synthetic-authored)
-v3,m4q067,none,reference (synthetic-authored)
-v3,m4q068,premise,reference (synthetic-authored)
-v3,m4q070,none,reference (synthetic-authored)
-v3,m4q071,none,reference (synthetic-authored)
-v3,m4q072,none,reference (synthetic-authored)
-v3,m4q073,none,reference (synthetic-authored)
-v3,m4q075,skipped,reference (synthetic-authored)
-v3,m4q076,none,reference (synthetic-authored)
-v3,m4q078,ignored,reference (synthetic-authored)
-v3,m4q079,none,reference (synthetic-authored)
-v3,m4q081,ignored,reference (synthetic-authored)
-v3,m4q083,none,reference (synthetic-authored)
-v3,m4q084,premise,reference (synthetic-authored)
-v3,m4q085,none,reference (synthetic-authored)
-v3,m4q086,none,reference (synthetic-authored)
-v3,m4q087,none,reference (synthetic-authored)
-v3,m4q088,none,reference (synthetic-authored)
-v3,m4q089,none,reference (synthetic-authored)
-v3,m4q090,none,reference (synthetic-authored)
-v3,m4q092,none,reference (synthetic-authored)
-v3,m4q093,none,reference (synthetic-authored)
-v3,m4q095,none,reference (synthetic-authored)
-v3,m4q099,ignored,reference (synthetic-authored)
-v3,m4q100,none,reference (synthetic-authored)
-v3,m4q102,premise,reference (synthetic-authored)
-v3,m4q104,none,reference (synthetic-authored)
-v3,m4q105,none,reference (synthetic-authored)
-v3,m4q106,none,reference (synthetic-authored)
-v3,m4q107,none,reference (synthetic-authored)
-v3,m4q108,none,reference (synthetic-authored)
-v3,m4q109,ignored,reference (synthetic-authored)
-v3,m4q110,none,reference (synthetic-authored)
-v3,m4q112,none,reference (synthetic-authored)
-v3,m4q114,skipped,reference (synthetic-authored)
-v3,m4q115,none,reference (synthetic-authored)
-v3,m4q116,none,reference (synthetic-authored)
-v3,m4q118,none,reference (synthetic-authored)
-v3,m4q119,none,reference (synthetic-authored)
-v3,m4q120,none,reference (synthetic-authored)
-v3,m4q121,none,reference (synthetic-authored)
-v3,m4q122,none,reference (synthetic-authored)
-v3,m4q123,format,reference (synthetic-authored)
-v3,m4q125,none,reference (synthetic-authored)
-v3,m4q126,none,reference (synthetic-authored)
-v3,m4q127,none,reference (synthetic-authored)
-v3,m4q128,none,reference (synthetic-authored)
-v3,m4q129,none,reference (synthetic-authored)
-v3,m4q130,none,reference (synthetic-authored)
-v3,m4q131,none,reference (synthetic-authored)
-v3,m4q132,format,reference (synthetic-authored)
-v3,m4q135,none,reference (synthetic-authored)
-v3,m4q136,none,reference (synthetic-authored)
-v3,m4q137,none,reference (synthetic-authored)
-v3,m4q138,none,reference (synthetic-authored)
-v3,m4q139,none,reference (synthetic-authored)
-v3,m4q141,none,reference (synthetic-authored)
-v3,m4q142,none,reference (synthetic-authored)
-v3,m4q143,none,reference (synthetic-authored)
-v3,m4q144,none,reference (synthetic-authored)
-v3,m4q146,none,reference (synthetic-authored)
-v3,m4q147,none,reference (synthetic-authored)
-v3,m4q148,none,reference (synthetic-authored)
-v3,m4q149,none,reference (synthetic-authored)
-v3,m4q150,none,reference (synthetic-authored)
-v3,m4q152,none,reference (synthetic-authored)
-v3,m4q153,none,reference (synthetic-authored)
-v3,m4q155,none,reference (synthetic-authored)
-v3,m4q156,none,reference (synthetic-authored)
-v3,m4q158,none,reference (synthetic-authored)
-v3,m4q159,none,reference (synthetic-authored)
-v3,m4q160,none,reference (synthetic-authored)
-v3,m4q161,none,reference (synthetic-authored)
-v3,m4q162,none,reference (synthetic-authored)
-v3,m4q163,none,reference (synthetic-authored)
-v3,m4q165,none,reference (synthetic-authored)
-v3,m4q167,format,reference (synthetic-authored)
-v3,m4q168,none,reference (synthetic-authored)
-v3,m4q169,ignored,reference (synthetic-authored)
-v3,m4q170,none,reference (synthetic-authored)
-v3,m4q171,none,reference (synthetic-authored)
-v3,m4q172,premise,reference (synthetic-authored)
-v3,m4q173,none,reference (synthetic-authored)
-v3,m4q174,none,reference (synthetic-authored)
-v3,m4q175,none,reference (synthetic-authored)
-v3,m4q176,format,reference (synthetic-authored)
-v3,m4q177,none,reference (synthetic-authored)
-v3,m4q178,none,reference (synthetic-authored)
-v3,m4q180,none,reference (synthetic-authored)
-v3,m4q181,none,reference (synthetic-authored)
-v3,m4q182,none,reference (synthetic-authored)
-v3-cache,m4q001,none,reference (synthetic-authored)
-v3-cache,m4q002,premise,reference (synthetic-authored)
-v3-cache,m4q003,none,reference (synthetic-authored)
-v3-cache,m4q004,none,reference (synthetic-authored)
-v3-cache,m4q005,none,reference (synthetic-authored)
-v3-cache,m4q006,none,reference (synthetic-authored)
-v3-cache,m4q007,none,reference (synthetic-authored)
-v3-cache,m4q008,none,reference (synthetic-authored)
-v3-cache,m4q009,none,reference (synthetic-authored)
-v3-cache,m4q010,none,reference (synthetic-authored)
-v3-cache,m4q011,none,reference (synthetic-authored)
-v3-cache,m4q012,none,reference (synthetic-authored)
-v3-cache,m4q014,none,reference (synthetic-authored)
-v3-cache,m4q017,none,reference (synthetic-authored)
-v3-cache,m4q018,none,reference (synthetic-authored)
-v3-cache,m4q019,none,reference (synthetic-authored)
-v3-cache,m4q021,none,reference (synthetic-authored)
-v3-cache,m4q023,none,reference (synthetic-authored)
-v3-cache,m4q024,none,reference (synthetic-authored)
-v3-cache,m4q025,none,reference (synthetic-authored)
-v3-cache,m4q026,none,reference (synthetic-authored)
-v3-cache,m4q027,none,reference (synthetic-authored)
-v3-cache,m4q030,none,reference (synthetic-authored)
-v3-cache,m4q031,none,reference (synthetic-authored)
-v3-cache,m4q033,none,reference (synthetic-authored)
-v3-cache,m4q034,none,reference (synthetic-authored)
-v3-cache,m4q036,none,reference (synthetic-authored)
-v3-cache,m4q037,none,reference (synthetic-authored)
-v3-cache,m4q039,none,reference (synthetic-authored)
-v3-cache,m4q040,none,reference (synthetic-authored)
-v3-cache,m4q041,none,reference (synthetic-authored)
-v3-cache,m4q042,none,reference (synthetic-authored)
-v3-cache,m4q047,none,reference (synthetic-authored)
-v3-cache,m4q049,none,reference (synthetic-authored)
-v3-cache,m4q050,none,reference (synthetic-authored)
-v3-cache,m4q054,none,reference (synthetic-authored)
-v3-cache,m4q055,none,reference (synthetic-authored)
-v3-cache,m4q056,none,reference (synthetic-authored)
-v3-cache,m4q057,none,reference (synthetic-authored)
-v3-cache,m4q059,none,reference (synthetic-authored)
-v3-cache,m4q060,none,reference (synthetic-authored)
-v3-cache,m4q061,none,reference (synthetic-authored)
-v3-cache,m4q062,none,reference (synthetic-authored)
-v3-cache,m4q063,none,reference (synthetic-authored)
-v3-cache,m4q064,none,reference (synthetic-authored)
-v3-cache,m4q065,none,reference (synthetic-authored)
-v3-cache,m4q066,none,reference (synthetic-authored)
-v3-cache,m4q067,none,reference (synthetic-authored)
-v3-cache,m4q068,premise,reference (synthetic-authored)
-v3-cache,m4q070,none,reference (synthetic-authored)
-v3-cache,m4q071,none,reference (synthetic-authored)
-v3-cache,m4q072,none,reference (synthetic-authored)
-v3-cache,m4q073,none,reference (synthetic-authored)
-v3-cache,m4q075,skipped,reference (synthetic-authored)
-v3-cache,m4q076,none,reference (synthetic-authored)
-v3-cache,m4q078,ignored,reference (synthetic-authored)
-v3-cache,m4q079,none,reference (synthetic-authored)
-v3-cache,m4q081,ignored,reference (synthetic-authored)
-v3-cache,m4q083,none,reference (synthetic-authored)
-v3-cache,m4q084,premise,reference (synthetic-authored)
-v3-cache,m4q085,none,reference (synthetic-authored)
-v3-cache,m4q086,none,reference (synthetic-authored)
-v3-cache,m4q087,none,reference (synthetic-authored)
-v3-cache,m4q088,none,reference (synthetic-authored)
-v3-cache,m4q089,none,reference (synthetic-authored)
-v3-cache,m4q090,none,reference (synthetic-authored)
-v3-cache,m4q092,none,reference (synthetic-authored)
-v3-cache,m4q093,none,reference (synthetic-authored)
-v3-cache,m4q095,none,reference (synthetic-authored)
-v3-cache,m4q099,ignored,reference (synthetic-authored)
-v3-cache,m4q100,none,reference (synthetic-authored)
-v3-cache,m4q102,premise,reference (synthetic-authored)
-v3-cache,m4q104,none,reference (synthetic-authored)
-v3-cache,m4q105,none,reference (synthetic-authored)
-v3-cache,m4q106,none,reference (synthetic-authored)
-v3-cache,m4q107,none,reference (synthetic-authored)
-v3-cache,m4q108,none,reference (synthetic-authored)
-v3-cache,m4q109,ignored,reference (synthetic-authored)
-v3-cache,m4q110,none,reference (synthetic-authored)
-v3-cache,m4q112,none,reference (synthetic-authored)
-v3-cache,m4q114,skipped,reference (synthetic-authored)
-v3-cache,m4q115,none,reference (synthetic-authored)
-v3-cache,m4q116,none,reference (synthetic-authored)
-v3-cache,m4q118,none,reference (synthetic-authored)
-v3-cache,m4q119,none,reference (synthetic-authored)
-v3-cache,m4q120,none,reference (synthetic-authored)
-v3-cache,m4q121,none,reference (synthetic-authored)
-v3-cache,m4q122,none,reference (synthetic-authored)
-v3-cache,m4q123,format,reference (synthetic-authored)
-v3-cache,m4q125,none,reference (synthetic-authored)
-v3-cache,m4q126,none,reference (synthetic-authored)
-v3-cache,m4q127,none,reference (synthetic-authored)
-v3-cache,m4q128,none,reference (synthetic-authored)
-v3-cache,m4q129,none,reference (synthetic-authored)
-v3-cache,m4q130,none,reference (synthetic-authored)
-v3-cache,m4q131,none,reference (synthetic-authored)
-v3-cache,m4q132,format,reference (synthetic-authored)
-v3-cache,m4q135,none,reference (synthetic-authored)
-v3-cache,m4q136,none,reference (synthetic-authored)
-v3-cache,m4q137,none,reference (synthetic-authored)
-v3-cache,m4q138,none,reference (synthetic-authored)
-v3-cache,m4q139,none,reference (synthetic-authored)
-v3-cache,m4q141,none,reference (synthetic-authored)
-v3-cache,m4q142,none,reference (synthetic-authored)
-v3-cache,m4q143,none,reference (synthetic-authored)
-v3-cache,m4q144,none,reference (synthetic-authored)
-v3-cache,m4q146,none,reference (synthetic-authored)
-v3-cache,m4q147,none,reference (synthetic-authored)
-v3-cache,m4q148,none,reference (synthetic-authored)
-v3-cache,m4q149,none,reference (synthetic-authored)
-v3-cache,m4q150,none,reference (synthetic-authored)
-v3-cache,m4q152,none,reference (synthetic-authored)
-v3-cache,m4q153,none,reference (synthetic-authored)
-v3-cache,m4q155,none,reference (synthetic-authored)
-v3-cache,m4q156,none,reference (synthetic-authored)
-v3-cache,m4q158,none,reference (synthetic-authored)
-v3-cache,m4q159,none,reference (synthetic-authored)
-v3-cache,m4q160,none,reference (synthetic-authored)
-v3-cache,m4q161,none,reference (synthetic-authored)
-v3-cache,m4q162,none,reference (synthetic-authored)
-v3-cache,m4q163,none,reference (synthetic-authored)
-v3-cache,m4q165,none,reference (synthetic-authored)
-v3-cache,m4q167,format,reference (synthetic-authored)
-v3-cache,m4q168,none,reference (synthetic-authored)
-v3-cache,m4q169,ignored,reference (synthetic-authored)
-v3-cache,m4q170,none,reference (synthetic-authored)
-v3-cache,m4q171,none,reference (synthetic-authored)
-v3-cache,m4q172,premise,reference (synthetic-authored)
-v3-cache,m4q173,none,reference (synthetic-authored)
-v3-cache,m4q174,none,reference (synthetic-authored)
-v3-cache,m4q175,none,reference (synthetic-authored)
-v3-cache,m4q176,format,reference (synthetic-authored)
-v3-cache,m4q177,none,reference (synthetic-authored)
-v3-cache,m4q178,none,reference (synthetic-authored)
-v3-cache,m4q180,none,reference (synthetic-authored)
-v3-cache,m4q181,none,reference (synthetic-authored)
-v3-cache,m4q182,none,reference (synthetic-authored)
-haiku,m4q001,none,reference (synthetic-authored)
-haiku,m4q002,premise,reference (synthetic-authored)
-haiku,m4q003,none,reference (synthetic-authored)
-haiku,m4q004,none,reference (synthetic-authored)
-haiku,m4q005,premise,reference (synthetic-authored)
-haiku,m4q006,ignored,reference (synthetic-authored)
-haiku,m4q007,none,reference (synthetic-authored)
-haiku,m4q008,none,reference (synthetic-authored)
-haiku,m4q009,none,reference (synthetic-authored)
-haiku,m4q010,none,reference (synthetic-authored)
-haiku,m4q011,none,reference (synthetic-authored)
-haiku,m4q012,none,reference (synthetic-authored)
-haiku,m4q014,none,reference (synthetic-authored)
-haiku,m4q017,ignored,reference (synthetic-authored)
-haiku,m4q018,none,reference (synthetic-authored)
-haiku,m4q019,none,reference (synthetic-authored)
-haiku,m4q021,none,reference (synthetic-authored)
-haiku,m4q023,none,reference (synthetic-authored)
-haiku,m4q024,none,reference (synthetic-authored)
-haiku,m4q025,none,reference (synthetic-authored)
-haiku,m4q026,format,reference (synthetic-authored)
-haiku,m4q027,none,reference (synthetic-authored)
-haiku,m4q030,premise,reference (synthetic-authored)
-haiku,m4q031,none,reference (synthetic-authored)
-haiku,m4q033,none,reference (synthetic-authored)
-haiku,m4q034,ignored,reference (synthetic-authored)
-haiku,m4q036,none,reference (synthetic-authored)
-haiku,m4q037,none,reference (synthetic-authored)
-haiku,m4q039,none,reference (synthetic-authored)
-haiku,m4q040,none,reference (synthetic-authored)
-haiku,m4q041,none,reference (synthetic-authored)
-haiku,m4q042,ignored,reference (synthetic-authored)
-haiku,m4q047,format,reference (synthetic-authored)
-haiku,m4q049,none,reference (synthetic-authored)
-haiku,m4q050,ignored,reference (synthetic-authored)
-haiku,m4q054,premise,reference (synthetic-authored)
-haiku,m4q055,premise,reference (synthetic-authored)
-haiku,m4q056,none,reference (synthetic-authored)
-haiku,m4q057,none,reference (synthetic-authored)
-haiku,m4q059,none,reference (synthetic-authored)
-haiku,m4q060,none,reference (synthetic-authored)
-haiku,m4q061,none,reference (synthetic-authored)
-haiku,m4q062,premise,reference (synthetic-authored)
-haiku,m4q063,none,reference (synthetic-authored)
-haiku,m4q064,none,reference (synthetic-authored)
-haiku,m4q065,none,reference (synthetic-authored)
-haiku,m4q066,none,reference (synthetic-authored)
-haiku,m4q067,none,reference (synthetic-authored)
-haiku,m4q068,premise,reference (synthetic-authored)
-haiku,m4q070,none,reference (synthetic-authored)
-haiku,m4q071,none,reference (synthetic-authored)
-haiku,m4q072,none,reference (synthetic-authored)
-haiku,m4q073,ignored,reference (synthetic-authored)
-haiku,m4q075,skipped,reference (synthetic-authored)
-haiku,m4q076,none,reference (synthetic-authored)
-haiku,m4q078,ignored,reference (synthetic-authored)
-haiku,m4q079,none,reference (synthetic-authored)
-haiku,m4q081,ignored,reference (synthetic-authored)
-haiku,m4q083,none,reference (synthetic-authored)
-haiku,m4q084,premise,reference (synthetic-authored)
-haiku,m4q085,ignored,reference (synthetic-authored)
-haiku,m4q086,none,reference (synthetic-authored)
-haiku,m4q087,none,reference (synthetic-authored)
-haiku,m4q088,none,reference (synthetic-authored)
-haiku,m4q089,format,reference (synthetic-authored)
-haiku,m4q090,premise,reference (synthetic-authored)
-haiku,m4q092,none,reference (synthetic-authored)
-haiku,m4q093,premise,reference (synthetic-authored)
-haiku,m4q095,none,reference (synthetic-authored)
-haiku,m4q099,ignored,reference (synthetic-authored)
-haiku,m4q100,none,reference (synthetic-authored)
-haiku,m4q102,premise,reference (synthetic-authored)
-haiku,m4q104,none,reference (synthetic-authored)
-haiku,m4q105,premise,reference (synthetic-authored)
-haiku,m4q106,none,reference (synthetic-authored)
-haiku,m4q107,none,reference (synthetic-authored)
-haiku,m4q108,premise,reference (synthetic-authored)
-haiku,m4q109,ignored,reference (synthetic-authored)
-haiku,m4q110,none,reference (synthetic-authored)
-haiku,m4q112,none,reference (synthetic-authored)
-haiku,m4q114,skipped,reference (synthetic-authored)
-haiku,m4q115,none,reference (synthetic-authored)
-haiku,m4q116,none,reference (synthetic-authored)
-haiku,m4q118,none,reference (synthetic-authored)
-haiku,m4q119,none,reference (synthetic-authored)
-haiku,m4q120,none,reference (synthetic-authored)
-haiku,m4q121,none,reference (synthetic-authored)
-haiku,m4q122,none,reference (synthetic-authored)
-haiku,m4q123,skipped,reference (synthetic-authored)
-haiku,m4q125,none,reference (synthetic-authored)
-haiku,m4q126,none,reference (synthetic-authored)
-haiku,m4q127,none,reference (synthetic-authored)
-haiku,m4q128,format,reference (synthetic-authored)
-haiku,m4q129,format,reference (synthetic-authored)
-haiku,m4q130,none,reference (synthetic-authored)
-haiku,m4q131,none,reference (synthetic-authored)
-haiku,m4q132,format,reference (synthetic-authored)
-haiku,m4q135,none,reference (synthetic-authored)
-haiku,m4q136,none,reference (synthetic-authored)
-haiku,m4q137,none,reference (synthetic-authored)
-haiku,m4q138,none,reference (synthetic-authored)
-haiku,m4q139,none,reference (synthetic-authored)
-haiku,m4q141,none,reference (synthetic-authored)
-haiku,m4q142,none,reference (synthetic-authored)
-haiku,m4q143,none,reference (synthetic-authored)
-haiku,m4q144,none,reference (synthetic-authored)
-haiku,m4q146,ignored,reference (synthetic-authored)
-haiku,m4q147,format,reference (synthetic-authored)
-haiku,m4q148,none,reference (synthetic-authored)
-haiku,m4q149,none,reference (synthetic-authored)
-haiku,m4q150,none,reference (synthetic-authored)
-haiku,m4q152,none,reference (synthetic-authored)
-haiku,m4q153,none,reference (synthetic-authored)
-haiku,m4q155,premise,reference (synthetic-authored)
-haiku,m4q156,premise,reference (synthetic-authored)
-haiku,m4q158,premise,reference (synthetic-authored)
-haiku,m4q159,none,reference (synthetic-authored)
-haiku,m4q160,none,reference (synthetic-authored)
-haiku,m4q161,none,reference (synthetic-authored)
-haiku,m4q162,none,reference (synthetic-authored)
-haiku,m4q163,none,reference (synthetic-authored)
-haiku,m4q165,none,reference (synthetic-authored)
-haiku,m4q167,skipped,reference (synthetic-authored)
-haiku,m4q168,none,reference (synthetic-authored)
-haiku,m4q169,ignored,reference (synthetic-authored)
-haiku,m4q170,none,reference (synthetic-authored)
-haiku,m4q171,none,reference (synthetic-authored)
-haiku,m4q172,premise,reference (synthetic-authored)
-haiku,m4q173,none,reference (synthetic-authored)
-haiku,m4q174,none,reference (synthetic-authored)
-haiku,m4q175,none,reference (synthetic-authored)
-haiku,m4q176,format,reference (synthetic-authored)
-haiku,m4q177,none,reference (synthetic-authored)
-haiku,m4q178,format,reference (synthetic-authored)
-haiku,m4q180,none,reference (synthetic-authored)
-haiku,m4q181,format,reference (synthetic-authored)
-haiku,m4q182,ignored,reference (synthetic-authored)
-cascade,m4q001,none,reference (synthetic-authored)
-cascade,m4q002,premise,reference (synthetic-authored)
-cascade,m4q003,none,reference (synthetic-authored)
-cascade,m4q004,none,reference (synthetic-authored)
-cascade,m4q005,premise,reference (synthetic-authored)
-cascade,m4q006,premise,reference (synthetic-authored)
-cascade,m4q007,none,reference (synthetic-authored)
-cascade,m4q008,none,reference (synthetic-authored)
-cascade,m4q009,none,reference (synthetic-authored)
-cascade,m4q010,none,reference (synthetic-authored)
-cascade,m4q011,none,reference (synthetic-authored)
-cascade,m4q012,none,reference (synthetic-authored)
-cascade,m4q014,none,reference (synthetic-authored)
-cascade,m4q017,premise,reference (synthetic-authored)
-cascade,m4q018,none,reference (synthetic-authored)
-cascade,m4q019,none,reference (synthetic-authored)
-cascade,m4q021,none,reference (synthetic-authored)
-cascade,m4q023,none,reference (synthetic-authored)
-cascade,m4q024,none,reference (synthetic-authored)
-cascade,m4q025,none,reference (synthetic-authored)
-cascade,m4q026,none,reference (synthetic-authored)
-cascade,m4q027,none,reference (synthetic-authored)
-cascade,m4q030,ignored,reference (synthetic-authored)
-cascade,m4q031,none,reference (synthetic-authored)
-cascade,m4q033,none,reference (synthetic-authored)
-cascade,m4q034,ignored,reference (synthetic-authored)
-cascade,m4q036,none,reference (synthetic-authored)
-cascade,m4q037,none,reference (synthetic-authored)
-cascade,m4q039,none,reference (synthetic-authored)
-cascade,m4q040,none,reference (synthetic-authored)
-cascade,m4q041,none,reference (synthetic-authored)
-cascade,m4q042,ignored,reference (synthetic-authored)
-cascade,m4q047,none,reference (synthetic-authored)
-cascade,m4q049,none,reference (synthetic-authored)
-cascade,m4q050,premise,reference (synthetic-authored)
-cascade,m4q054,ignored,reference (synthetic-authored)
-cascade,m4q055,premise,reference (synthetic-authored)
-cascade,m4q056,none,reference (synthetic-authored)
-cascade,m4q057,none,reference (synthetic-authored)
-cascade,m4q059,none,reference (synthetic-authored)
-cascade,m4q060,none,reference (synthetic-authored)
-cascade,m4q061,none,reference (synthetic-authored)
-cascade,m4q062,ignored,reference (synthetic-authored)
-cascade,m4q063,none,reference (synthetic-authored)
-cascade,m4q064,none,reference (synthetic-authored)
-cascade,m4q065,none,reference (synthetic-authored)
-cascade,m4q066,none,reference (synthetic-authored)
-cascade,m4q067,none,reference (synthetic-authored)
-cascade,m4q068,premise,reference (synthetic-authored)
-cascade,m4q070,none,reference (synthetic-authored)
-cascade,m4q071,none,reference (synthetic-authored)
-cascade,m4q072,none,reference (synthetic-authored)
-cascade,m4q073,ignored,reference (synthetic-authored)
-cascade,m4q075,skipped,reference (synthetic-authored)
-cascade,m4q076,none,reference (synthetic-authored)
-cascade,m4q078,ignored,reference (synthetic-authored)
-cascade,m4q079,none,reference (synthetic-authored)
-cascade,m4q081,ignored,reference (synthetic-authored)
-cascade,m4q083,none,reference (synthetic-authored)
-cascade,m4q084,ignored,reference (synthetic-authored)
-cascade,m4q085,ignored,reference (synthetic-authored)
-cascade,m4q086,none,reference (synthetic-authored)
-cascade,m4q087,none,reference (synthetic-authored)
-cascade,m4q088,none,reference (synthetic-authored)
-cascade,m4q089,none,reference (synthetic-authored)
-cascade,m4q090,premise,reference (synthetic-authored)
-cascade,m4q092,none,reference (synthetic-authored)
-cascade,m4q093,premise,reference (synthetic-authored)
-cascade,m4q095,none,reference (synthetic-authored)
-cascade,m4q099,ignored,reference (synthetic-authored)
-cascade,m4q100,none,reference (synthetic-authored)
-cascade,m4q102,premise,reference (synthetic-authored)
-cascade,m4q104,none,reference (synthetic-authored)
-cascade,m4q105,premise,reference (synthetic-authored)
-cascade,m4q106,none,reference (synthetic-authored)
-cascade,m4q107,none,reference (synthetic-authored)
-cascade,m4q108,premise,reference (synthetic-authored)
-cascade,m4q109,ignored,reference (synthetic-authored)
-cascade,m4q110,none,reference (synthetic-authored)
-cascade,m4q112,none,reference (synthetic-authored)
-cascade,m4q114,skipped,reference (synthetic-authored)
-cascade,m4q115,none,reference (synthetic-authored)
-cascade,m4q116,none,reference (synthetic-authored)
-cascade,m4q118,none,reference (synthetic-authored)
-cascade,m4q119,none,reference (synthetic-authored)
-cascade,m4q120,none,reference (synthetic-authored)
-cascade,m4q121,none,reference (synthetic-authored)
-cascade,m4q122,none,reference (synthetic-authored)
-cascade,m4q123,format,reference (synthetic-authored)
-cascade,m4q125,none,reference (synthetic-authored)
-cascade,m4q126,none,reference (synthetic-authored)
-cascade,m4q127,none,reference (synthetic-authored)
-cascade,m4q128,none,reference (synthetic-authored)
-cascade,m4q129,none,reference (synthetic-authored)
-cascade,m4q130,none,reference (synthetic-authored)
-cascade,m4q131,none,reference (synthetic-authored)
-cascade,m4q132,format,reference (synthetic-authored)
-cascade,m4q135,none,reference (synthetic-authored)
-cascade,m4q136,none,reference (synthetic-authored)
-cascade,m4q137,none,reference (synthetic-authored)
-cascade,m4q138,none,reference (synthetic-authored)
-cascade,m4q139,none,reference (synthetic-authored)
-cascade,m4q141,none,reference (synthetic-authored)
-cascade,m4q142,none,reference (synthetic-authored)
-cascade,m4q143,none,reference (synthetic-authored)
-cascade,m4q144,none,reference (synthetic-authored)
-cascade,m4q146,ignored,reference (synthetic-authored)
-cascade,m4q147,none,reference (synthetic-authored)
-cascade,m4q148,none,reference (synthetic-authored)
-cascade,m4q149,none,reference (synthetic-authored)
-cascade,m4q150,none,reference (synthetic-authored)
-cascade,m4q152,none,reference (synthetic-authored)
-cascade,m4q153,none,reference (synthetic-authored)
-cascade,m4q155,premise,reference (synthetic-authored)
-cascade,m4q156,premise,reference (synthetic-authored)
-cascade,m4q158,premise,reference (synthetic-authored)
-cascade,m4q159,none,reference (synthetic-authored)
-cascade,m4q160,none,reference (synthetic-authored)
-cascade,m4q161,none,reference (synthetic-authored)
-cascade,m4q162,none,reference (synthetic-authored)
-cascade,m4q163,none,reference (synthetic-authored)
-cascade,m4q165,none,reference (synthetic-authored)
-cascade,m4q167,format,reference (synthetic-authored)
-cascade,m4q168,none,reference (synthetic-authored)
-cascade,m4q169,ignored,reference (synthetic-authored)
-cascade,m4q170,none,reference (synthetic-authored)
-cascade,m4q171,none,reference (synthetic-authored)
-cascade,m4q172,premise,reference (synthetic-authored)
-cascade,m4q173,none,reference (synthetic-authored)
-cascade,m4q174,none,reference (synthetic-authored)
-cascade,m4q175,none,reference (synthetic-authored)
-cascade,m4q176,format,reference (synthetic-authored)
-cascade,m4q177,none,reference (synthetic-authored)
-cascade,m4q178,none,reference (synthetic-authored)
-cascade,m4q180,none,reference (synthetic-authored)
-cascade,m4q181,none,reference (synthetic-authored)
-cascade,m4q182,ignored,reference (synthetic-authored)
-retry,m4q001,none,reference (synthetic-authored)
-retry,m4q002,premise,reference (synthetic-authored)
-retry,m4q003,none,reference (synthetic-authored)
-retry,m4q004,none,reference (synthetic-authored)
-retry,m4q005,none,reference (synthetic-authored)
-retry,m4q006,none,reference (synthetic-authored)
-retry,m4q007,none,reference (synthetic-authored)
-retry,m4q008,none,reference (synthetic-authored)
-retry,m4q009,none,reference (synthetic-authored)
-retry,m4q010,none,reference (synthetic-authored)
-retry,m4q011,none,reference (synthetic-authored)
-retry,m4q012,none,reference (synthetic-authored)
-retry,m4q014,none,reference (synthetic-authored)
-retry,m4q017,none,reference (synthetic-authored)
-retry,m4q018,none,reference (synthetic-authored)
-retry,m4q019,none,reference (synthetic-authored)
-retry,m4q021,none,reference (synthetic-authored)
-retry,m4q023,none,reference (synthetic-authored)
-retry,m4q024,none,reference (synthetic-authored)
-retry,m4q025,none,reference (synthetic-authored)
-retry,m4q026,none,reference (synthetic-authored)
-retry,m4q027,none,reference (synthetic-authored)
-retry,m4q030,none,reference (synthetic-authored)
-retry,m4q031,none,reference (synthetic-authored)
-retry,m4q033,none,reference (synthetic-authored)
-retry,m4q034,none,reference (synthetic-authored)
-retry,m4q036,none,reference (synthetic-authored)
-retry,m4q037,none,reference (synthetic-authored)
-retry,m4q039,none,reference (synthetic-authored)
-retry,m4q040,none,reference (synthetic-authored)
-retry,m4q041,none,reference (synthetic-authored)
-retry,m4q042,none,reference (synthetic-authored)
-retry,m4q047,none,reference (synthetic-authored)
-retry,m4q049,none,reference (synthetic-authored)
-retry,m4q050,none,reference (synthetic-authored)
-retry,m4q054,none,reference (synthetic-authored)
-retry,m4q055,none,reference (synthetic-authored)
-retry,m4q056,none,reference (synthetic-authored)
-retry,m4q057,none,reference (synthetic-authored)
-retry,m4q059,none,reference (synthetic-authored)
-retry,m4q060,none,reference (synthetic-authored)
-retry,m4q061,none,reference (synthetic-authored)
-retry,m4q062,none,reference (synthetic-authored)
-retry,m4q063,none,reference (synthetic-authored)
-retry,m4q064,none,reference (synthetic-authored)
-retry,m4q065,none,reference (synthetic-authored)
-retry,m4q066,none,reference (synthetic-authored)
-retry,m4q067,none,reference (synthetic-authored)
-retry,m4q068,premise,reference (synthetic-authored)
-retry,m4q070,none,reference (synthetic-authored)
-retry,m4q071,none,reference (synthetic-authored)
-retry,m4q072,none,reference (synthetic-authored)
-retry,m4q073,none,reference (synthetic-authored)
-retry,m4q075,none,reference (synthetic-authored)
-retry,m4q076,none,reference (synthetic-authored)
-retry,m4q078,ignored,reference (synthetic-authored)
-retry,m4q079,none,reference (synthetic-authored)
-retry,m4q081,ignored,reference (synthetic-authored)
-retry,m4q083,none,reference (synthetic-authored)
-retry,m4q084,premise,reference (synthetic-authored)
-retry,m4q085,none,reference (synthetic-authored)
-retry,m4q086,none,reference (synthetic-authored)
-retry,m4q087,none,reference (synthetic-authored)
-retry,m4q088,none,reference (synthetic-authored)
-retry,m4q089,none,reference (synthetic-authored)
-retry,m4q090,none,reference (synthetic-authored)
-retry,m4q092,none,reference (synthetic-authored)
-retry,m4q093,none,reference (synthetic-authored)
-retry,m4q095,none,reference (synthetic-authored)
-retry,m4q099,ignored,reference (synthetic-authored)
-retry,m4q100,none,reference (synthetic-authored)
-retry,m4q102,premise,reference (synthetic-authored)
-retry,m4q104,none,reference (synthetic-authored)
-retry,m4q105,none,reference (synthetic-authored)
-retry,m4q106,none,reference (synthetic-authored)
-retry,m4q107,none,reference (synthetic-authored)
-retry,m4q108,none,reference (synthetic-authored)
-retry,m4q109,ignored,reference (synthetic-authored)
-retry,m4q110,none,reference (synthetic-authored)
-retry,m4q112,none,reference (synthetic-authored)
-retry,m4q114,none,reference (synthetic-authored)
-retry,m4q115,none,reference (synthetic-authored)
-retry,m4q116,none,reference (synthetic-authored)
-retry,m4q118,none,reference (synthetic-authored)
-retry,m4q119,none,reference (synthetic-authored)
-retry,m4q120,none,reference (synthetic-authored)
-retry,m4q121,none,reference (synthetic-authored)
-retry,m4q122,none,reference (synthetic-authored)
-retry,m4q123,none,reference (synthetic-authored)
-retry,m4q125,none,reference (synthetic-authored)
-retry,m4q126,none,reference (synthetic-authored)
-retry,m4q127,none,reference (synthetic-authored)
-retry,m4q128,none,reference (synthetic-authored)
-retry,m4q129,none,reference (synthetic-authored)
-retry,m4q130,none,reference (synthetic-authored)
-retry,m4q131,none,reference (synthetic-authored)
-retry,m4q132,none,reference (synthetic-authored)
-retry,m4q135,none,reference (synthetic-authored)
-retry,m4q136,none,reference (synthetic-authored)
-retry,m4q137,none,reference (synthetic-authored)
-retry,m4q138,none,reference (synthetic-authored)
-retry,m4q139,none,reference (synthetic-authored)
-retry,m4q141,none,reference (synthetic-authored)
-retry,m4q142,none,reference (synthetic-authored)
-retry,m4q143,none,reference (synthetic-authored)
-retry,m4q144,none,reference (synthetic-authored)
-retry,m4q146,none,reference (synthetic-authored)
-retry,m4q147,none,reference (synthetic-authored)
-retry,m4q148,none,reference (synthetic-authored)
-retry,m4q149,none,reference (synthetic-authored)
-retry,m4q150,none,reference (synthetic-authored)
-retry,m4q152,none,reference (synthetic-authored)
-retry,m4q153,none,reference (synthetic-authored)
-retry,m4q155,none,reference (synthetic-authored)
-retry,m4q156,none,reference (synthetic-authored)
-retry,m4q158,none,reference (synthetic-authored)
-retry,m4q159,none,reference (synthetic-authored)
-retry,m4q160,none,reference (synthetic-authored)
-retry,m4q161,none,reference (synthetic-authored)
-retry,m4q162,none,reference (synthetic-authored)
-retry,m4q163,none,reference (synthetic-authored)
-retry,m4q165,none,reference (synthetic-authored)
-retry,m4q167,none,reference (synthetic-authored)
-retry,m4q168,none,reference (synthetic-authored)
-retry,m4q169,ignored,reference (synthetic-authored)
-retry,m4q170,none,reference (synthetic-authored)
-retry,m4q171,none,reference (synthetic-authored)
-retry,m4q172,premise,reference (synthetic-authored)
-retry,m4q173,none,reference (synthetic-authored)
-retry,m4q174,none,reference (synthetic-authored)
-retry,m4q175,none,reference (synthetic-authored)
-retry,m4q176,format,reference (synthetic-authored)
-retry,m4q177,none,reference (synthetic-authored)
-retry,m4q178,none,reference (synthetic-authored)
-retry,m4q180,none,reference (synthetic-authored)
-retry,m4q181,none,reference (synthetic-authored)
-retry,m4q182,none,reference (synthetic-authored)
+cascade,m4q001,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q002,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q003,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q004,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q005,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q006,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q007,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q008,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q009,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q010,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q011,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q012,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q014,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q017,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q018,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q019,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q021,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q023,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q024,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q025,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q026,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q027,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q028,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q031,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q032,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q034,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q035,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q036,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q038,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q039,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q041,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q042,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q043,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q044,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q049,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q051,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q052,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q057,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q058,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q059,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q060,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q062,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q063,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q064,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q065,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q066,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q067,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q068,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q069,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q070,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q071,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q073,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q074,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q075,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q076,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q078,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q079,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q081,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q082,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q084,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q086,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q087,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q089,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q090,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q091,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q092,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q093,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q094,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q096,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q097,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q098,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q101,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q105,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q106,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q108,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q110,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q111,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q113,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q114,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q115,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q116,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q117,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q119,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q121,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q122,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q123,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q125,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q127,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q128,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q129,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q130,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q131,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q133,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q134,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q135,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q136,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q137,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q138,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q139,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q140,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q143,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q144,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q145,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q146,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q147,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q149,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q150,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q151,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q152,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q153,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q156,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q158,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q159,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q160,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q161,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q163,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q164,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q165,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q167,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q168,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q169,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q171,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q172,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q173,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q174,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q175,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q176,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q177,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q179,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q180,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q182,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q183,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q184,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q185,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q186,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q187,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q188,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q189,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q191,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q192,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q193,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q194,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q195,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q197,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q198,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q199,none,"reference (subagent-authored, Claude Opus)"
+cascade,m4q200,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q001,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q002,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q003,skipped,"reference (subagent-authored, Claude Opus)"
+haiku,m4q004,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q005,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q006,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q007,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q008,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q009,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q010,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q011,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q012,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q014,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q017,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q018,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q019,skipped,"reference (subagent-authored, Claude Opus)"
+haiku,m4q021,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q023,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q024,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q025,skipped,"reference (subagent-authored, Claude Opus)"
+haiku,m4q026,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q027,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q028,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q031,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q032,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q034,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q035,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q036,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q038,skipped,"reference (subagent-authored, Claude Opus)"
+haiku,m4q039,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q041,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q042,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q043,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q044,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q049,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q051,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q052,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q057,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q058,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q059,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q060,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q062,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q063,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q064,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q065,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q066,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q067,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q068,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q069,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q070,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q071,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q073,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q074,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q075,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q076,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q078,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q079,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q081,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q082,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q084,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q086,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q087,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q089,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q090,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q091,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q092,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q093,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q094,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q096,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q097,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q098,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q101,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q105,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q106,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q108,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q110,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q111,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q113,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q114,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q115,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q116,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q117,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q119,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q121,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q122,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q123,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q125,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q127,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q128,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q129,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q130,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q131,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q133,skipped,"reference (subagent-authored, Claude Opus)"
+haiku,m4q134,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q135,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q136,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q137,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q138,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q139,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q140,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q143,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q144,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q145,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q146,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q147,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q149,skipped,"reference (subagent-authored, Claude Opus)"
+haiku,m4q150,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q151,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q152,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q153,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q156,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q158,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q159,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q160,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q161,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q163,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q164,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q165,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q167,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q168,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q169,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q171,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q172,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q173,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q174,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q175,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q176,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q177,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q179,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q180,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q182,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q183,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q184,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q185,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q186,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q187,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q188,skipped,"reference (subagent-authored, Claude Opus)"
+haiku,m4q189,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q191,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q192,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q193,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q194,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q195,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q197,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q198,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q199,none,"reference (subagent-authored, Claude Opus)"
+haiku,m4q200,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q001,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q002,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q003,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q004,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q005,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q006,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q007,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q008,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q009,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q010,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q011,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q012,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q014,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q017,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q018,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q019,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q021,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q023,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q024,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q025,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q026,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q027,skipped,"reference (subagent-authored, Claude Opus)"
+retry,m4q028,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q031,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q032,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q034,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q035,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q036,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q038,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q039,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q041,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q042,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q043,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q044,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q049,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q051,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q052,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q057,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q058,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q059,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q060,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q062,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q063,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q064,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q065,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q066,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q067,skipped,"reference (subagent-authored, Claude Opus)"
+retry,m4q068,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q069,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q070,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q071,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q073,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q074,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q075,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q076,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q078,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q079,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q081,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q082,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q084,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q086,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q087,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q089,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q090,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q091,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q092,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q093,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q094,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q096,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q097,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q098,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q101,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q105,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q106,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q108,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q110,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q111,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q113,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q114,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q115,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q116,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q117,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q119,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q121,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q122,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q123,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q125,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q127,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q128,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q129,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q130,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q131,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q133,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q134,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q135,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q136,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q137,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q138,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q139,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q140,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q143,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q144,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q145,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q146,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q147,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q149,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q150,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q151,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q152,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q153,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q156,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q158,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q159,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q160,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q161,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q163,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q164,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q165,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q167,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q168,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q169,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q171,skipped,"reference (subagent-authored, Claude Opus)"
+retry,m4q172,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q173,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q174,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q175,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q176,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q177,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q179,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q180,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q182,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q183,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q184,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q185,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q186,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q187,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q188,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q189,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q191,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q192,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q193,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q194,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q195,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q197,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q198,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q199,none,"reference (subagent-authored, Claude Opus)"
+retry,m4q200,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q001,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q002,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q003,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q004,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q005,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q006,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q007,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q008,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q009,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q010,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q011,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q012,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q014,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q017,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q018,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q019,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q021,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q023,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q024,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q025,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q026,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q027,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q028,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q031,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q032,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q034,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q035,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q036,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q038,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q039,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q041,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q042,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q043,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q044,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q049,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q051,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q052,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q057,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q058,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q059,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q060,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q062,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q063,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q064,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q065,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q066,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q067,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q068,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q069,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q070,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q071,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q073,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q074,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q075,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q076,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q078,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q079,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q081,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q082,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q084,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q086,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q087,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q089,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q090,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q091,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q092,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q093,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q094,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q096,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q097,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q098,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q101,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q105,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q106,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q108,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q110,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q111,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q113,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q114,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q115,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q116,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q117,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q119,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q121,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q122,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q123,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q125,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q127,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q128,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q129,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q130,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q131,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q133,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q134,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q135,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q136,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q137,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q138,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q139,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q140,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q143,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q144,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q145,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q146,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q147,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q149,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q150,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q151,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q152,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q153,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q156,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q158,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q159,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q160,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q161,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q163,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q164,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q165,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q167,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q168,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q169,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q171,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q172,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q173,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q174,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q175,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q176,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q177,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q179,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q180,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q182,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q183,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q184,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q185,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q186,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q187,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q188,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q189,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q191,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q192,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q193,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q194,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q195,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q197,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q198,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q199,none,"reference (subagent-authored, Claude Opus)"
+v1,m4q200,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q001,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q002,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q003,skipped,"reference (subagent-authored, Claude Opus)"
+v2,m4q004,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q005,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q006,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q007,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q008,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q009,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q010,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q011,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q012,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q014,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q017,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q018,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q019,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q021,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q023,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q024,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q025,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q026,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q027,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q028,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q031,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q032,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q034,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q035,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q036,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q038,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q039,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q041,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q042,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q043,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q044,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q049,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q051,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q052,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q057,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q058,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q059,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q060,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q062,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q063,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q064,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q065,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q066,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q067,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q068,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q069,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q070,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q071,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q073,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q074,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q075,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q076,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q078,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q079,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q081,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q082,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q084,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q086,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q087,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q089,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q090,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q091,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q092,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q093,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q094,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q096,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q097,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q098,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q101,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q105,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q106,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q108,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q110,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q111,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q113,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q114,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q115,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q116,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q117,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q119,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q121,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q122,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q123,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q125,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q127,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q128,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q129,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q130,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q131,skipped,"reference (subagent-authored, Claude Opus)"
+v2,m4q133,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q134,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q135,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q136,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q137,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q138,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q139,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q140,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q143,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q144,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q145,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q146,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q147,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q149,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q150,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q151,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q152,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q153,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q156,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q158,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q159,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q160,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q161,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q163,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q164,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q165,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q167,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q168,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q169,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q171,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q172,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q173,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q174,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q175,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q176,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q177,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q179,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q180,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q182,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q183,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q184,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q185,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q186,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q187,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q188,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q189,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q191,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q192,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q193,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q194,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q195,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q197,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q198,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q199,none,"reference (subagent-authored, Claude Opus)"
+v2,m4q200,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q001,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q002,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q003,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q004,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q005,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q006,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q007,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q008,skipped,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q009,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q010,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q011,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q012,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q014,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q017,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q018,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q019,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q021,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q023,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q024,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q025,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q026,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q027,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q028,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q031,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q032,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q034,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q035,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q036,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q038,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q039,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q041,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q042,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q043,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q044,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q049,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q051,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q052,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q057,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q058,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q059,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q060,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q062,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q063,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q064,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q065,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q066,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q067,skipped,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q068,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q069,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q070,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q071,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q073,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q074,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q075,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q076,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q078,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q079,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q081,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q082,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q084,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q086,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q087,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q089,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q090,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q091,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q092,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q093,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q094,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q096,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q097,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q098,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q101,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q105,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q106,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q108,skipped,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q110,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q111,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q113,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q114,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q115,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q116,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q117,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q119,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q121,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q122,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q123,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q125,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q127,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q128,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q129,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q130,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q131,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q133,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q134,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q135,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q136,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q137,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q138,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q139,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q140,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q143,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q144,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q145,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q146,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q147,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q149,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q150,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q151,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q152,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q153,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q156,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q158,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q159,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q160,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q161,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q163,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q164,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q165,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q167,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q168,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q169,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q171,skipped,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q172,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q173,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q174,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q175,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q176,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q177,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q179,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q180,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q182,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q183,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q184,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q185,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q186,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q187,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q188,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q189,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q191,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q192,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q193,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q194,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q195,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q197,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q198,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q199,none,"reference (subagent-authored, Claude Opus)"
+v3-cache,m4q200,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q001,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q002,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q003,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q004,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q005,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q006,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q007,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q008,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q009,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q010,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q011,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q012,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q014,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q017,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q018,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q019,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q021,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q023,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q024,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q025,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q026,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q027,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q028,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q031,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q032,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q034,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q035,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q036,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q038,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q039,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q041,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q042,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q043,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q044,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q049,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q051,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q052,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q057,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q058,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q059,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q060,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q062,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q063,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q064,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q065,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q066,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q067,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q068,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q069,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q070,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q071,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q073,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q074,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q075,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q076,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q078,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q079,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q081,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q082,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q084,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q086,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q087,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q089,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q090,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q091,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q092,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q093,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q094,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q096,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q097,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q098,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q101,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q105,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q106,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q108,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q110,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q111,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q113,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q114,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q115,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q116,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q117,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q119,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q121,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q122,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q123,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q125,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q127,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q128,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q129,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q130,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q131,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q133,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q134,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q135,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q136,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q137,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q138,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q139,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q140,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q143,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q144,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q145,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q146,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q147,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q149,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q150,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q151,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q152,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q153,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q156,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q158,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q159,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q160,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q161,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q163,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q164,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q165,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q167,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q168,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q169,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q171,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q172,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q173,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q174,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q175,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q176,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q177,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q179,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q180,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q182,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q183,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q184,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q185,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q186,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q187,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q188,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q189,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q191,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q192,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q193,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q194,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q195,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q197,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q198,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q199,none,"reference (subagent-authored, Claude Opus)"
+v3,m4q200,none,"reference (subagent-authored, Claude Opus)"
