@@ -29,28 +29,33 @@ def test_every_request_has_a_fixture_in_both_prompt_versions():
 def test_fixture_provenance_is_labelled():
     path = repo_root() / "fixtures" / "recorded" / f"{AGENT_NAMESPACE}.jsonl"
     sources = {json.loads(line)["source"] for line in path.read_text().splitlines()}
-    assert sources <= {"synthetic-authored", "live"}
+    assert sources <= {"synthetic-authored", "subagent-authored", "live"}
 
 
 def test_v1_numbers_match_lesson():
     s = evaluate("v1")["summary"]
-    assert s["checks"] == {"format": (19, 20), "cites_kb": (19, 20), "length": (18, 20)}
-    assert s["all_pass"] == (16, 20)
-    assert s["failing_cases"] == ["q07", "q11", "q15", "q18"]
+    assert s["checks"] == {"format": (20, 20), "cites_kb": (19, 20), "length": (20, 20)}
+    assert s["all_pass"] == (19, 20)
+    assert s["failing_cases"] == ["q11"]
 
 
-def test_v2_fixes_two_and_breaks_three():
-    a, b = evaluate("v1")["summary"], evaluate("v2")["summary"]
-    fa, fb = set(a["failing_cases"]), set(b["failing_cases"])
-    assert fa - fb == {"q07", "q18"}
-    assert fb - fa == {"q03", "q09", "q14"}
-    assert b["all_pass"] == (15, 20)
+def test_v2_changes_no_check_outcome_but_shortens_answers():
+    a, b = evaluate("v1"), evaluate("v2")
+    fa, fb = set(a["summary"]["failing_cases"]), set(b["summary"]["failing_cases"])
+    assert fa - fb == set() and fb - fa == set()
+    assert a["summary"] == b["summary"] and b["summary"]["all_pass"] == (19, 20)
+    # the per-case diff is empty, yet v2 did change every answer: all 20 got shorter
+    words = {v: {cid: len(out.split()) for cid, out in r["outputs"].items()} for v, r in (("v1", a), ("v2", b))}
+    assert all(words["v2"][cid] < words["v1"][cid] for cid in words["v1"])
+    assert max(words["v1"].values()) == 90 and max(words["v2"].values()) == 51
 
 
-def test_confident_factual_error_passes_all_code_checks():
+def test_q05_passes_all_code_checks_and_now_matches_the_kb():
     out = evaluate("v1")["outputs"]["q05"]
     assert has_format({}, out) and cites_known_doc({}, out) and within_length({}, out)
-    assert "requirement" in out  # the planted, wrong claim the lesson asks students to spot
+    # the checks pass whether or not the claim is true; here the answer gets AV1 right
+    assert "software AV1 decoder" in out and "SoC" in out
+    assert "requirement" not in out
 
 
 def test_check_functions():
@@ -66,8 +71,9 @@ def test_check_functions():
 def test_cli_compare_runs(capsys):
     assert main(["compare", "v1", "v2"]) == 0
     out = capsys.readouterr().out
-    assert "fixed by v2:  q07, q18" in out
-    assert "broken by v2: q03, q09, q14" in out
+    assert "fixed by v2:  none" in out
+    assert "broken by v2: none" in out
+    assert out.count("ALL        19/20   failing: q11") == 2
 
 
 def test_cli_run_writes_outputs(tmp_path, capsys):

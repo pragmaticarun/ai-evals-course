@@ -63,11 +63,12 @@ id to be one of the documents the retriever actually returned for that question.
     real failures costs maintenance and gives nothing back. Keep it only if error analysis shows citation
     hallucination happening.
 
-## Exercise 3: Can a regex catch the AV1 mistake?
+## Exercise 3: Can a regex catch an AV1 mistake?
 
-q05 confidently claims hardware AV1 decoding is guaranteed on Android 10+. Write `no_absolute_claims(case, output)`
-that fails answers containing absolute phrases ("every device", "any device", "all devices", "guaranteed",
-"requirement"). Run it on v1. Then answer: should this check gate CI?
+q05 asks whether hardware AV1 decoding can be assumed on every Android 10+ phone. A classic wrong answer says yes,
+that it is guaranteed or a requirement. Write `no_absolute_claims(case, output)` that fails answers containing
+absolute phrases ("every device", "any device", "all devices", "guaranteed", "requirement"). Run it on v1. Then
+answer: should this check gate CI?
 
 ??? success "Solution"
     ```python
@@ -86,10 +87,21 @@ that fails answers containing absolute phrases ("every device", "any device", "a
     outputs = evaluate("v1")["outputs"]
     flagged = sorted(cid for cid, out in outputs.items() if not no_absolute_claims({}, out))
     print(flagged)
-    assert "q05" in flagged
+    assert flagged == []
+    assert not no_absolute_claims({}, "Hardware AV1 decoding is guaranteed on every device.")
     ```
 
-    It flags q05, so it caught this mistake. It should **not** gate CI on its own:
+    Output:
+
+    ```text
+    []
+    ```
+
+    It flags nothing on v1, and that is the right result here: q05 answers correctly (Android 10 "only guarantees a
+    software AV1 decoder"; hardware support depends on the SoC), and "guarantees" is not one of the listed words.
+    Note how close that was: had the regex matched `guarantee\w*`, it would have flagged the *correct* answer. On
+    an answer that made the classic mistake ("hardware AV1 decoding is guaranteed on every device") it does fire, as
+    the second assert shows. It should **not** gate CI on its own:
 
     - It is a proxy. Plenty of correct answers say "every device" ("check this on every device you support"),
       and plenty of wrong answers contain no absolute words at all.
@@ -118,13 +130,16 @@ should come first?
 
 ## Exercise 5: Who decides?
 
-Your v2 prompt makes answers 60% shorter, and users have asked for brevity, but it drops citations on 3 of 20
-answers. Write three sentences: what the engineer should present, what the product owner should decide, and what
-experiment would settle it.
+Your v2 prompt makes answers about half as long (median 76.5 to 38 words), and users have asked for brevity. On the
+20 cases the three checks see no difference (19 of 20 pass under both, nothing fixed, nothing broken). Write three
+sentences: what the engineer should present, what the product owner should decide, and what experiment would
+settle it.
 
 ??? success "Solution"
-    The engineer presents the per-case diff (2 fixed, 3 broken), says that 20 cases is a small sample, and shows
-    the length distribution before and after. The product owner decides whether citations are a hard requirement
-    (they are a trust signal for engineers reading the answer) or a nice-to-have. The experiment is a v3 prompt that
-    keeps the length limit but makes the `Sources:` line mandatory, run on a larger case set, with the citation check
-    treated as a hard gate.
+    The engineer presents the per-case diff (nothing fixed, nothing broken), says that 20 cases is a small sample
+    and that the checks only cover format, citations and length, and shows the length distribution before and
+    after with a few v1/v2 answers side by side. The product owner decides whether the shorter answers still carry
+    what users need (a usable next step, the citation as a trust signal) and whether brevity is worth any loss of
+    detail. The experiment is to run both prompts on a larger case set with the citation and format checks as hard
+    gates, plus a validated judge (or a human review sample) for "the next step is actionable", since that is the
+    property the brevity instruction is most likely to hurt.
