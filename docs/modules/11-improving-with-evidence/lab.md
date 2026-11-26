@@ -66,10 +66,10 @@ two failure modes.
 
 The code you will use is in `mediadoctor.experiments` (building requests, running a task under a strategy, grading)
 and `mediadoctor.lab11` (metrics, decisions, reports). A task is graded by module 5's code checks (format,
-citations, investigated) and a reference check of the diagnosis (`experiments.check_correct`), which compares the
-Likely cause with a fixed phrase for each scenario's key fact (a regular expression); it stands in for module 5's
-validated judges so the lab can grade 833 dev answers offline. Keep an eye on that stand-in: on the regenerated
-answers it is the weakest part of the lab (section 4).
+citations, investigated) and a reference check of the diagnosis (`experiments.check_correct`), which looks in the
+Likely cause for each scenario's key fact, in any wording (a case-insensitive regular expression per scenario); it
+stands in for module 5's validated judges so the lab can grade 833 dev answers offline. Keep an eye on that
+stand-in, and on what it counts as a failure (section 4).
 
 ## 4. Run one configuration
 
@@ -81,12 +81,14 @@ uv run mediadoctor-lab11 run v1 | tail -1
 ```text
 case    ok  checks failed                 latency      cost calls
 m4q001  yes -                               8.55s  $0.00611 2
-m4q002  NO  correct                         8.76s  $0.00631 2
+m4q002  yes -                               8.76s  $0.00631 2
 m4q003  NO  investigated,correct            7.69s  $0.00689 2
-...
+m4q004  yes -                               9.48s  $0.00653 2
+m4q005  yes -                               8.45s  $0.00640 2
+m4q006  NO  investigated,correct            9.51s  $0.00668 2
 m4q007  NO  timeout                        20.36s  $0.00751 2
 ...
-success 28/119 = 0.235 [0.168, 0.319]  cost/success $0.02883
+success 78/119 = 0.655 [0.566, 0.735]  cost/success $0.01035
 ```
 
 m4q007's answer passed every check, and the task still failed: it took 20.36 s, past the 15 s timeout. Now look at
@@ -102,20 +104,27 @@ invoke_agent MediaDoctor  [+0ms, 6.68s]
 ├─ execute_tool codec_caps  [+1.58s, 2ms]
 └─ chat claude-sonnet-5-5  [+1.58s, 5.10s]
 
-checks: {'format': True, 'citations': True, 'investigated': True, 'correct': False}
+checks: {'format': True, 'citations': True, 'investigated': True, 'correct': True}
 latency 6.68 s  cost $0.00353  calls 2  cache read 2066 / write 0 tokens
 ```
 
-Both calls read the 1,033-token prefix from the cache, and the format and citations are fine. The `correct` check
-says the diagnosis is wrong. Read the answer at the bottom of the full output: "The premise does not hold:
-codec_caps shows atlas-a1 has a hardware AV1 decoder, "c2.atlas.av1.decoder" with hardware: true (Main and Main10,
-...)". That is the right diagnosis (the user claimed the device decodes AV1 only in software), and the reference
-label for this answer is `none`. The reference check failed it because it looks for the exact phrase "hardware AV1
-decoder for Main", and this answer says the same thing in other words. That is a grader false negative, and it is
-not rare: across the seven configurations, the grader fails 620 of the 818 dev answers the labels call correct,
-and passes none of the 15 the labels call defective. Every success rate in this lab is measured by that grader, so
-read them as "answers that pass a strict phrase check", not as accuracy. Drop the `grep` to see every attribute,
-including the per-call `gen_ai.usage.cache_read.input_tokens` and `evalkit.cost.usd`.
+Both calls read the 1,033-token prefix from the cache, and every check passes. Read the answer at the bottom of the
+full output: "The premise does not hold: codec_caps shows atlas-a1 has a hardware AV1 decoder,
+"c2.atlas.av1.decoder" with hardware: true (Main and Main10, ...)". That is the right diagnosis (the user claimed
+the device decodes AV1 only in software), stated in the agent's own words. (An earlier version of the reference
+check looked for the exact phrase "hardware AV1 decoder for Main" from the course's old hand-scripted answers and
+failed this answer and most other correct ones; that was a bug, and it is fixed.)
+
+Now look at a task the grader fails and the labels do not: `uv run mediadoctor-lab11 trace v1 m4q006`. The question
+is about "one of our test phones", so the agent cannot look the device up; it says so, offers the knowledge base's
+usual causes as a hypothesis ("the display is likely capable and the loss is probably in your player's surface/output
+setup, though I haven't inspected the phone"), and suggests what to check. The reference label is `none`. The
+grader fails it on `investigated` (no `codec_caps` call, which the dataset expects) and `correct` (it never states
+the scenario's fact about the device). Across the seven configurations the grader fails 251 of the 818 dev answers
+the labels call correct, 223 of them answers like this one, and passes none of the 15 the labels call defective.
+Decide which definition of success you want before you compare configurations on it; this lab keeps the grader's,
+and it affects every configuration alike. Drop the `grep` to see every attribute, including the per-call
+`gen_ai.usage.cache_read.input_tokens` and `evalkit.cost.usd`.
 
 ## 5. The report
 
@@ -135,12 +144,14 @@ against the table.
 uv run mediadoctor-lab11 report --only v1 v2 v3
 ```
 
-Neither passes the superiority rule: v2's paired CI is +0.000 to +0.084 (6 queries fixed, 1 broken, by the grader),
-and v3's is −0.092 to +0.025 (5 fixed, 9 broken). Now read the failure-mode table: the labels find no failure in
-v1's or v3's answers and 2 (skipped investigation) in v2's. There was nothing for the prompts to fix, so the
-grader's differences are differences in phrasing. Then answer: v3 costs 38% more per success than v2. Would v3 be a
-good change by itself, before caching, if it had passed its rule? (Its rule is about success; by cost per success
-it is worse. Notice what the next experiment does to the cost of its few-shot examples.)
+v2 does not pass the superiority rule: its paired CI is −0.067 to +0.050 (6 queries fixed, 7 broken, 9 of the 13 by
+a timeout). v3's interval against v2 is above zero, +0.008 to +0.126 (11 fixed, 3 broken), but v3 breaks both
+guardrails (p95 14.8 s, $0.0118 per success) and its parent v2 was not kept, so the log rejects it as well. Now read
+the failure-mode table: the labels find no failure in v1's or v3's answers and 2 (skipped investigation) in v2's.
+List v3's 11 fixed queries with the checks v2 failed on them (`lab11.run_rows`): most are v2 answers that did not
+call or cite the tool the question needed. Then answer: v3 costs 10% more per success than v2. Would v3 be a good
+change by itself, before caching, if it had met the guardrails? (Notice what the next experiment does to the cost
+of its few-shot examples.)
 
 ## 7. Experiment 2: prompt caching (v3-cache)
 
@@ -161,7 +172,7 @@ timed out under v3: ['m4q017', 'm4q078', 'm4q086', 'm4q096', 'm4q175', 'm4q185']
 
 No answer is identical, because v3 and v3-cache were generated in separate runs (see the box at the top): the
 recordings are two independent samples of the same prompt, not one sample replayed with and without a cache. On a
-real API at temperature above zero you would see the same thing. The no-change rule catches it: 25 of 119 tasks
+real API at temperature above zero you would see the same thing. The no-change rule catches it: 23 of 119 tasks
 grade differently, the log reports "graded answers identical: NO", and v3-cache is rejected. That is the rule
 working as written; what it tells you is that "no change" can only be checked against a run that controls for
 sampling (temperature 0, or several runs of each), and the pre-registration should have said so.
@@ -176,10 +187,11 @@ free.
 uv run mediadoctor-lab11 report --only v3-cache haiku cascade
 ```
 
-Both pass the non-inferiority rule: Haiku's paired CI against v3-cache is −0.025 to +0.084, the cascade's +0.017
-to +0.101, both above the −5-point margin, at 96% and 78% lower cost per success. Neither is kept, though, because
-the rule only keeps a change whose parent was kept, and v3-cache was rejected (section 7). Check what the router
-did: list the tasks where the cascade and v3-cache disagree, with the reference label of each final answer.
+The cascade passes the non-inferiority rule: its paired CI against v3-cache is +0.017 to +0.092, above the −5-point
+margin, at 74% lower cost per success. Haiku alone does not: its CI is −0.067 to +0.050, and the lower bound is
+below the margin, even though it is 95% cheaper per success. The cascade is not kept either, because the rule only
+keeps a change whose parent was kept, and v3-cache was rejected (section 7). Check what the router did: list the
+tasks where the cascade and v3-cache disagree, with the reference label of each final answer.
 
 ```python
 from collections import Counter
@@ -197,7 +209,7 @@ print("labelled failures:", Counter(labels[("haiku", r.case_id)] for r in rows),
 ```
 
 ```text
-lost 0 won 7 Counter({'none': 7})
+lost 0 won 6 Counter({'none': 6})
 escalated: 27 of 119
 labelled failures: Counter({'none': 112, 'skipped': 7}) (haiku alone)
 ```
@@ -241,13 +253,12 @@ uv run mediadoctor-lab11 pareto --svg runs/m11/pareto.svg
 ```
 
 ```text
-frontier: haiku ($0.00022, 0.218) -> cascade ($0.00127, 0.252) -> v2 ($0.00692, 0.277)
-cheapest within 2 points of the best (point estimates): v2
+frontier: haiku ($0.00022, 0.630) -> cascade ($0.00127, 0.689) -> v3 ($0.00842, 0.714)
+cheapest within 2 points of the best (point estimates): v3
 ```
 
 Open the SVG in a browser (hover a point for its numbers). Which configurations are dominated, and by what? Then
-look at the whiskers: every interval overlaps every other, so the frontier's order rests on the grader's point
-estimates.
+look at the whiskers: every interval overlaps every other, so the frontier's order rests on point estimates.
 
 ## 11. The experiment log and the decision memo
 
@@ -260,13 +271,14 @@ The log merges what was written before each run (`config/experiments/log.toml`) 
 each experiment's rule. The memo applies the pre-registered decision rule: keep each change that passed its own test
 (and whose parent was kept), recommend the most accurate kept configuration. On this data no change on the
 v1 → v2 → v3 → v3-cache path passes, so the chain stops at v1, and the draft reads "Switch MediaDoctor from
-**v1 (release)** to **v1 (release)**". Haiku and the cascade passed their own rules but sit under the rejected
-v3-cache, and the memo's table lists them as "rejected" with their passing reason, which is misleading; its "How
+**v1 (release)** to **v1 (release)**". The cascade passed its own rule but sits under the rejected v3-cache, and
+the memo's table lists it as "rejected" with its passing reason, which is misleading; its "How
 sure we are" line also prints "about nan%" for the detectable difference, because the recommendation is the release
 itself and no task changed outcome. Read the draft against the
 [decision memo template](../../eval-templates/decision-memo.md) and edit it: say plainly that the recommendation is
 to keep v1 and why, fix those two lines by hand, add the owner, and add one sentence on what would change your mind
-(a validated grader). Keep it to one page. A generated memo is a draft, and this one shows why.
+(the cascade passing a registered test against v1). Keep it to one page. A generated memo is a draft, and this one
+shows why.
 
 ## 12. The held-out check (once)
 
@@ -280,7 +292,7 @@ refused: 'confirm cascade' asked for 28 held-out case(s), e.g. m4q008; only a re
 ```
 
 The held-out look is for the configuration you are about to release, and on this evidence that is v1, which is
-already in production: there is nothing to confirm. Keep the look for the next study, after the grader is fixed.
+already in production: there is nothing to confirm. Keep the look for the next study (cascade against v1).
 Spending it now on the cascade, because it is cheap and passed its own rule, would be choosing what to confirm after
 seeing the results. If you do run `confirm VARIANT --release` to see how it works, it appends a row to
 `runs/m11/holdout_log.csv`; a reviewer reading that log should find exactly one look per release decision. If a

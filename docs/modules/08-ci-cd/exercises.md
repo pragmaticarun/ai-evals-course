@@ -196,7 +196,11 @@ Save v1 and v2 runs with both tiers, diff them, and use the result to write the 
     for cid in cites:
         cited = sorted(set(re.findall(r"\[kb:([\w-]+)\]", v2.answers[cid])))
         got = sorted(
-            {d for s in traces[cid] for d in s["attributes"].get("mediadoctor.retrieval.doc_ids", []) or []}
+            {
+                d
+                for s in traces[cid]
+                for d in s["attributes"].get("mediadoctor.retrieval.doc_ids", []) or []
+            }
         )
         print(f"citations: {cid} cites kb {cited}, search_kb returned {got or 'nothing'}; "
               f"human label: {sorted(labels[cid]) or 'pass'}")  # fmt: skip
@@ -401,7 +405,9 @@ prompt v1, (b) a new agent model ID, (c) a sentence added to a tool's descriptio
     if d == 0:
         # No disagreement at all: the judge tier gives no pilot estimate. Plan with the code tier's
         # v1/v2 disagreement on the gate set instead (the same two prompts, more cases).
-        lost, gained = flips(v1.outcomes["code"]["all-code-checks"], v2.outcomes["code"]["all-code-checks"])
+        lost, gained = flips(
+            v1.outcomes["code"]["all-code-checks"], v2.outcomes["code"]["all-code-checks"]
+        )
         d = (len(lost) + len(gained)) / len(v1.outcomes["code"]["all-code-checks"])
         print(f"no judge disagrees; planning with the code tier's discordant share, {d:.3f}")
     mdd = mdd_paired(n_dev, d)

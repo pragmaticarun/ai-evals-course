@@ -42,32 +42,32 @@ who asks "what's the cheapest option that's basically as good?"
     Output:
 
     ```text
-    best v2 0.277; point-estimate pick: v2
-      haiku     diff -0.059 [-0.118, +0.000]  not shown within 2 pts  cost/success $0.00103
-      cascade   diff -0.025 [-0.084, +0.034]  not shown within 2 pts  cost/success $0.00504
-      v3-cache  diff -0.084 [-0.143, -0.025]  not shown within 2 pts  cost/success $0.02332
-      retry     diff -0.076 [-0.134, -0.017]  not shown within 2 pts  cost/success $0.02422
-      v2        (the best)                      cost/success $0.02495
-      v1        diff -0.042 [-0.092, +0.000]  not shown within 2 pts  cost/success $0.02883
-      v3        diff -0.034 [-0.092, +0.025]  not shown within 2 pts  cost/success $0.03454
+    best v3 0.714; point-estimate pick: v3
+      haiku     diff -0.084 [-0.151, -0.017]  not shown within 2 pts  cost/success $0.00036
+      cascade   diff -0.025 [-0.084, +0.025]  not shown within 2 pts  cost/success $0.00185
+      v3-cache  diff -0.076 [-0.143, -0.017]  not shown within 2 pts  cost/success $0.00706
+      retry     diff -0.067 [-0.126, -0.008]  not shown within 2 pts  cost/success $0.00755
+      v1        diff -0.059 [-0.118, +0.000]  not shown within 2 pts  cost/success $0.01035
+      v2        diff -0.067 [-0.126, -0.008]  not shown within 2 pts  cost/success $0.01069
+      v3        (the best)                      cost/success $0.01178
     ```
 
-    On point estimates the answer is v2 itself: the next best, the cascade (0.252), is 2.5 points below 0.277. With
+    On point estimates the answer is v3 itself: the next best, the cascade (0.689), is 2.5 points below 0.714. With
     intervals, no configuration can be shown to be within 2 points of the best: even the cascade's paired CI goes
     down to −8.4 points. A 2-point tolerance is below what 119 queries can resolve (about 8 points when 10% of
     queries change outcome).
 
-    Before you answer the manager, look at what "success" is measuring here. By the lab's grader every
-    configuration succeeds on only 19% to 28% of tasks, but the reference labels find a failure mode in just 15 of
-    the 833 dev answers (the lesson's Step 3). Most of the grader's failures are its own: its reference check looks
-    for a fixed phrase per scenario, and the regenerated answers state the same diagnosis in other words. A ranking
-    of the configurations by a grader that disagrees with the labels on most answers is a ranking of how each one
-    happens to phrase things.
+    Before you answer the manager, look at what "success" is measuring here. By the lab's grader the configurations
+    succeed on 63% to 71% of tasks, but the reference labels find a failure mode in just 15 of the 833 dev answers
+    (the lesson's Step 3). Most of the gap is the grader's stricter definition: it fails answers that rightly ask for
+    a device or file the question left out, and tasks that run past 15 s. So "best" here means "best at answering
+    with the expected evidence in time", and the labels say the configurations barely differ in quality.
 
     For the manager: "on our labels the configurations are close to equally good, and our automated score cannot
-    tell them apart; the cascade is about 80% cheaper per success than any Sonnet-only option, and Haiku cheaper
-    again. We cannot call any of them within 2 points of another with this data and this grader. Before we trade
-    points for money, we have to fix the grader." That is a less satisfying answer than a name, and the right one.
+    separate the top ones; the cascade is at least 74% cheaper per success than any Sonnet-only option and scores
+    within a few points of the best, and Haiku alone is cheaper again but skips more investigations. We cannot call
+    any of them within 2 points of another with this data." That is a less satisfying answer than a name, and the
+    right one.
 
 ## Exercise 2: Explain a latency regression from the traces
 
@@ -304,7 +304,9 @@ can detect, and what a perfect score would save in cost per success. Should you 
     s = lab11.summary("retry")
     labels = lab11.reference_labels()
     bad = sum(labels[("retry", c["id"])] != "none" for c in lab11.split_cases("dev"))
-    print(f"retry on dev: the grader fails {s.n - s.successes}/{s.n}; the labels find {bad} defective answers")
+    print(
+        f"retry on dev: the grader fails {s.n - s.successes}/{s.n}; the labels find {bad} defective answers"
+    )
 
     # A plausible next fix removes a third of the labelled failures and breaks almost nothing.
     gain = bad / 3 / s.n
@@ -326,11 +328,11 @@ can detect, and what a perfect score would save in cost per success. Should you 
     Output:
 
     ```text
-    retry on dev: the grader fails 95/119; the labels find 3 defective answers
+    retry on dev: the grader fails 42/119; the labels find 3 defective answers
     hoped-for gain +0.008; discordant share 0.018
     tasks needed to see it (80% power, paired): 2044
     dev tasks we have: 119; the largest gain 119 tasks can reliably see when 10% of tasks change outcome: 0.080
-    cost/success now $0.02422; at 100% success $0.00489 (-80%)
+    cost/success now $0.00755; at 100% success $0.00489 (-35%)
     ```
 
     Not on this dev set, and not for the usual reason. By the labels there is almost nothing left to fix: removing
@@ -338,10 +340,10 @@ can detect, and what a perfect score would save in cost per success. Should you 
     while 119 tasks can only see gains of about 8 points. Running it anyway produces a coin-flip "result" that you
     will be tempted to believe if it comes out positive.
 
-    The last line is the trap. By the grader, a perfect system would cut cost per success by 80%, which looks like
-    the biggest prize in the module. But almost all of the grader's 95 failures are answers the labels call
-    correct: the money is not in the agent, it is in the measurement. The experiment worth running now is on the
-    grader: measure its agreement with the labels (it fails every labelled defect but also rejects most good
-    answers), fix its reference check, and re-run the comparisons. Then re-run error analysis on a larger, harder
-    sample (module 9's production sampling) to find failures worth a fix. Stopping the agent work here is a
-    decision, and it goes in the experiment log with these numbers.
+    The last line is the trap. By the grader, a perfect system would cut cost per success by 35%, which looks like a
+    prize. But only 3 of the grader's 42 failures are answers the labels call defective: 5 are timeouts, and most of
+    the rest are answers that rightly asked for a device or file the question did not name. An agent fix cannot
+    collect that money; deciding whether those answers should count as successes (and cutting the timeouts) would
+    move the number more than any prompt. Then re-run error analysis on a larger, harder sample (module 9's
+    production sampling) to find failures worth a fix. Stopping the agent work here is a decision, and it goes in
+    the experiment log with these numbers.

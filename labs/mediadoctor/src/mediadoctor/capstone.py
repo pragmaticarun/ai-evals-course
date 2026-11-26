@@ -783,7 +783,7 @@ def report_markdown(topic: str | None = None, release: bool = False, today: str 
         add(f"- **No change passed its test.** `{BASELINE}` stays, at {rate(b.successes, b.n)} on the {b.n} dev "
             f"queries. The best rejected configuration, `{cand}`, scores {rate(c.successes, c.n)}, a paired "
             f"difference of {diff(ov)} ({ov.b_only} queries fixed, {ov.a_only} broken), which its pre-registered "
-            f"rule did not accept ({d.verdicts[cand][1].split(';')[0]}).{held}")  # fmt: skip
+            f"rule did not accept ({d.verdicts[cand][1]}).{held}")  # fmt: skip
     elif ho:
         # Lead with the held-out number: the dev number comes from the queries every step was chosen on,
         # so it is biased upward (selection, and five sequential keep-or-drop decisions).

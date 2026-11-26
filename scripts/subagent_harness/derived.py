@@ -44,12 +44,17 @@ def module09_traffic() -> None:
 
 def module08() -> None:
     print("wrote", lab08.rel(lab08.write_label_answers()))
-    print("wrote", lab08.rel(write_manifest(lab08.manifest_path(), lab08.make_manifest(created=CREATED))))
+    print(
+        "wrote",
+        lab08.rel(write_manifest(lab08.manifest_path(), lab08.make_manifest(created=CREATED))),
+    )
     print("wrote", lab08.rel(lab08.write_baseline()))
 
 
 def module10() -> None:
-    subprocess.run(["uv", "run", "mediadoctor-lab10", "gate", "--write-baseline"], check=True, cwd=ROOT)
+    subprocess.run(
+        ["uv", "run", "mediadoctor-lab10", "gate", "--write-baseline"], check=True, cwd=ROOT
+    )
 
 
 if __name__ == "__main__":

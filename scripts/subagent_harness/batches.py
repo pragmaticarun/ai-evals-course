@@ -33,7 +33,11 @@ def family(model: str) -> str:
 def image_index() -> dict[str, Path]:
     """sha256 of the base64 text of each repo image -> its path (requests store only the hash)."""
     out = {}
-    for p in [*ROOT.glob("data/**/*.png"), *ROOT.glob("data/**/*.jpg"), *ROOT.glob("docs/**/*.png")]:
+    for p in [
+        *ROOT.glob("data/**/*.png"),
+        *ROOT.glob("data/**/*.jpg"),
+        *ROOT.glob("docs/**/*.png"),
+    ]:
         b64 = base64.standard_b64encode(p.read_bytes())
         out[hashlib.sha256(b64).hexdigest()] = p
     return out
@@ -57,7 +61,9 @@ def _block(b: dict, images: dict[str, Path]) -> str:
         where = str(p) if p else f"(image not found, sha256 {src.get('data_sha256')})"
         return f"[IMAGE: open and look at this file with your Read tool: {where}]"
     if t == "tool_use":
-        return "TOOL CALL " + json.dumps({"id": b["id"], "name": b["name"], "input": b.get("input", {})})
+        return "TOOL CALL " + json.dumps(
+            {"id": b["id"], "name": b["name"], "input": b.get("input", {})}
+        )
     if t == "tool_result":
         c = b.get("content")
         if isinstance(c, list):
@@ -65,7 +71,7 @@ def _block(b: dict, images: dict[str, Path]) -> str:
         err = " (is_error)" if b.get("is_error") else ""
         try:  # pretty-print JSON so no line is long (the Read tool cuts lines over 2000 chars)
             c = json.dumps(json.loads(c), indent=1, ensure_ascii=False)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             pass
         return f"TOOL RESULT for {b['tool_use_id']}{err}:\n{c}"
     return json.dumps(b)
@@ -106,7 +112,9 @@ def prepare(hdir: Path, rnd: str) -> None:
         pending.setdefault(p["key"], p)
     done = set()
     if (hdir / "answers.jsonl").exists():
-        done = {json.loads(x)["key"] for x in (hdir / "answers.jsonl").read_text().splitlines() if x}
+        done = {
+            json.loads(x)["key"] for x in (hdir / "answers.jsonl").read_text().splitlines() if x
+        }
     pending = {k: v for k, v in pending.items() if k not in done}
     rdir = hdir / "rounds" / rnd
     (rdir / "tasks").mkdir(parents=True, exist_ok=True)
@@ -198,19 +206,44 @@ def merge(hdir: Path, rnd: str) -> None:
                 for blk in ans["content"]:
                     if blk["type"] == "tool_use":
                         tid = "toolu_sa_" + hashlib.sha256(f"{key}:{n}".encode()).hexdigest()[:20]
-                        content.append({"type": "tool_use", "id": tid, "name": blk["name"],
-                                        "input": blk["input"]})
+                        content.append(
+                            {
+                                "type": "tool_use",
+                                "id": tid,
+                                "name": blk["name"],
+                                "input": blk["input"],
+                            }
+                        )
                         n += 1
                     else:
                         content.append({"type": "text", "text": blk["text"].strip()})
                 stop = "tool_use" if n else "end_turn"
-                resp = {"id": f"msg_subagent_{key[:16]}", "type": "message", "role": "assistant",
-                        "model": p["request"]["model"], "content": content, "stop_reason": stop,
-                        "usage": {"input_tokens": len(json.dumps(p["request"])) // 4,
-                                  "output_tokens": max(1, len(json.dumps(content)) // 4)}}
-                out.write(json.dumps({"key": key, "ns": p["ns"], "trial": p["trial"],
-                                      "request": p["request"], "response": resp},
-                                     sort_keys=True, separators=(",", ":")) + "\n")
+                resp = {
+                    "id": f"msg_subagent_{key[:16]}",
+                    "type": "message",
+                    "role": "assistant",
+                    "model": p["request"]["model"],
+                    "content": content,
+                    "stop_reason": stop,
+                    "usage": {
+                        "input_tokens": len(json.dumps(p["request"])) // 4,
+                        "output_tokens": max(1, len(json.dumps(content)) // 4),
+                    },
+                }
+                out.write(
+                    json.dumps(
+                        {
+                            "key": key,
+                            "ns": p["ns"],
+                            "trial": p["trial"],
+                            "request": p["request"],
+                            "response": resp,
+                        },
+                        sort_keys=True,
+                        separators=(",", ":"),
+                    )
+                    + "\n"
+                )
                 ok += 1
     print(f"merged {ok}; problems {len(bad)}")
     for row in bad:

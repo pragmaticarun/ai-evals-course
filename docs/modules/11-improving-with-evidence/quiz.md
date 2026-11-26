@@ -78,15 +78,16 @@ alone skipped the investigation in 7 of 119. Why does the router work here, and 
     premise and the cause, with its own TPR and TNR) is a new one-change configuration with its added cost and
     latency.
 
-**8. In the lab, every configuration's task success is 19% to 28% by the automated grader, but the reference labels
+**8. In the lab, every configuration's task success is 63% to 71% by the automated grader, but the reference labels
 find a failure in only 15 of the 833 dev answers. The pre-registered rule keeps nothing and recommends staying on v1.
 Write the sentence about uncertainty that belongs in the memo, and one sentence that does not.**
 
 ??? question "Answer"
-    Belongs: "Our automated grader fails all 15 answers the reference labels call defective, but also 620 of the
-    818 they call correct, so the success comparisons in this memo mostly reflect phrasing, not quality; we
-    recommend keeping v1, fixing the grader, and re-running the comparisons before changing the release." Does not
-    belong: "v1 is 24% accurate" or "v2 is 4.2 points better" (both read the grader's numbers as accuracy), or "the
+    Belongs: "Our automated grader fails all 15 answers the reference labels call defective, and also 251 of the
+    818 they call correct (most of them answers that asked for a device the question did not name), so the success
+    rates are stricter than accuracy; no change passed its registered rule, so we recommend keeping v1, and the
+    cascade, 74% cheaper per success with no labelled failures, should be tested against v1 next." Does not
+    belong: "v1 is 66% accurate" or "v3 is 6.7 points better than v2" (both read the grader's numbers as accuracy), or "the
     configurations are equivalent" (the labels say they are close, but 7 skipped investigations for Haiku against
     0 for v1 is a difference; and "no difference we could detect" needs the size we could detect, about 8 points).
     Name the measurement's weakness, give the numbers that show it, and say what would change the decision.

@@ -44,8 +44,9 @@ uv run mediadoctor-capstone slices
 ```
 
 The suggested slice is **drm-resolution** (DRM, Widevine security levels, and resolution caps). It is a risk-based
-choice: a wrong Widevine answer sends a customer to the wrong team or blames a device for a licence problem. Write
-down, before you look further, what you expect: how many failures, which modes.
+choice: a wrong Widevine answer sends a customer to the wrong team or blames a device for a licence problem. On this
+data it is also the weakest topic under `v1` (7 of 14, tied with live-stream at 6 of 12), so it is the reference
+report's slice too. Write down, before you look further, what you expect: how many failures, which modes.
 
 If you prefer, take any other topic, or the alternative project's slice from the syllabus (CrashTriage, see
 [Make it your own](extensions.md), option B).
@@ -62,12 +63,13 @@ ids = C.dev_ids("drm-resolution")
 labels = lab11.reference_labels()
 for i in ids:
     q = C.case_by_id()[i]["question"]
-    print(i, labels[("v1", i)], labels[("v2", i)], q[:70])
+    print(i, labels[("v1", i)], labels[("v3", i)], q[:70])
 ```
 
-Every DRM query fails under `v1` (0 of 14), yet the reference labels record no failure mode for any of them. For every
-query that fails under `v1`, read the trace (`uv run mediadoctor-lab11 trace v1 CASE`), and write an open
-note on the first thing that went wrong, as in [module 3](../03-error-analysis/index.md). Then read two that pass
+Half the DRM queries fail under `v1` (7 of 14), yet the reference labels record no failure mode for any of them.
+For every query that fails under `v1`, read the trace (`uv run mediadoctor-lab11 trace v1 CASE`), and write an open
+note on the first thing that went wrong, as in [module 3](../03-error-analysis/index.md). Look at how each question
+is phrased as well as at the answer: does it name the phone? Then read two that pass
 under both: error analysis that only reads failures misses the near-misses. Map your notes to the taxonomy. Did you
 find a mode that is not in it? If so, that is [option C](extensions.md) of Make it your own.
 
@@ -88,8 +90,8 @@ uv run mediadoctor-lab05 judge false-premise --split test
 Its test split has 28 traces and no failing ones, so its TNR is n/a (0/0): nothing tells you how often it passes an
 answer that accepts a false premise. Write down whether its test set contains any DRM traces as well. A judge
 validated on other topics, or on no failures, is a judge you are trusting on this one. The same question applies to
-the `correct` code check that grades success here: [Exercise 3](exercises.md) shows it fails DRM answers that state
-the right diagnosis in other words.
+the code checks that grade success here: [Exercise 3](exercises.md) shows that `investigated` and `correct` fail
+every DRM answer to a question that does not name the phone, answers the labels accept.
 
 ## 6. The improvement experiment, on the slice
 
@@ -106,12 +108,15 @@ for a, b in [("v1", "v2"), ("v2", "v3"), ("v1", "retry")]:
     print(f"{a} -> {b}: {C.diff(p)}  fixed {p.b_only} broken {p.a_only}")
 ```
 
-You should see `v1` → `v2` at +0.143 [+0.000, +0.357] (2 fixed, 0 broken), `v2` → `v3` giving those two back,
-and `v1` → `retry` at +0.000. Every interval reaches zero: with 14 queries, no experiment on this slice alone can
-pass a superiority rule. That is the finding, together with the one from section 5: the success being compared is
-graded by a check that misses correct DRM answers. Use the report's last slice paragraph to say how many queries you
-would need, and write the follow-ups as a measurement task (validate the `correct` check against the labels) and a
-data task (module 4: more DRM tuples, including log evidence), not as a prompt task.
+You should see `v1` → `v2` at -0.071 [-0.214, +0.000] (0 fixed, 1 broken: a timeout), `v2` → `v3` giving that one
+back, and `v1` → `retry` at +0.000. There were no false-premise failures to remove: under `v1` the five
+false-premise DRM queries already pass, each answer correcting the user's L1 claim. Every interval reaches zero:
+with 14 queries, no experiment on this slice alone can pass a superiority rule. That is the finding, together with
+the one from section 5: the seven failures every configuration shares are questions that do not name the phone,
+which a prompt change cannot fix. Use the report's last slice paragraph to say how many queries you would need, and
+write the follow-ups as a measurement task (decide whether an answer that asks for the missing device counts as a
+success, and re-validate the checks against the labels) and a data task (module 4: more DRM tuples, including log
+evidence), not as a prompt task.
 
 ## 7. Generate the report
 

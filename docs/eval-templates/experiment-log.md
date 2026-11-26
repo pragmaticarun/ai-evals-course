@@ -27,8 +27,8 @@ The examples are module 11's E3 (`uv run mediadoctor-lab11 report` and `log`).
 | Field | What to write | Example |
 |---|---|---|
 | **Commit and fixtures** | the git sha and the fixture or trace set the run used | `abc1234`, `mediadoctor-m11-*` |
-| **Result** | primary metric for both, the paired difference with its CI, discordant counts | 0.244 → 0.193, −0.050 [−0.101, −0.008], 7 broken / 1 fixed; 25 of 119 answers grade differently |
-| **Cost and latency** | cost per task, cost per success, p50, p95 (with CI) | $0.00842 → $0.00451 per task (−46%); $0.03454 → $0.02332 per success; p95 14.8 → 13.4 s |
+| **Result** | primary metric for both, the paired difference with its CI, discordant counts | 0.714 → 0.639, −0.076 [−0.143, −0.017], 12 broken / 3 fixed; 23 of 119 answers grade differently |
+| **Cost and latency** | cost per task, cost per success, p50, p95 (with CI) | $0.00842 → $0.00451 per task (−46%); $0.01178 → $0.00706 per success; p95 14.8 → 13.4 s |
 | **What moved** | which failure modes changed, from the labels or judges | by the labels, little (0 and 3 skipped investigations); the answers are a different sample, not a changed behaviour |
-| **Decision** | keep / reject / inconclusive, citing the rule | reject: graded answers not identical, and both guardrails missed (p95 13.4 s > 12 s; cost/success $0.0233 > $0.01), although cost per success fell |
+| **Decision** | keep / reject / inconclusive, citing the rule | reject: graded answers not identical, and the latency guardrail missed (p95 13.4 s > 12 s), although cost per success fell below the one-cent guardrail |
 | **Surprises and follow-ups** | anything unexpected, and the next experiment it suggests | the two runs were independent samples, so "no change" cannot be checked; rerun at temperature 0 or with several runs per configuration. The few-shot examples are now almost free |

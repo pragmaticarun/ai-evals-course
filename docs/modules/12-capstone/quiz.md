@@ -16,9 +16,11 @@ Answer each one about **your** report first, in writing; then expand to compare 
 the truth were at the bottom of it?**
 
 ??? question "Answer"
-    In the reference report, the largest difference is the best rejected configuration's +0.042, and the bottom of
-    its interval is +0.000, which is exactly why the rule rejected it; the recommendation to keep `v1` is robust to
-    the interval. Had the bottom been above zero, `v2` would still have failed its guardrails. If the bottom of your headline interval would change the decision, your report must
+    In the reference report, the largest difference is the best rejected configuration's: `v3` against `v1`,
+    +0.059 [+0.000, +0.118]. The rule did not reject `v3` for its interval (against its registered parent `v2` it
+    cleared zero, +0.067 [+0.008, +0.126]) but for its guardrails (p95 14.8 s, $0.0118 per success) and its
+    rejected parent, so the recommendation to keep `v1` holds anywhere in the interval. If the bottom of your
+    headline interval would change the decision, your report must
     say so and the recommendation becomes conditional (more data, or a staged rollout with module 9's monitors).
     A headline whose interval you have never thought about is the most common weakness in eval reports.
 
@@ -28,10 +30,12 @@ the truth were at the bottom of it?**
     Usually the judge with the smallest validation set or the lowest TNR, because a low TNR means bad answers pass
     and your quality numbers are optimistic. In the reference report that is the tool-grounding judge: its 28
     labelled test traces contain no failures, so its TNR is n/a (0/0) and its pass rate cannot be corrected at all.
-    The `correct` code check is a close second: on the av-sync and DRM slices it fails answers that state the right
-    diagnosis in other words. The honest response is to say so in the report and plan to label failures and validate
-    the check. An evaluator you cannot defend should
-    not carry a headline number.
+    The `correct` and `investigated` checks are a close second: on the DRM slice they fail all seven answers to
+    questions that never name the phone, which the reference labels accept, so success there depends on a
+    definition (should asking for the missing device count?) that nobody wrote down. (An earlier version of the
+    `correct` check also failed right answers phrased in other words; that was a bug, and it is fixed.) The honest
+    response is to say so in the report and plan to label failures and settle the definition. An evaluator you
+    cannot defend should not carry a headline number.
 
 **4. Your slice has n queries. What is the smallest difference it can detect, and did your report claim anything
 smaller?**

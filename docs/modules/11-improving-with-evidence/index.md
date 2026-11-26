@@ -39,8 +39,8 @@ cost per successful task = (total cost of every call for every task) / (number o
 Media engineers already think this way about encoders. A faster preset that needs a second pass to hit the bitrate
 target is not faster; the unit you care about is "seconds per file that meets spec", not "seconds per pass". In
 this module a Haiku-only MediaDoctor costs about a twentieth of the Sonnet version per task. Whether that is a bargain
-depends entirely on how many of its tasks are done right, so the denominator has to be measured well; this module's
-data shows what happens when it is not (Step 3). Meanwhile one change that does not touch the model at all, prompt
+depends entirely on how many of its tasks are done right, so the denominator has to be measured well, by a grader
+you have checked against labels (Step 3). Meanwhile one change that does not touch the model at all, prompt
 caching, cuts the cost per task by almost half.
 
 The other half of the intuition: **with LLMs, every change changes everything a little**. A longer prompt is more
@@ -122,13 +122,13 @@ discipline.
 
 ```text
 variant   success         95% CI  p50 s  p95 s       95% CI t/o  cost/task cost/success                95% CI cache
-v1          0.235 [0.168, 0.319]   7.94  15.84 [12.5, 30.4]   7   $0.00678     $0.02883 [$0.02119, $0.04229]    0%
-v2          0.277 [0.205, 0.364]   7.77  12.05 [11.0, 22.8]   5   $0.00692     $0.02495 [$0.01920, $0.03445]    0%
-v3          0.244 [0.175, 0.328]   7.42  14.80 [11.5, 21.7]   6   $0.00842     $0.03454 [$0.02634, $0.04980]    0%
-v3-cache    0.193 [0.132, 0.273]   7.39  13.40 [10.3, 19.6]   4   $0.00451     $0.02332 [$0.01713, $0.03554]   72%
-haiku       0.218 [0.154, 0.301]   2.34   3.85 [ 3.5,  6.8]   0   $0.00022     $0.00103 [$0.00077, $0.00150]   71%
-cascade     0.252 [0.183, 0.337]   2.65  11.83 [10.4, 23.0]   4   $0.00127     $0.00504 [$0.00334, $0.00812]   71%
-retry       0.202 [0.139, 0.283]   7.97  14.82 [12.6, 19.9]   5   $0.00489     $0.02422 [$0.01785, $0.03707]   57%
+v1          0.655 [0.566, 0.735]   7.94  15.84 [12.5, 30.4]   7   $0.00678     $0.01035 [$0.00913, $0.01203]    0%
+v2          0.647 [0.558, 0.727]   7.77  12.05 [11.0, 22.8]   5   $0.00692     $0.01069 [$0.00945, $0.01232]    0%
+v3          0.714 [0.627, 0.788]   7.42  14.80 [11.5, 21.7]   6   $0.00842     $0.01178 [$0.01064, $0.01323]    0%
+v3-cache    0.639 [0.549, 0.719]   7.39  13.40 [10.3, 19.6]   4   $0.00451     $0.00706 [$0.00621, $0.00817]   72%
+haiku       0.630 [0.541, 0.712]   2.34   3.85 [ 3.5,  6.8]   0   $0.00022     $0.00036 [$0.00031, $0.00041]   71%
+cascade     0.689 [0.601, 0.765]   2.65  11.83 [10.4, 23.0]   4   $0.00127     $0.00185 [$0.00129, $0.00258]   71%
+retry       0.647 [0.558, 0.727]   7.97  14.82 [12.6, 19.9]   5   $0.00489     $0.00755 [$0.00663, $0.00880]   57%
 ```
 
 **Accuracy** is task success with a Wilson interval, as in module 6. Success here means the final answer passes
@@ -150,19 +150,27 @@ Failure modes in the final answers (reference labels; dev):
   retry            0        0        3        0
 ```
 
-The labels find a failure in 15 of the 833 dev answers; the grader fails 635. It catches all 15, but it also fails
-620 of the 818 answers the labels call correct, almost all on the `correct` check. That check is a regular
-expression per scenario (for example, an answer about AV1 on the atlas-a1 must contain "hardware AV1 decoder for
-Main"); it was written against answers that used those phrases, and the regenerated answers state the same
-diagnosis in their own words (lab section 4 walks through one). So the success rates above, 19% to 28%, measure
-how often an answer happens to use the expected phrase, and the differences between configurations are mostly
-differences in phrasing. By the labels, every configuration gets 94% to 100% of its answers right, and the
-configurations barely differ in quality.
+The labels find a failure in 15 of the 833 dev answers; the grader fails 266. It catches all 15, and it also fails
+251 of the 818 answers the labels call correct: a true negative rate of 69%. Read the disagreements before you
+read the success column. 223 of the 251 are answers to questions that leave out the device or the file ("one of our
+test phones", "one of our AV1 clips"). The agent rightly says it cannot check a device it was not named and offers
+the usual cause as a hypothesis, so it does not run the tool the dataset expects (the `investigated` check) and
+does not state the scenario's fact about that device or file (the `correct` check, a reference check of the
+diagnosis per scenario). The labels do not call that a failure; the grader does. Most of the remaining 28 fail a
+code check (`investigated` or `citations`) on an answer the labels accept. So the success rates above, 63% to 71%,
+are "answered the question that was asked, with the evidence the dataset expected, in time", which is stricter than
+the labels; by the labels, every configuration gets 94% to 100% of its answers right.
 
-This is the most important lesson the module's data teaches, and it is module 5's: **validate the grader before
-you optimize against it**. A grader with 100% recall and 24% specificity will happily rank seven configurations,
-pass or fail pre-registered rules, and draw a frontier, and none of it is about the agent. The rest of this page
-runs the method as registered, on the grader's numbers, and says at each step what the labels show instead.
+(An earlier version of the reference check matched exact phrases from the course's old hand-scripted answers, such
+as "hardware AV1 decoder for Main", and failed most correct regenerated answers, which say the same thing in their
+own words: every configuration scored 19% to 28%. That was a bug in the check, and it is fixed: the check now
+accepts each scenario's key fact in any wording and still rejects answers that miss or contradict it.)
+
+This is module 5's lesson, and it is the first thing to do with any grader: **validate it before you optimize
+against it**. Count where it disagrees with the labels, read the disagreements, and decide whether they are the
+grader's mistakes or a stricter definition you want. Here the definition question is real (should an answer that
+asks for the missing device count as a success?), and it affects every configuration alike; the rest of this page
+runs the method as registered on the grader's numbers and says where the labels see it differently.
 
 **Latency** is the wall time of the whole task, read from the root span of the trace: every model call, every tool,
 and every self-check. Report the median (p50, the typical user) and the 95th percentile (p95, the slow experience
@@ -197,20 +205,22 @@ tool output contradicts your expectation the output wins; cite only tools that r
 examples.
 
 ```text
-  v2        vs v1        +0.042 [+0.000, +0.084]  only parent  1, only v2  6  cost/success -13%
-  v3        vs v2        -0.034 [-0.092, +0.025]  only parent  9, only v3  5  cost/success +38%
+  v2        vs v1        -0.008 [-0.067, +0.050]  only parent  7, only v2  6  cost/success +3%
+  v3        vs v2        +0.067 [+0.008, +0.126]  only parent  3, only v3 11  cost/success +10%
 ```
 
-Neither clears the superiority bar: v2's interval touches zero, and v3's straddles it. Read the discordant counts,
-not just the difference: by the grader, v2 fixed 6 queries and broke 1, and v3 fixed 5 and broke 9. Then look at
+v2 does not clear the superiority bar: its interval straddles zero. v3's interval is above zero, but v3 breaks
+both guardrails (p95 14.8 s against 12 s, and $0.0118 per success against one cent), and its parent v2 was not
+kept, so the rule rejects it too. Read the discordant counts, not just the difference: v2 fixed 6 queries and broke
+7, and 9 of those 13 changes are timeouts, a task finishing on one side of 15 s and not the other; v3 fixed 11 and
+broke 3, mostly by calling the tool the question needed (5 queries) or citing it (2) where v2 had not. Then look at
 the failure modes behind the numbers: the labels find no failure in v1's answers, 2 skipped investigations in
-v2's, and none in v3's. There was nothing for either prompt to fix, so the grader's "fixed" and "broken" queries
-are answers that switched between phrasings. That is the point of aiming a change at a mode: you can check that it
-hit the mode you aimed at. Here the check says the target was not there; on data where v1 adopted false premises
-or contradicted the tool output, the same table would show whether v2 and v3 removed them.
+v2's, and none in v3's. That is the point of aiming a change at a mode: you can check that it hit the mode you
+aimed at. Here the target modes (adopted premises, contradicted tool output) were not in v1's answers; on data
+where they were, the same table would show whether v2 and v3 removed them.
 
-v3 also costs 22% more per task than v2 (38% more per success on the grader's count), because the examples add
-about 400 tokens to every call. Hold that thought.
+v3 also costs 22% more per task than v2 (10% more per success, because it also succeeds more often), because the
+examples add about 400 tokens to every call. Hold that thought.
 
 **Few-shot examples** are the strongest prompt lever and the easiest to get wrong. Choose them from your failures (the
 cases the model got wrong in error analysis), rewritten as correct answers, so they teach exactly what the model
@@ -244,15 +254,16 @@ because the failures are often in the prompt, the tools, or the data. When you d
 non-inferiority question: is it good enough, for much less?
 
 ```text
-  haiku     vs v3-cache  +0.025 [-0.025, +0.084]  only parent  4, only haiku  7  cost/success -96%
-  cascade   vs v3-cache  +0.059 [+0.017, +0.101]  only parent  0, only cascade  7  cost/success -78%
+  haiku     vs v3-cache  -0.008 [-0.067, +0.050]  only parent  7, only haiku  6  cost/success -95%
+  cascade   vs v3-cache  +0.050 [+0.017, +0.092]  only parent  0, only cascade  6  cost/success -74%
 ```
 
-By the grader, both pass the non-inferiority rule: their interval's lower bound is above minus 5 points, and both
-are far cheaper per success. The labels agree on the direction for the cascade and add a caveat for Haiku alone:
+The cascade passes the non-inferiority rule: its interval's lower bound is above minus 5 points, and it is far
+cheaper per success. Haiku alone does not: its point estimate is within a point of v3-cache, but its interval
+reaches minus 6.7 points, so the data cannot rule out a loss bigger than the margin. The labels point the same way:
 7 of Haiku's 119 answers skipped the investigation (it answered without calling the tool the question needed),
-against 3 for v3-cache. That is a real quality difference, of about 3 points, that the non-inferiority margin was
-written to allow; whether 7 in 119 is acceptable for your users is a product question, not a statistical one.
+against 3 for v3-cache. Whether a difference of that size is acceptable for your users is a product question; the
+registered rule says the evidence is not strong enough to call it non-inferior.
 
 A **cascade** runs the cheap model first and escalates to the expensive one only when something says the cheap
 answer is bad (the idea behind [FrugalGPT](https://arxiv.org/abs/2305.05176), which chains models of increasing cost
@@ -293,7 +304,7 @@ Measure both:
 ```text
 Retry: the self-check sent 6/119 tasks back (0 of 3 defective answers caught, 6 false alarms on 116 good ones);
 6 of the 6 retried tasks ended correct.
-retry     vs v3-cache  +0.008 [-0.017, +0.042]  only parent  1, only retry  2  cost/success +4%  p95 +1.42 s
+retry     vs v3-cache  +0.008 [-0.017, +0.042]  only parent  1, only retry  2  cost/success +7%  p95 +1.42 s
 ```
 
 Read the judge's line against the labels first. It caught none of the 3 defective first answers and sent back 6
@@ -344,10 +355,10 @@ Caching does not change what the model sees, so it should not change the answers
 experiment whose rule is "no change": the graded answers must be identical.
 
 ```text
-  v3-cache  vs v3        -0.050 [-0.101, -0.008]  only parent  7, only v3-cache  1  cost/success -32%
+  v3-cache  vs v3        -0.076 [-0.143, -0.017]  only parent 12, only v3-cache  3  cost/success -40%
 ```
 
-Here they are not: none of the 119 answers is word-for-word the same, and 25 grade differently, so the rule
+Here they are not: none of the 119 answers is word-for-word the same, and 23 grade differently, so the rule
 rejects v3-cache ("graded answers identical: NO"). The cause is in how the recordings were made, not in caching:
 v3 and v3-cache were generated in separate runs, so they are two independent samples of the same prompt, as two
 runs on the real API at a temperature above zero would be. The rule did its job (it refused to call two different
@@ -356,8 +367,8 @@ a run that controls for sampling, at temperature 0 or with several runs of each 
 two sets are about equally good (0 and 3 skipped investigations).
 
 The cost side is what caching was for, and it holds: cost per task fell 46% ($0.00842 to $0.00451), and v3's extra
-few-shot tokens are now almost free, because they sit in the cached prefix. (Cost per success fell only 32%,
-because the grader's success count fell too.) The 72% in the cache column is the share of input tokens read from
+few-shot tokens are now almost free, because they sit in the cached prefix. (Cost per success fell only 40%,
+because the success count fell too.) The 72% in the cache column is the share of input tokens read from
 the cache.
 
 Two caveats belong in any write-up. Caching pays only when requests arrive faster than the cache expires: exercise 4
@@ -387,37 +398,38 @@ retried tasks climb into the slowest 5%; the four slowest were already slow with
 
 Plot success against cost per task: `uv run mediadoctor-lab11 pareto --svg runs/m11/pareto.svg`.
 
-![MediaDoctor success against cost per task, with 95% intervals; the Pareto frontier joins haiku, cascade, and v2](pareto.svg)
+![MediaDoctor success against cost per task, with 95% intervals; the Pareto frontier joins haiku, cascade, and v3](pareto.svg)
 
-A configuration is on the **Pareto frontier** when no other is both cheaper and more accurate. By the grader that is
-Haiku, the cascade, and v2. v1, v3, v3 with caching, and retry are dominated: the cascade beats each of them on both
+A configuration is on the **Pareto frontier** when no other is both cheaper and more accurate. Here that is Haiku,
+the cascade, and v3. v1, v2, v3 with caching, and retry are dominated: the cascade beats each of them on both
 axes. The frontier does not tell you which of its points to choose; that is a business question (what is a correct
 answer worth to you, and what is a wrong one?). It does tell you which questions are worth asking.
 
 Three traps when reading it:
 
-- **The y-axis is only as good as the grader.** Every whisker in the chart overlaps every other, and the labels say
-  the configurations barely differ in quality, so the frontier's order on the y-axis is mostly the grader's
-  phrasing preferences. The x-axis, cost per task, is solid: it comes from token counts and prices.
+- **The y-axis is only as good as the grader.** The whiskers overlap (63% to 71%, each about 17 points wide), and
+  the labels say the configurations barely differ in quality, so the frontier's order on the y-axis is weak
+  evidence. The x-axis, cost per task, is solid: it comes from token counts and prices.
 - **Point estimates make the frontier look sharper than it is.** "The cheapest configuration within 2 points of the
-  best" is v2 itself on point estimates, and no configuration can be shown to be within 2 points of it once you
+  best" is v3 itself on point estimates, and no configuration can be shown to be within 2 points of it once you
   use the paired intervals (exercise 1). With this dev set, a 2-point tolerance is below what you can measure.
 - **The x-axis is cost per task, not per success**, so that accuracy is not counted twice. Read cost per success off
   the report for the headline.
 
 The lab applies the pre-registered rule mechanically: each change is kept only if it passed its own test (and every
 guardrail) and its parent was kept, and the recommendation is the most accurate kept configuration. On this data
-the chain stops at the start: v2 fails its rule, and so do v3 and v3-cache, so the recommendation is to keep v1.
-Haiku and the cascade pass their own rules, but they were registered as changes to v3-cache, which was rejected, so
-the rule cannot keep them. That is the rule working as written, and it is worth seeing why it is written that way: a
-change tested against a parent you did not keep has not been tested against what you would ship. If the cascade is
-worth pursuing (and on cost it clearly is: 78% cheaper per success than v3-cache, and no labelled failures), the
-honest next step is a new registered experiment, cascade against v1, with a grader that has been checked against
-the labels; not an exception granted after seeing these numbers.
+the chain stops at the start: v2 fails its rule, and so does v3-cache; v3's interval passes but it breaks both
+guardrails and sits under the rejected v2. So the recommendation is to keep v1. The cascade passes its own rule
+(Haiku alone does not), but it was registered as a change to v3-cache, which was rejected, so the rule cannot keep
+it. That is the rule working as written, and it is worth seeing why it is written that way: a change tested against
+a parent you did not keep has not been tested against what you would ship. If the cascade is worth pursuing (and on
+cost it clearly is: 74% cheaper per success than v3-cache, 82% cheaper than v1, and no labelled failures), the
+honest next step is a new registered experiment, cascade against v1; not an exception granted after seeing these
+numbers.
 
 Two more things the rule's output shows. First, even v1, the release, breaks both guardrails (p95 15.8 s against
-12 s, and $0.029 per success against one cent, because the grader counts so few successes); a guardrail set from a
-broken metric blocks everything. Second, the numbers are measured on the dev queries every step was chosen on.
+12 s, and $0.0104 per success against one cent); only Haiku and the cascade meet both, so a guardrail is a real
+constraint here, not a formality. Second, the numbers are measured on the dev queries every step was chosen on.
 Sequential keep-or-drop decisions on the same 119 queries favour changes that happened to do well on them, so when a
 chain does form, its total gain is optimistic: the held-out look is the estimate to lead with.
 
@@ -429,10 +441,12 @@ Stop optimizing, or at least stop this round, when one of these is true:
   119 dev tasks; a fix that removes a third of retry's 3 is a gain of under a point, and seeing it reliably takes
   about 2,000 tasks (exercise 5). Without more data, you would be tuning to noise.
 - **The remaining failures are not worth their cost.** By the grader, a perfect score would cut cost per success by
-  80%; by the labels, almost every task already succeeds, so the real saving is near zero. Compare the saving you
-  can trust with the engineering time and the added latency of the next idea.
-- **The measurement is the bottleneck.** When the grader and the labels disagree on most answers, the next
-  experiment is on the grader, not the agent. Fix it, re-validate it, then come back.
+  35%; by the labels, almost every task already succeeds, and most of the grader's failures are the missing-detail
+  answers and timeouts, so the saving you can buy with an agent fix is much smaller. Compare the saving you can
+  trust with the engineering time and the added latency of the next idea.
+- **The measurement is the bottleneck.** When the grader and the labels disagree on many answers, the next
+  experiment is on the grader (or on the definition of success), not the agent. Settle it, re-validate, then come
+  back.
 - **The dev set is being used up.** Every round of "look at dev, change, re-run" fits the system a little to those
   119 queries. When the held-out result starts trailing dev, refresh the dev set from production (modules 4 and 9).
 - **The failure taxonomy has changed.** After a big improvement, re-run error analysis. The top modes are now
@@ -469,8 +483,9 @@ success number depends on it.
 
 **What not to say:**
 
-- "24% accurate." Say "28 of 119 dev answers passed our automated checks, which reject most answers our reference
-  labels call correct; the labels find no failure in v1's 119 answers. Production questions differ."
+- "66% accurate." Say "78 of 119 dev tasks passed our automated checks within 15 s; the checks also fail answers
+  that ask for a missing device instead of guessing, and the reference labels find no failure in v1's 119 answers.
+  Production questions differ."
 - "Haiku is as good as Sonnet." Say "on this agent, prompt, and question mix, Haiku skipped the investigation in 7
   of 119 answers, against 0 to 3 for the Sonnet configurations."
 - "No regression." Say "no difference we could detect; this test can see differences of about 8 points."
@@ -498,17 +513,16 @@ still rejects v3-cache, because its answers are a different sample from v3's; th
 and "without changing any answer" is what this data cannot show.
 
 **Routing, by itself.** The cascade sends every question to Haiku first and escalates to Sonnet when Haiku's answer
-fails a code check. By the grader it is 5.9 points better than v3-cache (CI +1.7 to +10.1), comfortably inside the
-5-point margin; by the labels none of its final answers has a failure, and it is 78% cheaper per success. The
+fails a code check. By the grader it is 5.0 points better than v3-cache (CI +1.7 to +9.2), comfortably inside the
+5-point margin; by the labels none of its final answers has a failure, and it is 74% cheaper per success. The
 router works here because Haiku's only failure in this data, skipping the investigation, is one the code checks
 see. The proposal's "easy questions to Haiku" also hides an assumption: this router does not route by difficulty
 at all, it routes by a check on the answer, and that is why it can be tested.
 
 **What goes in the memo.** Not "we halved the bill": "caching cut cost per task by 46%; a Haiku-first cascade passed
-its non-inferiority test at 78% lower cost per success, with no failures in the reference labels; neither can be
-adopted under the registered rule, because both were tested against a parent that failed its own rule, and our
-automated grader disagrees with the labels on most answers. We recommend keeping v1, fixing the grader, and
-registering cascade against v1 as the next experiment." The held-out split stays untouched: the recommendation is
+its non-inferiority test at 74% lower cost per success, with no failures in the reference labels; neither can be
+adopted under the registered rule, because both were tested against a parent that failed its own rule. We recommend
+keeping v1 and registering cascade against v1 as the next experiment." The held-out split stays untouched: the recommendation is
 the release itself, so there is nothing to confirm, and the one look is worth more to the next study than to a
 configuration chosen after the fact.
 
@@ -518,8 +532,9 @@ refused: 'confirm cascade' asked for 28 held-out case(s), e.g. m4q008; only a re
 (add --release for the one pre-release look; it is logged)
 ```
 
-That is a less exciting memo than "23 points better and half the price", and a more useful one: it says what is
-known (the cost), what is not (the quality differences, under this grader), and what to do to find out.
+That is a less exciting memo than "5 points better and a quarter of the price", and a more useful one: it says what
+is known (the cost), what is not (whether the cascade holds up against the release itself), and what to do to find
+out.
 
 ## Checklist
 
@@ -543,14 +558,15 @@ Cost per successful task is the number to optimize, measured alongside task succ
 p50 and p95. Choose fixes by expected value from the failure taxonomy, change one thing at a time, and decide by a
 rule written down first, on a dev set, with one held-out look before release. On MediaDoctor's regenerated data the
 agent rarely fails: the reference labels find a failure in 15 of 833 dev answers, so the configurations barely
-differ in quality. The lab's grader, a phrase-matching reference check, fails 635 of them, and every success rate,
-paired test, and frontier built on it mostly measures phrasing. Run as registered, the rule keeps nothing and
-recommends staying on v1. The cost results hold regardless: prompt caching cut cost per task by 46%, and a
-Haiku-first cascade with code-check escalation was 78% cheaper per success than Sonnet with caching and had no
+differ in quality. The lab's grader catches all 15 and also fails 251 answers the labels accept, most of them
+answers that rightly ask for a device or file the question left out; check a grader against labels like this
+before you trust its success rates (63% to 71% here). Run as registered, the rule keeps nothing and recommends
+staying on v1: v2 and v3-cache fail their rules, v3 breaks the guardrails, and the cascade, which passes its own
+rule, sits under a rejected parent. The cost results hold regardless: prompt caching cut cost per task by 46%, and
+a Haiku-first cascade with code-check escalation was 74% cheaper per success than Sonnet with caching and had no
 labelled failures, because the code checks catch the one failure Haiku makes here. The self-check judge caught
-none of the 3 defective answers and cost 0.5 s on every task. The method's lesson for this data is the oldest one in
-the course: validate the grader before you optimize against it. Stop when the next gain is below what your data
-can measure, worth less than it costs, or hidden behind a measurement you cannot trust.
+none of the 3 defective answers and cost 0.5 s on every task. Stop when the next gain is below what your data can
+measure, worth less than it costs, or hidden behind a measurement you cannot trust.
 
 Next: [Module 12](../12-capstone/index.md) puts the whole course together in a capstone eval report.
 

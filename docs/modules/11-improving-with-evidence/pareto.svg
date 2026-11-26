@@ -3,19 +3,19 @@
 <rect width="720" height="440" fill="white"/>
 <text x="360.0" y="22" text-anchor="middle" font-size="14">Success vs cost per task (dev, 95% CI); the line joins the Pareto frontier</text>
 <line x1="70" x2="690" y1="380.0" y2="380.0" stroke="#eee"/>
-<text x="62" y="384.0" text-anchor="end">0.10</text>
+<text x="62" y="384.0" text-anchor="end">0.50</text>
 <line x1="70" x2="690" y1="323.3" y2="323.3" stroke="#eee"/>
-<text x="62" y="327.3" text-anchor="end">0.15</text>
+<text x="62" y="327.3" text-anchor="end">0.55</text>
 <line x1="70" x2="690" y1="266.7" y2="266.7" stroke="#eee"/>
-<text x="62" y="270.7" text-anchor="end">0.20</text>
+<text x="62" y="270.7" text-anchor="end">0.60</text>
 <line x1="70" x2="690" y1="210.0" y2="210.0" stroke="#eee"/>
-<text x="62" y="214.0" text-anchor="end">0.25</text>
+<text x="62" y="214.0" text-anchor="end">0.65</text>
 <line x1="70" x2="690" y1="153.3" y2="153.3" stroke="#eee"/>
-<text x="62" y="157.3" text-anchor="end">0.30</text>
+<text x="62" y="157.3" text-anchor="end">0.70</text>
 <line x1="70" x2="690" y1="96.7" y2="96.7" stroke="#eee"/>
-<text x="62" y="100.7" text-anchor="end">0.35</text>
+<text x="62" y="100.7" text-anchor="end">0.75</text>
 <line x1="70" x2="690" y1="40.0" y2="40.0" stroke="#eee"/>
-<text x="62" y="44.0" text-anchor="end">0.40</text>
+<text x="62" y="44.0" text-anchor="end">0.80</text>
 <line x1="118.1" x2="118.1" y1="40" y2="380" stroke="#eee"/>
 <text x="118.1" y="396" text-anchor="middle">$0.0002</text>
 <line x1="242.6" x2="242.6" y1="40" y2="380" stroke="#eee"/>
@@ -30,26 +30,26 @@
 <text x="649.5" y="396" text-anchor="middle">$0.01</text>
 <text x="380.0" y="422" text-anchor="middle">cost per task, USD (log scale)</text>
 <text x="18" y="210.0" text-anchor="middle" transform="rotate(-90 18 210.0)">task success rate</text>
-<polyline points="133.8,245.7 369.4,207.6 599.5,179.0" fill="none" stroke="#2b6cb0" stroke-width="2"/>
-<line x1="596.8" x2="596.8" y1="131.8" y2="302.8" stroke="#888"/>
-<circle cx="596.8" cy="226.7" r="5" fill="#888"><title>v1: success 0.235 [0.168, 0.319], cost/task $0.00678, cost/success $0.02883</title></circle>
-<text x="588.8" y="220.7" text-anchor="end" fill="#888">v1</text>
-<line x1="599.5" x2="599.5" y1="81.1" y2="261.2" stroke="#2b6cb0"/>
-<circle cx="599.5" cy="179.0" r="5" fill="#2b6cb0"><title>v2: success 0.277 [0.205, 0.364], cost/task $0.00692, cost/success $0.02495</title></circle>
-<text x="591.5" y="173.0" text-anchor="end" fill="#2b6cb0">v2</text>
-<line x1="626.2" x2="626.2" y1="121.5" y2="294.6" stroke="#888"/>
-<circle cx="626.2" cy="217.1" r="5" fill="#888"><title>v3: success 0.244 [0.175, 0.328], cost/task $0.00842, cost/success $0.03454</title></circle>
-<text x="634.2" y="211.1" text-anchor="start" fill="#888">v3</text>
-<line x1="541.3" x2="541.3" y1="183.5" y2="343.3" stroke="#888"/>
-<circle cx="541.3" cy="274.3" r="5" fill="#888"><title>v3-cache: success 0.193 [0.132, 0.273], cost/task $0.00451, cost/success $0.02332</title></circle>
-<text x="533.3" y="268.3" text-anchor="end" fill="#888">v3-cache</text>
-<line x1="133.8" x2="133.8" y1="152.3" y2="319.2" stroke="#2b6cb0"/>
-<circle cx="133.8" cy="245.7" r="5" fill="#2b6cb0"><title>haiku: success 0.218 [0.154, 0.301], cost/task $0.00022, cost/success $0.00103</title></circle>
-<text x="141.8" y="239.7" text-anchor="start" fill="#2b6cb0">haiku</text>
-<line x1="369.4" x2="369.4" y1="111.4" y2="286.3" stroke="#2b6cb0"/>
-<circle cx="369.4" cy="207.6" r="5" fill="#2b6cb0"><title>cascade: success 0.252 [0.183, 0.337], cost/task $0.00127, cost/success $0.00504</title></circle>
-<text x="377.4" y="201.6" text-anchor="start" fill="#2b6cb0">cascade</text>
-<line x1="552.2" x2="552.2" y1="173.1" y2="335.3" stroke="#888"/>
-<circle cx="552.2" cy="264.8" r="5" fill="#888"><title>retry: success 0.202 [0.139, 0.283], cost/task $0.00489, cost/success $0.02422</title></circle>
-<text x="544.2" y="258.8" text-anchor="end" fill="#888">retry</text>
+<polyline points="133.8,232.4 369.4,165.7 626.2,137.1" fill="none" stroke="#2b6cb0" stroke-width="2"/>
+<line x1="596.8" x2="596.8" y1="113.9" y2="304.7" stroke="#888"/>
+<circle cx="596.8" cy="203.8" r="5" fill="#888"><title>v1: success 0.655 [0.566, 0.735], cost/task $0.00678, cost/success $0.01035</title></circle>
+<text x="588.8" y="197.8" text-anchor="end" fill="#888">v1</text>
+<line x1="599.5" x2="599.5" y1="122.6" y2="314.5" stroke="#888"/>
+<circle cx="599.5" cy="213.3" r="5" fill="#888"><title>v2: success 0.647 [0.558, 0.727], cost/task $0.00692, cost/success $0.01069</title></circle>
+<text x="607.5" y="207.3" text-anchor="start" fill="#888">v2</text>
+<line x1="626.2" x2="626.2" y1="53.9" y2="235.6" stroke="#2b6cb0"/>
+<circle cx="626.2" cy="137.1" r="5" fill="#2b6cb0"><title>v3: success 0.714 [0.627, 0.788], cost/task $0.00842, cost/success $0.01178</title></circle>
+<text x="634.2" y="131.1" text-anchor="start" fill="#2b6cb0">v3</text>
+<line x1="541.3" x2="541.3" y1="131.4" y2="324.2" stroke="#888"/>
+<circle cx="541.3" cy="222.9" r="5" fill="#888"><title>v3-cache: success 0.639 [0.549, 0.719], cost/task $0.00451, cost/success $0.00706</title></circle>
+<text x="533.3" y="216.9" text-anchor="end" fill="#888">v3-cache</text>
+<line x1="133.8" x2="133.8" y1="140.1" y2="333.9" stroke="#2b6cb0"/>
+<circle cx="133.8" cy="232.4" r="5" fill="#2b6cb0"><title>haiku: success 0.630 [0.541, 0.712], cost/task $0.00022, cost/success $0.00036</title></circle>
+<text x="141.8" y="226.4" text-anchor="start" fill="#2b6cb0">haiku</text>
+<line x1="369.4" x2="369.4" y1="79.4" y2="265.4" stroke="#2b6cb0"/>
+<circle cx="369.4" cy="165.7" r="5" fill="#2b6cb0"><title>cascade: success 0.689 [0.601, 0.765], cost/task $0.00127, cost/success $0.00185</title></circle>
+<text x="377.4" y="159.7" text-anchor="start" fill="#2b6cb0">cascade</text>
+<line x1="552.2" x2="552.2" y1="122.6" y2="314.5" stroke="#888"/>
+<circle cx="552.2" cy="213.3" r="5" fill="#888"><title>retry: success 0.647 [0.558, 0.727], cost/task $0.00489, cost/success $0.00755</title></circle>
+<text x="544.2" y="207.3" text-anchor="end" fill="#888">retry</text>
 </svg>

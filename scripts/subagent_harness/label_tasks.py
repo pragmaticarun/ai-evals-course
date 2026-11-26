@@ -51,7 +51,13 @@ def render_trace(trace: Any, extra: str = "") -> str:
         out.append("(none)")
     for i, (name, args, result, ok) in enumerate(item.tools, 1):
         out += [f"### {i}. {name} {args} -> {'ok' if ok else 'ERROR'}", "```", _cut(result), "```"]
-    out += ["", "## Final answer", item.answer or "(empty)", "", "## Span order (for first_upstream)"]
+    out += [
+        "",
+        "## Final answer",
+        item.answer or "(empty)",
+        "",
+        "## Span order (for first_upstream)",
+    ]
     out.append(_cut(lab03.render_review(trace), 4000))
     return "\n".join(x for x in out if x is not None)
 
@@ -77,8 +83,13 @@ def trace_specs() -> dict[str, dict[str, Any]]:
         "m09ref": dict(tax=taxp, out="module09_reference.csv", text=common),
         "m09a": dict(tax=taxp, out="module09_annotator_a.csv", text=common, who="a"),
         "m09b": dict(tax=taxp, out="module09_annotator_b.csv", text=common, who="b"),
-        "m06": dict(tax=taxp, out="module06_runs.csv", text=common.replace(
-            ', "first_upstream": "..."', "").replace("and first_upstream: the first step", "(no first_upstream here; the first step")),
+        "m06": dict(
+            tax=taxp,
+            out="module06_runs.csv",
+            text=common.replace(', "first_upstream": "..."', "").replace(
+                "and first_upstream: the first step", "(no first_upstream here; the first step"
+            ),
+        ),
     }
 
 
@@ -88,7 +99,9 @@ def items_for(name: str) -> dict[str, str]:
         return {cid: render_trace(t) for cid, t in lab03.load_traces(None).items() if cid in cases}
     if name == "m04":
         rows = lab04.agent_slice(lab04.load_dataset())
-        return {cid: render_trace(t) for cid, t in lab03.traces_by_case(lab04.run_slice(rows)).items()}
+        return {
+            cid: render_trace(t) for cid, t in lab03.traces_by_case(lab04.run_slice(rows)).items()
+        }
     if name == "m05":
         return {cid: render_trace(t) for cid, t in lab05.traces().items()}
     if name == "m06":
@@ -113,14 +126,18 @@ def items_for(name: str) -> dict[str, str]:
                      "## Steps"]  # fmt: skip
             for s in run.steps:
                 args = json.dumps(s.args) if s.args else ""
-                lines.append(f"- [{s.kind}] {s.agent} {s.name} {args} {'' if s.ok else 'ERROR '}\n  {_cut(s.text, 1500)}")
+                lines.append(
+                    f"- [{s.kind}] {s.agent} {s.name} {args} {'' if s.ok else 'ERROR '}\n  {_cut(s.text, 1500)}"
+                )
             lines += ["## Final answer", run.answer or "(empty)"]
             out[cid] = "\n".join(lines)
         return out
     if name == "m07rag":
         out = {}
         for rid, r in lab07.rag_runs().items():
-            ctx = "\n\n".join(f"[{c.id}] {_cut(c.text, 1200)}" for c in r.context) or "(no passages)"
+            ctx = (
+                "\n\n".join(f"[{c.id}] {_cut(c.text, 1200)}" for c in r.context) or "(no passages)"
+            )
             out[rid] = (f"# Item {rid} (system {r.system}, query {r.query.id})\n## Question\n{r.query.text}\n"
                         f"## Retrieved passages\n{ctx}\n## Answer\n{r.answer}")  # fmt: skip
         return out
@@ -138,44 +155,66 @@ def items_for(name: str) -> dict[str, str]:
             for c in X.cases():
                 t = X.run_task(c, v)
                 a = t.attempts[-1]
-                body = render_trace(a.spans, f"(configuration {v}; attempts {len(t.attempts)}; final answer below)")
-                out[f"{v}__{c['id']}"] = body.replace(lab05.item_from_trace(a.spans).answer or "\0", t.answer) if t.answer else body
+                body = render_trace(
+                    a.spans, f"(configuration {v}; attempts {len(t.attempts)}; final answer below)"
+                )
+                out[f"{v}__{c['id']}"] = (
+                    body.replace(lab05.item_from_trace(a.spans).answer or "\0", t.answer)
+                    if t.answer
+                    else body
+                )
         return out
     raise KeyError(name)
 
 
 SPECS_EXTRA = {
-    "m07agents": dict(out="module07_agents.csv", text=(
-        "Each item is one run of MediaDoctor's planner + specialists + writer team. Judge the final "
-        "answer the user gets: verdict pass (correct, grounded in what the specialists found, "
-        "answers the question) or fail, with a short note naming the first thing that went wrong "
-        "(wrong route, a brief that drops names the specialist needed, bad tool arguments, findings "
-        "ignored by the writer, a generic answer...).\n\nAnswer as JSON: "
-        '{"verdict": "pass"|"fail", "note": "..."}')),
-    "m07rag": dict(out="module07_rag.csv", text=(
-        "Each item is a RAG answer: a question, the passages retrieved for it, and the answer. "
-        "Label correct (yes: the answer is right and responsive for an Android media engineer), "
-        "faithful (yes: every claim is supported by the retrieved passages; general knowledge or "
-        "invented specifics make it no), relevant (yes: it addresses the question asked), and a "
-        "short note.\n\nAnswer as JSON: "
-        '{"correct": "yes"|"no", "faithful": "yes"|"no", "relevant": "yes"|"no", "note": "..."}')),
-    "m07sessions": dict(out="module07_sessions.csv", text=(
-        "Each item is a multi-turn chat between MediaDoctor and a simulated user. Label: resolved "
-        "(the user ends with a correct, usable diagnosis), gave_up_early (the agent stopped helping "
-        "before it had to), re_ask (the agent asked for something the user already gave), "
-        "needless_question (it asked a question it did not need), each yes/no; simulator_issue "
-        "(empty, or a short note if the simulated user broke character, leaked the answer, or "
-        "contradicted its scenario); and a short note.\n\nAnswer as JSON: "
-        '{"resolved": "yes"|"no", "gave_up_early": "yes"|"no", "re_ask": "yes"|"no", '
-        '"needless_question": "yes"|"no", "simulator_issue": "", "note": "..."}')),
-    "m11": dict(out="module11_reference.csv", text=(
-        "Each item is one configuration's run on one query. Name the failure mode in the FINAL "
-        "answer, or none:\n- `premise`: the answer adopts a false premise stated by the user\n"
-        "- `ignored`: the answer contradicts a tool output\n- `skipped`: the answer relied on no "
-        "tool output although the question named a file, device or log, or it cites tools that "
-        "never ran\n- `format`: the answer lacks the Sources line (or the required format)\n"
-        "- `none`: a correct, grounded answer\nIf several apply, pick the first in that order."
-        '\n\nAnswer as JSON: {"mode": "premise"|"ignored"|"skipped"|"format"|"none"}')),
+    "m07agents": dict(
+        out="module07_agents.csv",
+        text=(
+            "Each item is one run of MediaDoctor's planner + specialists + writer team. Judge the final "
+            "answer the user gets: verdict pass (correct, grounded in what the specialists found, "
+            "answers the question) or fail, with a short note naming the first thing that went wrong "
+            "(wrong route, a brief that drops names the specialist needed, bad tool arguments, findings "
+            "ignored by the writer, a generic answer...).\n\nAnswer as JSON: "
+            '{"verdict": "pass"|"fail", "note": "..."}'
+        ),
+    ),
+    "m07rag": dict(
+        out="module07_rag.csv",
+        text=(
+            "Each item is a RAG answer: a question, the passages retrieved for it, and the answer. "
+            "Label correct (yes: the answer is right and responsive for an Android media engineer), "
+            "faithful (yes: every claim is supported by the retrieved passages; general knowledge or "
+            "invented specifics make it no), relevant (yes: it addresses the question asked), and a "
+            "short note.\n\nAnswer as JSON: "
+            '{"correct": "yes"|"no", "faithful": "yes"|"no", "relevant": "yes"|"no", "note": "..."}'
+        ),
+    ),
+    "m07sessions": dict(
+        out="module07_sessions.csv",
+        text=(
+            "Each item is a multi-turn chat between MediaDoctor and a simulated user. Label: resolved "
+            "(the user ends with a correct, usable diagnosis), gave_up_early (the agent stopped helping "
+            "before it had to), re_ask (the agent asked for something the user already gave), "
+            "needless_question (it asked a question it did not need), each yes/no; simulator_issue "
+            "(empty, or a short note if the simulated user broke character, leaked the answer, or "
+            "contradicted its scenario); and a short note.\n\nAnswer as JSON: "
+            '{"resolved": "yes"|"no", "gave_up_early": "yes"|"no", "re_ask": "yes"|"no", '
+            '"needless_question": "yes"|"no", "simulator_issue": "", "note": "..."}'
+        ),
+    ),
+    "m11": dict(
+        out="module11_reference.csv",
+        text=(
+            "Each item is one configuration's run on one query. Name the failure mode in the FINAL "
+            "answer, or none:\n- `premise`: the answer adopts a false premise stated by the user\n"
+            "- `ignored`: the answer contradicts a tool output\n- `skipped`: the answer relied on no "
+            "tool output although the question named a file, device or log, or it cites tools that "
+            "never ran\n- `format`: the answer lacks the Sources line (or the required format)\n"
+            "- `none`: a correct, grounded answer\nIf several apply, pick the first in that order."
+            '\n\nAnswer as JSON: {"mode": "premise"|"ignored"|"skipped"|"format"|"none"}'
+        ),
+    ),
 }
 
 
@@ -196,7 +235,9 @@ def export(d: Path, only: list[str]) -> None:
             (sd / "items" / f"{iid}.md").write_text(body, encoding="utf-8")
         ids = sorted(items)
         for i in range(0, len(ids), BATCH):
-            (sd / "batches" / f"{i // BATCH:03d}.txt").write_text("\n".join(ids[i:i + BATCH]) + "\n")
+            (sd / "batches" / f"{i // BATCH:03d}.txt").write_text(
+                "\n".join(ids[i : i + BATCH]) + "\n"
+            )
         print(f"{name}: {len(ids)} items, {(len(ids) + BATCH - 1) // BATCH} batches")
 
 
@@ -238,7 +279,9 @@ def build(d: Path, only: list[str]) -> None:
                              "modes": ";".join(modes) if fail else "",
                              "annotator": who or ANN})  # fmt: skip
         elif name == "m06":
-            m05 = {r["case_id"]: r for r in csv.DictReader((LABELS / "module05_reference.csv").open())}
+            m05 = {
+                r["case_id"]: r for r in csv.DictReader((LABELS / "module05_reference.csv").open())
+            }
             for p, r in lab06.run_keys():
                 if (p, r) == ("v1", 1):
                     for cid in lab06.ids_for(1):
@@ -257,13 +300,20 @@ def build(d: Path, only: list[str]) -> None:
             old = list(csv.DictReader((LABELS / "module07_agents.csv").open()))
             for r in old:
                 a = ans[r["case_id"]]
-                rows.append({**r, "verdict": a["verdict"], "note": a.get("note", ""), "annotator": ANN})
+                rows.append(
+                    {**r, "verdict": a["verdict"], "note": a.get("note", ""), "annotator": ANN}
+                )
         elif name == "m07rag":
-            old = {(r["system"], r["query_id"]): r for r in csv.DictReader((LABELS / "module07_rag.csv").open())}
+            old = {
+                (r["system"], r["query_id"]): r
+                for r in csv.DictReader((LABELS / "module07_rag.csv").open())
+            }
             runs = lab07.rag_runs()
             for i in ids:
                 run, a = runs[i], ans[i]
-                hit = old[(run.system, run.query.id)]["retrieval_hit"]  # retrieval is not a model output
+                hit = old[(run.system, run.query.id)][
+                    "retrieval_hit"
+                ]  # retrieval is not a model output
                 rows.append({"system": run.system, "query_id": run.query.id, "retrieval_hit": hit,
                              "correct": _yn(a["correct"]), "faithful": _yn(a["faithful"]),
                              "relevant": _yn(a["relevant"]), "note": a.get("note", ""), "annotator": ANN})  # fmt: skip

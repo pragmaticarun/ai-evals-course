@@ -177,7 +177,9 @@ What can these numbers tell you, and what can they not?
     labelled = [(True, True)] * 18 + [(True, False)] * 2 + [(False, False)] * 3 + [(False, True)] * 2
     unl = [True] * 73 + [False] * 16
     base = bootstrap_corrected(labelled, unl, draws=1000, seed=5)
-    print(f"25 labelled (5 failures): corrected {base.corrected:.2f}, CI [{base.low:.2f}, {base.high:.2f}]")
+    print(
+        f"25 labelled (5 failures): corrected {base.corrected:.2f}, CI [{base.low:.2f}, {base.high:.2f}]"
+    )
     assert round(base.corrected, 2) == 0.84
     for k in (4, 16):
         # Pretend each labelled trace had k independent twins with the same outcome.
@@ -293,11 +295,15 @@ for a v2.
 
     # Where could the judge have failed? On questions that carry a false premise.
     fp_dev = [c for c in v.verdicts if rows[c]["ambiguity"] == "false-premise"]
-    print(f"{len(fp_dev)} dev questions with a false premise; judge passed {sum(v.verdicts[c].passed for c in fp_dev)}")
+    print(
+        f"{len(fp_dev)} dev questions with a false premise; judge passed {sum(v.verdicts[c].passed for c in fp_dev)}"
+    )
 
     # A FAIL few-shot example for v2 would have to come from train:
-    by_split = {s: sum("accepted-false-premise" in labels[c].modes for c in lab05.ids_in(s))
-                for s in ("train", "dev", "test")}
+    by_split = {
+        s: sum("accepted-false-premise" in labels[c].modes for c in lab05.ids_in(s))
+        for s in ("train", "dev", "test")
+    }
     print("accepted-false-premise labels by split:", by_split)
     assert dis == [] and len(fp_dev) == 12
     assert all(v.verdicts[c].passed for c in fp_dev)

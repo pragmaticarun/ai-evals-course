@@ -47,9 +47,11 @@ if os.environ.get("SUBAGENT_HARNESS_DIR"):
 
     def _ours(store):
         try:
-            return store.directory.resolve().name == "recorded" and (
-                store.directory.resolve().parent.name == "fixtures"
-            ) and "pytest" not in str(store.directory)
+            return (
+                store.directory.resolve().name == "recorded"
+                and (store.directory.resolve().parent.name == "fixtures")
+                and "pytest" not in str(store.directory)
+            )
         except OSError:
             return False
 
@@ -91,12 +93,19 @@ if os.environ.get("SUBAGENT_HARNESS_DIR"):
             return {"response": ans["response"], "latency_ms": ans.get("latency_ms")}
         text = fx.canonical_json(compact)
         if MARK not in text and MARK.lower() not in text:
-            _log("pending.jsonl", {"ns": self.namespace, "key": key, "trial": trial,
-                                   "request": compact})
-        resp = {"id": "msg_placeholder", "type": "message", "role": "assistant",
-                "model": request.get("model"), "stop_reason": "end_turn",
-                "content": [{"type": "text", "text": PLACEHOLDER_TEXT}],
-                "usage": {"input_tokens": 1, "output_tokens": 1}}
+            _log(
+                "pending.jsonl",
+                {"ns": self.namespace, "key": key, "trial": trial, "request": compact},
+            )
+        resp = {
+            "id": "msg_placeholder",
+            "type": "message",
+            "role": "assistant",
+            "model": request.get("model"),
+            "stop_reason": "end_turn",
+            "content": [{"type": "text", "text": PLACEHOLDER_TEXT}],
+            "usage": {"input_tokens": 1, "output_tokens": 1},
+        }
         return {"response": resp, "latency_ms": 1000.0}
 
     def has(self, request, trial=0):

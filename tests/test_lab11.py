@@ -92,10 +92,12 @@ def test_call_usage_prices_cache_reads():
     assert u.cost_usd == pytest.approx((400 * 2 + 100 * 10 + 1000 * 0.1) / 1e6)
 
 
-def test_reference_grader_fails_every_labelled_failure_but_rejects_most_good_answers():
-    # The regenerated answers are natural prose; the regex reference check (`check_correct`) and the
-    # code checks still fail every answer the labels call defective, but they also reject most of the
-    # answers the labels call correct. Measure the grader against the labels before trusting it.
+def test_reference_grader_fails_every_labelled_failure_and_passes_most_good_answers():
+    # The reference check (`check_correct`) accepts each scenario's key fact in any wording, so with the
+    # code checks it fails every answer the labels call defective and passes most of the answers they
+    # call correct. The 251 it still rejects are mostly answers to questions that leave out the device
+    # or file, where the agent rightly asks instead of naming the scenario's fact. Measure the grader
+    # against the labels before trusting it.
     labels = lab11.reference_labels()
     assert len(labels) == 7 * 147
     agree = {(True, True): 0, (True, False): 0, (False, True): 0, (False, False): 0}
@@ -111,15 +113,53 @@ def test_reference_grader_fails_every_labelled_failure_but_rejects_most_good_ans
             if mode == "format":
                 assert not checks["format"]
     assert agree[(True, False)] == 0  # the grader never passes a labelled failure (15 on dev)
-    assert agree == {(True, True): 198, (True, False): 0, (False, True): 620, (False, False): 15}
+    assert agree == {(True, True): 567, (True, False): 0, (False, True): 251, (False, False): 15}
+
+
+def test_reference_check_accepts_the_key_fact_in_any_wording():
+    def case_for(scenario):
+        return next(c for c in X.cases() if lab04.scenario_for(c) == scenario)
+
+    def correct(scenario, cause, next_step="Check it."):
+        answer = f"Likely cause: {cause}\nNext step: {next_step}\nSources: [tool:ffprobe]"
+        return X.check_correct(answer, case_for(scenario))
+
+    # The same fact in the regenerated answers' words passes ...
+    assert correct(
+        "avoffset", 'ffprobe shows the video stream\'s start_time is "0.300000", audio 0.000000.'
+    )
+    assert correct(
+        "widevine", 'codec_caps reports "widevine_security_level": "L3" for lumen-l3, not L1.'
+    )
+    assert correct(
+        "latemoov", 'ffprobe lists the top-level boxes as ["ftyp", "free", "mdat", "moov"].'
+    )
+    assert correct(
+        "av1-atlas", "atlas-a1 lists c2.atlas.av1.decoder (hardware: true, 3840x2160 at 60)."
+    )
+    # ... and a wrong or missing fact still fails.
+    assert not correct("avoffset", "The video stream starts at 0.500000 and the audio at 0.000000.")
+    assert not correct(
+        "avoffset", "Both streams start at 0.000 s, so the player's audio sink is the cause."
+    )
+    assert not correct(
+        "widevine", "The lumen-l3 is a Widevine L1 device, so it must be the bandwidth."
+    )
+    assert not correct(
+        "latemoov", "The boxes are ftyp, moov, free, mdat: moov is already at the front."
+    )
+    assert not correct("av1-lumen", "Phones without a hardware AV1 decoder often stutter at 4K.")
+    assert not correct(
+        "audiofocus", "The app ignores focus loss.", "Use AudioFocusRequest, from API 21."
+    )
 
 
 def test_caching_cuts_cost_and_the_no_change_rule_flags_the_resampled_answers():
     a, b = lab11.task_results("v3"), lab11.task_results("v3-cache")
     # The two configurations' answers were generated in separate runs, so none is word-for-word
-    # equal and 25 of 119 tasks grade differently: the no-change rule's identity check catches it.
+    # equal and 23 of 119 tasks grade differently: the no-change rule's identity check catches it.
     assert sum(x.answer == y.answer for x, y in zip(a, b, strict=True)) == 0
-    assert sum(x.checks == y.checks for x, y in zip(a, b, strict=True)) == 94
+    assert sum(x.checks == y.checks for x, y in zip(a, b, strict=True)) == 96
     assert "graded answers identical: NO" in lab11.decide().verdicts["v3-cache"][1]
     assert sum(t.usage.cost_usd for t in b) < 0.55 * sum(t.usage.cost_usd for t in a)  # -46%
     first = b[0].attempts[0].usage
@@ -161,11 +201,11 @@ def test_dev_and_holdout_splits():
 
 def test_summary_numbers():
     s = lab11.summary("v1")
-    assert (s.n, s.successes, s.timeouts) == (119, 28, 7)
+    assert (s.n, s.successes, s.timeouts) == (119, 78, 7)
     assert s.cost_per_success == pytest.approx(s.cost_per_task * s.n / s.successes)
     assert s.cps_low < s.cost_per_success < s.cps_high
     assert s.p50_ms < s.p95_ms and s.cache_hit_rate == 0
-    assert lab11.summary("v3-cache").successes == 23 and lab11.summary("retry").successes == 24
+    assert lab11.summary("v3-cache").successes == 76 and lab11.summary("retry").successes == 77
     assert lab11.summary("v3-cache").cache_hit_rate > 0.7
 
 
@@ -177,18 +217,21 @@ def test_cost_per_success_with_no_successes_is_infinite():
 
 def test_pareto_front_and_cheapest_within():
     pts = [lab11.summary(n) for n in X.variants()]
-    assert [p.variant for p in lab11.pareto_front(pts)] == ["haiku", "cascade", "v2"]
-    assert lab11.cheapest_within(pts, 0.02).variant == "v2"
+    assert [p.variant for p in lab11.pareto_front(pts)] == ["haiku", "cascade", "v3"]
+    assert lab11.cheapest_within(pts, 0.02).variant == "v3"
     assert lab11.cheapest_within(pts, 0.03).variant == "cascade"
 
 
 def test_decision_follows_the_preregistered_rule():
     d = lab11.decide()
-    # No change on the v1 -> v2 -> v3 -> v3-cache path passes its rule, so the chain stops at v1;
-    # haiku and cascade pass theirs, but their parent (v3-cache) was rejected, so neither is kept.
+    # No change on the v1 -> v2 -> v3 -> v3-cache path passes its rule (v3's interval clears zero, but
+    # it breaks both guardrails), so the chain stops at v1; the cascade passes its non-inferiority rule,
+    # but its parent (v3-cache) was rejected, so it is not kept; haiku alone fails the margin.
     assert d.kept == ["v1"]
     assert d.chosen == "v1" and d.best == "cascade"
-    assert [n for n, (v, _) in d.verdicts.items() if v == "keep"] == ["haiku", "cascade"]
+    assert [n for n, (v, _) in d.verdicts.items() if v == "keep"] == ["cascade"]
+    assert "CI lower bound +0.008 > 0; guardrail" in d.verdicts["v3"][1]
+    assert "CI lower bound -0.067 below -0.05" in d.verdicts["haiku"][1]
     assert "graded answers identical: NO" in d.verdicts["v3-cache"][1]
 
 

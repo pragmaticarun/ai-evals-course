@@ -36,7 +36,7 @@ def test_report_follows_the_template(release_report):
 def test_release_look_is_logged_once_per_report(release_report):
     _, log = release_report
     rows = list(csv.DictReader(log.open(encoding="utf-8")))
-    assert len(rows) == 1 and rows[0]["variant"] == "v2" and rows[0]["n"] == "28"
+    assert len(rows) == 1 and rows[0]["variant"] == "v3" and rows[0]["n"] == "28"
 
 
 def test_dev_report_does_not_read_the_holdout(tmp_path, monkeypatch):
@@ -57,18 +57,19 @@ def test_stage_numbers_come_from_the_modules():
     assert "fabricated-evidence (3)" in rows[3].headline
     assert "TPR 1.00 TNR n/a (0/0)" in rows[5].headline  # no failing test traces: TNR is undefined
     # the monitoring alarm is flagged for the report
+    assert "manifest problems 0" in rows[8].headline  # lab08 manifest --check is clean
     assert not rows[9].ok and "tool_error CUSUM alarm +8.6 h" in rows[9].headline
     assert "no change kept, v1 stays" in rows[11].headline
     s = C.m11()["summaries"]["v1"]
-    assert (s.successes, s.n) == (28, 119)
+    assert (s.successes, s.n) == (78, 119)
 
 
 def test_no_kept_change_keeps_the_baseline_and_labels_the_comparison(release_report):
     text, _ = release_report
     # nothing kept: the report compares v1 with the best rejected configuration on dev
-    assert C.candidate() == "v1" and C.comparator() == "v2"
+    assert C.candidate() == "v1" and C.comparator() == "v3"
     assert text.startswith("# MediaDoctor eval report: keep `v1` (no change passed its test)")
-    assert "Best rejected configuration | `v2`" in text and "| v1 | v2 (rejected) |" in text
+    assert "Best rejected configuration | `v3`" in text and "| v1 | v3 (rejected) |" in text
     assert "**Keep `v1`.**" in text and "Ship `" not in text
     assert "tool_error CUSUM alarm (+8.6 h after the rollout" in text
     assert "| 1.00 (28/28) | n/a (0/0) |" in text
@@ -77,9 +78,12 @@ def test_no_kept_change_keeps_the_baseline_and_labels_the_comparison(release_rep
 def test_slices_cover_every_dev_case_and_pick_the_weakest():
     rows = C.slice_rows()
     assert sum(r["n"] for r in rows) == 119
-    assert C.weakest_slice() == "av-sync"
-    weakest = next(r for r in rows if r["topic"] == "av-sync")
-    assert (weakest["n"], weakest["ship"], weakest["cand"]) == (12, 0, 0)
+    # drm-resolution and live-stream tie at 0.500 under v1; the tie goes to the first topic by name
+    assert C.weakest_slice() == "drm-resolution"
+    weakest = next(r for r in rows if r["topic"] == "drm-resolution")
+    assert (weakest["n"], weakest["ship"], weakest["cand"]) == (14, 7, 7)
+    live = next(r for r in rows if r["topic"] == "live-stream")
+    assert live["ship"] / live["n"] == weakest["ship"] / weakest["n"]
 
 
 def test_unknown_slice_is_rejected():
@@ -89,7 +93,7 @@ def test_unknown_slice_is_rejected():
 
 def test_check_report_flags_a_bare_summary():
     text = PUBLISHED.read_text(encoding="utf-8")
-    broken = text.replace("## 6. Evaluators", "## 6. Judges").replace("[0.168, 0.319]", "")
+    broken = text.replace("## 6. Evaluators", "## 6. Judges").replace("[0.566, 0.735]", "")
     problems = C.check_report(broken)
     assert "missing section: Evaluators" in problems
     assert C.check_report("# empty\n")[:1] == ["missing section: Decision requested"]
@@ -99,7 +103,7 @@ def test_cli_run_and_slices(capsys):
     assert C.main(["run"]) == 0
     assert "11 stages replayed; 1 flagged" in capsys.readouterr().out
     assert C.main(["slices"]) == 0
-    assert "weakest slice under v1: av-sync" in capsys.readouterr().out
+    assert "weakest slice under v1: drm-resolution" in capsys.readouterr().out
 
 
 def test_cli_check_exit_code(tmp_path, capsys):

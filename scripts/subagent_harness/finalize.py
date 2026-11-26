@@ -97,16 +97,27 @@ def main(hdir: Path) -> None:
             if pre is not None:
                 n = len(pre) // 4
                 if writers[pre] == key:
-                    usage.update(input_tokens=total - n, cache_creation_input_tokens=n,
-                                 cache_read_input_tokens=0)
+                    usage.update(
+                        input_tokens=total - n,
+                        cache_creation_input_tokens=n,
+                        cache_read_input_tokens=0,
+                    )
                 else:
-                    usage.update(input_tokens=total - n, cache_read_input_tokens=n,
-                                 cache_creation_input_tokens=0)
+                    usage.update(
+                        input_tokens=total - n,
+                        cache_read_input_tokens=n,
+                        cache_creation_input_tokens=0,
+                    )
                     cached = n
             resp["usage"] = usage
-            rec = {"request_sha256": key, "request": req, "response": resp,
-                   "recorded_at": RECORDED_AT, "source": SRC,
-                   "latency_ms": latency_ms(fam, total - cached, cached, out, key)}
+            rec = {
+                "request_sha256": key,
+                "request": req,
+                "response": resp,
+                "recorded_at": RECORDED_AT,
+                "source": SRC,
+                "latency_ms": latency_ms(fam, total - cached, cached, out, key),
+            }
             if keys[key]:
                 rec["trial"] = keys[key]
             lines.append(canonical_json(rec))

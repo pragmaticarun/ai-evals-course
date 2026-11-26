@@ -55,10 +55,10 @@ uv run mediadoctor-capstone run
  5  judges          ok    tool-grounding TPR 1.00 TNR n/a (0/0) on test (n=28)
  6  statistics      ok    v1->v2 +0.000 [-0.034, +0.034]; 6/30 queries flaky
  7  architecture    ok    best retrieval section+bm25 recall@5 0.81
- 8  CI gate         ok    gate pass; mediadoctor-golden 1.0.1, manifest problems 1
+ 8  CI gate         ok    gate pass; mediadoctor-golden 1.0.1, manifest problems 0
  9  monitoring      FLAG  tool_error CUSUM alarm +8.6 h after the rollout
 10  red team        ok    ASR 0.017 -> 0.033 with guardrails v2, benign FPR 0.150
-11  improvement     ok    no change kept, v1 stays: success 0.235, cost/success $0.02883; best rejected v2 0.277
+11  improvement     ok    no change kept, v1 stays: success 0.655, cost/success $0.01035; best rejected v3 0.714
 
 11 stages replayed; 1 flagged for the report
 ```
@@ -71,13 +71,12 @@ the change will ship; monitoring (9) and the red team (10) are what the change d
 
 Read stage 11 first, because it sets the decision: no change passed its pre-registered test with a kept parent, so
 the decision rule keeps `v1`. That is a result, not a failure of the capstone. The report still needs a comparison
-wherever its template asks for a candidate, so it shows the best rejected configuration (`v2`, by dev success),
+wherever its template asks for a candidate, so it shows the best rejected configuration (`v3`, by dev success),
 always marked as rejected. Then the flagged stage: monitoring found tool errors on 90 of 252 requests from app 4.2.0
 after the rollout, against none of 111 on 4.1.3, and the CUSUM alarm fired 8.6 hours in. Nothing in the improvement
 experiment touches it. A report that says "keep `v1`, nothing to do" and leaves this out would be correct and
-misleading. Two other stages carry caveats you must not lose: stage 5's judge has no failing test traces, so its TNR
-is undefined (n/a, 0/0), and stage 8's golden manifest reports one problem (a judge config file changed since
-version 1.0.1).
+misleading. Another stage carries a caveat you must not lose: stage 5's judge has no failing test traces, so its TNR
+is undefined (n/a, 0/0). Stage 8 is clean: the gate passes and the golden manifest check reports no problems.
 
 ## Step 2: choose a slice by evidence
 
@@ -89,54 +88,56 @@ uv run mediadoctor-capstone slices
 ```
 
 ```text
-dev success per topic, v1 -> v2 (paired 95% CI; small n, read the intervals; no change was kept, so v2 is the best rejected configuration)
+dev success per topic, v1 -> v3 (paired 95% CI; small n, read the intervals; no change was kept, so v3 is the best rejected configuration)
 
-topic              n      v1      v2  diff [95% CI]
-audio-focus       15   0.400   0.333  -0.067 [-0.200, +0.000]
-av-sync           12   0.000   0.000  +0.000 [+0.000, +0.000]
-av1-playback      19   0.158   0.211  +0.053 [+0.000, +0.158]
-codec-limits      18   0.167   0.278  +0.111 [+0.000, +0.278]
-drm-resolution    14   0.000   0.143  +0.143 [+0.000, +0.357]
-hdr-colour        19   0.263   0.263  +0.000 [+0.000, +0.000]
-live-stream       12   0.500   0.500  +0.000 [+0.000, +0.000]
-mp4-startup       10   0.500   0.600  +0.100 [+0.000, +0.300]
+topic              n      v1      v3  diff [95% CI]
+audio-focus       15   0.933   0.933  +0.000 [-0.200, +0.200]
+av-sync           12   0.750   0.667  -0.083 [-0.333, +0.167]
+av1-playback      19   0.684   0.737  +0.053 [+0.000, +0.158]
+codec-limits      18   0.556   0.611  +0.056 [+0.000, +0.167]
+drm-resolution    14   0.500   0.500  +0.000 [+0.000, +0.000]
+hdr-colour        19   0.684   0.737  +0.053 [+0.000, +0.158]
+live-stream       12   0.500   0.917  +0.417 [+0.167, +0.667]
+mp4-startup       10   0.600   0.600  +0.000 [+0.000, +0.000]
 
-weakest slice under v1: av-sync
+weakest slice under v1: drm-resolution
 ```
 
-Two ways to choose. **By weakness:** the topic where the release configuration does worst (av-sync, 0 of 12 under
-`v1`; DRM is also 0 of 14, and the tie goes to the first topic by name), because that is where the next fix pays.
-**By risk:** a topic where a wrong answer costs most, such as DRM and Widevine questions, where a wrong security
-level sends a customer to the wrong team. The reference report takes the first; the lab asks you to take the
-second, so that you meet the same problem from another side: a slice whose rate says something is badly wrong,
-on too few queries to say exactly what.
+Two ways to choose. **By weakness:** the topic where the release configuration does worst (drm-resolution, 7 of 14
+under `v1`; live-stream is also at 0.500, 6 of 12, and the tie goes to the first topic by name), because that is
+where the next fix pays. **By risk:** a topic where a wrong answer costs most, such as DRM and Widevine questions,
+where a wrong security level sends a customer to the wrong team. On this data both rules pick the same topic, so
+the reference report and the lab's suggested slice are both drm-resolution.
 
-Look at the intervals before the point estimates. With 10 to 19 queries per topic, no topic shows a difference
-between `v1` and `v2` whose interval excludes zero. Some may differ; this data cannot tell.
+Look at the intervals before the point estimates. With 10 to 19 queries per topic, only live-stream shows a
+difference between `v1` and `v3` whose interval excludes zero (+0.417 [+0.167, +0.667], 5 fixed and 0 broken),
+and even that rests on 5 queries (McNemar p = 0.06). Others may differ; this data cannot tell.
 
 ## Step 3: error analysis on the slice
 
-Module 3's method, scaled down. Read every failing trace in the slice (all twelve, for av-sync under `v1`), write a
-note on the first thing that went wrong, and map it to the taxonomy:
+Module 3's method, scaled down. Read every failing trace in the slice (all seven, for drm-resolution under `v1`),
+write a note on the first thing that went wrong, and map it to the taxonomy:
 
 ```bash
-uv run mediadoctor-lab11 trace v1 m4q019
+uv run mediadoctor-lab11 trace v1 m4q042
 ```
 
 The report's slice section already shows something odd: the reference labels record no failure mode for any of the
-twelve, and the retry step's self-check judge passes all twelve first answers it judged on the slice (TPR 12/12),
-yet every configuration fails all twelve on the `correct` check, the reference check of the diagnosis. Reading the
-traces settles it. Ten of `v1`'s twelve answers
-state the key fact, that ffprobe shows the video stream starting at 0.300 s while the audio starts at 0.000 s, but
-in words such as "the video stream starting at 0.300000" that the check's pattern (`video stream starts at 0.300`)
-does not match. The other two (`m4q024`, `m4q062`) ask about an unnamed clip, and their answers give general advice
-without the 0.300 s fact: those are the ones to judge by hand. On this slice the measurement fails more often than
-the agent does. The DRM slice shows the same pattern (the answers say "Widevine L3"; the check looks for "security
-level L3").
+seven, yet every configuration fails them (all seven configurations score 7 of 14 or 6 of 14 on the slice).
+Reading the traces settles it. All seven are questions that never name the phone ("a customer's phone", "one of
+the budget test phones"). The agent cannot look up a device it was not given, so it does not run `codec_caps` (the
+`investigated` check fails) and answers with the knowledge base's general explanation, "an L3 device commonly gets
+only SD", hedged as a likely cause, without stating that this phone is L3 (the `correct` check fails). One more
+timed out. The seven answers that do name lumen-l3 all pass, including the six that correct a user who assumed the
+device is Widevine L1. So the slice's failures are not wrong diagnoses; they are a definition the grader applies
+and the labels do not: is "tell me which phone, and here is the likely cause" a success?
 
-That is a finding about the evaluator, and it points at the next step: validate the reference check against the
-labels on every topic, as module 5 does for judges, before running any experiment that is graded by it. Be honest
-about the size: twelve queries are a lead, which is all a 12-query slice can give you. The method works the same way on data with more real failures; here it found a broken ruler.
+That is a finding about the measurement, and it points at the next step: decide what success means for questions
+that leave out the device (module 4's `missing-detail` rows), write it down, and re-validate the checks against the
+labels before running an experiment graded by them. (An earlier version of the course's reference check also failed
+correct answers phrased in other words, such as "Widevine L3" where it looked for "security level L3"; that was a
+bug, and it is fixed.) Be honest about the size: seven failures are a lead, which is all a 14-query slice can give
+you. The method works the same way on data with more real failures.
 
 ## Step 4: evaluators you can vouch for
 
@@ -159,11 +160,11 @@ The template's Results section has four parts, and the reference report shows ea
 1. **A table per configuration**: success with a Wilson interval, p50 and p95 latency, cost per task, and cost per
    successful task with a bootstrap interval, plus the pre-registered verdict.
 2. **Paired steps**: each kept change against its parent, with the fixed and broken counts; when nothing was kept,
-   every tested change with its verdict. "`v1` → `v2`: +0.042 [+0.000, +0.084], 6 fixed, 1 broken, rejected" says
-   more than "+4.2 points": one more fixed query would have lifted the lower bound above zero (Exercise 4).
-3. **The per-case diff**: which queries changed and how they had failed. A reviewer who sees that three of `v2`'s
-   six fixes were `v1` timeouts knows that part of the gain is answers finishing inside the 15 s limit, not better
-   diagnoses.
+   every tested change with its verdict. "`v1` → `v2`: -0.008 [-0.067, +0.050], 6 fixed, 7 broken, rejected" says
+   more than "-0.8 points": the step changed 13 queries and they split almost evenly (Exercise 4).
+3. **The per-case diff**: which queries changed and how they had failed. A reviewer who sees that five of `v3`'s
+   ten fixes against `v1` were `v1` timeouts knows that part of the gain is answers finishing inside the 15 s
+   limit, not better diagnoses.
 4. **Cost and latency from traces**, median and p90 per trace, with the most expensive traces by id, next to the
    trace-check pass rates, so that a quality gain bought with a latency regression is visible on the same page.
 
@@ -175,7 +176,7 @@ reader needs to know that they were measured and what they say about this decisi
 
 **Risks and caveats** are where a report earns trust. Name the sample size and what it can detect, judge error,
 where the data came from, the metric definitions that differ between modules (module 6's v1 → v2 difference of
-+0.000 and module 11's +0.042 measure different things), the failure modes the experiment did not re-measure, and
++0.000 and module 11's -0.008 measure different things), the failure modes the experiment did not re-measure, and
 the distribution shift monitoring found. A stakeholder who later discovers a caveat you knew about stops reading
 your reports.
 
@@ -208,24 +209,23 @@ The [reference report](../../capstone/index.md) is generated by `uv run mediadoc
 beside you:
 
 - **Decision requested** is one paragraph: keep `v1`, because none of the six tested changes joined the release
-  chain (four failed their tests; `haiku` and `cascade` passed theirs but build on `v3-cache`, which did not), and
-  fund the follow-ups, starting with what the 4.2.0 tool-error alarm caught.
-- **Summary** has exactly three bullets, each with intervals: no change passed its test (`v1` at 0.235 [0.168,
-  0.319] on 119 dev queries; the best rejected configuration, `v2`, +0.042 [+0.000, +0.084], and +0.000 [-0.107,
-  +0.107] on the 28 held-out queries read once as a check); cost and latency (`v1` is over both guardrails, $0.0288
+  chain (five failed their tests; `cascade` passed its own but builds on `v3-cache`, which did not), and fund the
+  follow-ups, starting with what the 4.2.0 tool-error alarm caught.
+- **Summary** has exactly three bullets, each with intervals: no change passed its test (`v1` at 0.655 [0.566,
+  0.735] on 119 dev queries; the best rejected configuration, `v3`, +0.059 [+0.000, +0.118], and +0.000 [-0.107,
+  +0.107] on the 28 held-out queries read once as a check); cost and latency (`v1` is over both guardrails, $0.0104
   per success against $0.01 and p95 15.8 s against 12 s, while `cascade` meets both); and what the decision does
-  not fix (tool errors at 35.7% on app 4.2.0, and av-sync at 0 of 12).
+  not fix (tool errors at 35.7% on app 4.2.0, and drm-resolution at 7 of 14).
 - **Failure taxonomy** shows module 3's ranked modes (one, fabricated evidence, in 3 of 100 traces) and then before
-  and after for the four modes module 11 labelled, which are rare on dev: `v1` has none of them, `v2` two skipped
-  investigations.
+  and after for the four modes module 11 labelled, which are rare on dev: neither `v1` nor `v3` has any of them.
 - **Evaluators** puts seven evaluators in one table, including the self-check judge inside the retry step (TPR
   0.95, TNR 0.00 on 3 bad first answers) and module 10's injection detector, and prints n/a (0/0) wherever a
   validation set had no failing cases.
-- **Results** includes the slice deep-dive: every configuration on av-sync (all 0 of 12), the twelve failing
-  queries by id, and what 12 queries can detect.
+- **Results** includes the slice deep-dive: every configuration on drm-resolution (6 or 7 of 14 each), the seven
+  failing queries by id, and what 14 queries can detect.
 - **Risks** lists nine, including the ones that would change the decision if they were wrong: synthetic data, the
-  guardrails `v1` already breaks, and the rejections themselves (`v2` missed its rule by a lower bound of exactly
-  +0.000 and is over both guardrails).
+  guardrails `v1` already breaks, and the rejections themselves (`v3`'s interval against its parent cleared zero,
+  but it is over both guardrails and its parent was rejected).
 Then read it as a reviewer. [Exercise 2](exercises.md) asks for its three weakest claims; find them before you look.
 
 ## Checklist
@@ -251,10 +251,11 @@ The capstone runs the whole loop and turns it into a decision. `mediadoctor-caps
 earlier modules in seconds; `slices` finds where the release configuration is weakest; `report` writes an eval report that
 follows the template, with real numbers from every module's artifacts and a slice deep-dive; `check` reviews it
 against the template; and `--release` spends the one held-out look. On MediaDoctor the evidence supports
-keeping `v1`: no change passed its pre-registered test, the best rejected one (`v2`, +4.2 points [+0.0, +8.4] on dev,
-+0.0 on 28 held-out queries) is not shown to help, and `v1` itself is over the cost and latency guardrails. The
-report names what the decision does not fix (a tool-error rise on app 4.2.0, an injection vector, and a slice where
-the reference check misses correct answers) and says what each slice is too small to show. That last part is the difference between a report that sells and one that informs.
+keeping `v1`: no change passed its pre-registered test, the best rejected one (`v3`, +5.9 points [+0.0, +11.8] on
+dev, +0.0 on 28 held-out queries) is over the guardrails and not shown to help, and `v1` itself is over the cost and
+latency guardrails. The report names what the decision does not fix (a tool-error rise on app 4.2.0, an injection
+vector, and a slice where every failure is a question that never names the device) and says what each slice is too
+small to show. That last part is the difference between a report that sells and one that informs.
 
 Continue with the [lab](lab.md), the [exercises](exercises.md), the [self-assessment](quiz.md), the
 [rubric and checklist](rubric.md), [Make it your own](extensions.md), and the
