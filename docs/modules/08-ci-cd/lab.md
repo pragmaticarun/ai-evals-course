@@ -165,7 +165,7 @@ uv run mediadoctor-lab08 manifest --check
 uv run mediadoctor-lab08 hygiene
 ```
 
-The manifest check reports `mediadoctor-golden 1.0.1: 12 files and 3 splits match`. Change one character in
+The manifest check reports `mediadoctor-golden 2.0.0: 12 files and 3 splits match`. Change one character in
 `data/labels/module06_runs.csv` and run it again; then `git checkout data/labels/` to undo it.
 
 Hygiene prints the three closest gate and held-out questions (the closest scores 0.204, well under module 4's

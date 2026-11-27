@@ -131,7 +131,7 @@ went away. Code checks gate; judge tiers mostly inform, until the judge is good 
 
 A gate compares against something fixed. Two files pin it down.
 
-The **golden manifest** (`data/golden/manifest.json`) names the golden set (`mediadoctor-golden 1.0.1`) and lists the
+The **golden manifest** (`data/golden/manifest.json`) names the golden set (`mediadoctor-golden 2.0.0`) and lists the
 SHA-256 of every file the gate's numbers depend on: the dataset, the reference labels from modules 5 and 6, the judge
 specs, the recorded fixtures, a digest of each labelled answer, and the hygiene review. It also stores a digest of
 each split's case ids (119 gate, 30 judge, 28 held out). `evalkit.golden.check_manifest` lists every difference, and
@@ -194,7 +194,9 @@ so the same report serves an experiment on your laptop and a PR in CI.
 The report has four parts:
 
 1. A headline (passed, passed with warnings, or blocked) and what was compared: the base's prompt, fingerprint, and
-   where its baseline came from, the head's, and the golden version.
+   where its baseline came from, the head's, and the golden version. When the base's baseline is on a different
+   *major* golden version (new cases or splits), its results are on another set and cannot gate this one: the gate
+   compares with this checkout's baseline instead, and the source line says why.
 2. Per tier, a table with one row per metric: n, both rates, the paired difference with its interval, the flips in
    each direction, the adjusted p-value, and the status.
 3. The flips to read first: each newly failing case with the first line of the new answer, and the newly passing

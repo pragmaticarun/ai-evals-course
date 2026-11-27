@@ -83,7 +83,7 @@ JUDGE_NAMESPACES = (JUDGE_NAMESPACE, lab05.JUDGE_NAMESPACE)
 RUN_SCHEMA = "mediadoctor-eval-run/1"
 TIERS = ("code", "judges")
 GOLDEN_NAME = "mediadoctor-golden"
-GOLDEN_VERSION = "1.0.1"
+GOLDEN_VERSION = "2.0.0"  # 2.0.0: every case and label regenerated (Claude subagents)
 HOLDOUT_SPLIT = "test"
 
 Trace = list[dict[str, Any]]
@@ -495,17 +495,33 @@ def git_show(ref: str, path: str) -> str | None:
         return None
 
 
+def major(version: str) -> str:
+    """The major part of a golden version ("2.0.0" -> "2")."""
+    return version.split(".", 1)[0]
+
+
 def load_baseline(base_ref: str | None = None) -> Baseline:
     """The baseline committed at `base_ref` (the PR's base); this checkout's if the ref has none."""
     path = rel(baseline_path())
     if base_ref:
         text = git_show(base_ref, path)
+        source = f"{path} in this checkout ({base_ref[:12]} has no usable baseline)"
         if text is not None:
             try:
-                return Baseline(SuiteRun.from_json(json.loads(text)), f"{path} at {base_ref[:12]}")
+                data = json.loads(text)
+                base_version = str(data.get("golden", {}).get("version", ""))
+                if major(base_version) != major(GOLDEN_VERSION):
+                    # A new major golden version means new cases or splits (the manifest's rule):
+                    # the base's outcomes are on a different set, so they cannot gate this one.
+                    source = (
+                        f"{path} in this checkout ({base_ref[:12]}'s baseline is on "
+                        f"{GOLDEN_NAME} {base_version or '?'}, this checkout on {GOLDEN_VERSION}: "
+                        "a new major version is a new set of cases, so it is not comparable)"
+                    )
+                else:
+                    return Baseline(SuiteRun.from_json(data), f"{path} at {base_ref[:12]}")
             except ValueError, KeyError:
                 pass  # an older format: fall back to this checkout's baseline
-        source = f"{path} in this checkout ({base_ref[:12]} has no usable baseline)"
     else:
         source = f"{path} in this checkout"
     return Baseline(

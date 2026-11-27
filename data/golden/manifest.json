@@ -1,7 +1,7 @@
 {
   "schema": "evalkit-golden/1",
   "name": "mediadoctor-golden",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "created": "2026-11-23 04:00 IST",
   "source": "dataset v1 (module 4), reference labels (modules 5 and 6), recorded runs",
   "notes": "Bump the version when any file changes: major for new cases or splits, minor for relabels or re-recorded runs, patch for fixes that change no outcome.",

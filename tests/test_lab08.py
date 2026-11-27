@@ -159,6 +159,17 @@ def test_baseline_from_a_ref_without_one_falls_back():
     assert b.run.prompt == "v1"
 
 
+def test_baseline_on_another_major_golden_version_is_not_compared(monkeypatch):
+    doc = json.loads(lab08.baseline_path().read_text())
+    doc["golden"]["version"] = "1.0.1"
+    monkeypatch.setattr(lab08, "git_show", lambda ref, path: json.dumps(doc))
+    b = lab08.load_baseline("1111111111111111111111111111111111111111")
+    assert "in this checkout" in b.source and "not comparable" in b.source
+    doc["golden"]["version"] = lab08.GOLDEN_VERSION.split(".")[0] + ".9.9"  # same major: compared
+    b = lab08.load_baseline("1111111111111111111111111111111111111111")
+    assert b.source.endswith("at 111111111111")
+
+
 def test_usage_estimates_missing_latency(v1):
     assert v1.usage["judges"].latency_s > 60  # module 5's judge records carry no latency
     assert lab08.estimated_latency_ms(1000, 50) == pytest.approx(1140.0)
