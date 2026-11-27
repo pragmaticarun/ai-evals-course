@@ -11,7 +11,7 @@ MediaDoctor's production pass rate is about 0.80, and a prompt change is expecte
 2. How many queries per variant to detect 0.80 → 0.85 (α = 0.05, power 0.8) if each variant runs on its own queries?
 3. How many if both run on the same queries and 10%, 15%, or 25% of queries are discordant?
 4. How many per variant for 0.95 → 0.99?
-5. With 137 queries (and with 500), what is the smallest lift from 0.80 you can detect?
+5. With 147 queries (and with 500), what is the smallest lift from 0.80 you can detect?
 
 ??? success "Solution"
     ```python
@@ -29,7 +29,7 @@ MediaDoctor's production pass rate is about 0.80, and a prompt change is expecte
     for disc in (0.10, 0.15, 0.25):
         print(f"(c) 0.80 -> 0.85, same queries, {disc:.0%} discordant: {n_paired(disc, 0.05)} queries")
     print(f"(d) 0.95 -> 0.99, separate queries: {n_two_proportions(0.95, 0.99)} per variant")
-    for n in (137, 500):
+    for n in (147, 500):
         print(
             f"(e) n={n}: smallest detectable lift from 0.80 is {mdd_two_proportions(n, 0.80):.3f} "
             f"unpaired, {mdd_paired(n, 0.15):.3f} paired (15% discordant)"
@@ -45,7 +45,7 @@ MediaDoctor's production pass rate is about 0.80, and a prompt change is expecte
     (c) 0.80 -> 0.85, same queries, 15% discordant: 469 queries
     (c) 0.80 -> 0.85, same queries, 25% discordant: 783 queries
     (d) 0.95 -> 0.99, separate queries: 285 per variant
-    (e) n=137: smallest detectable lift from 0.80 is 0.117 unpaired, 0.092 paired (15% discordant)
+    (e) n=147: smallest detectable lift from 0.80 is 0.114 unpaired, 0.089 paired (15% discordant)
     (e) n=500: smallest detectable lift from 0.80 is 0.066 unpaired, 0.048 paired (15% discordant)
     ```
 
@@ -53,8 +53,10 @@ MediaDoctor's production pass rate is about 0.80, and a prompt change is expecte
     needs about 900 per variant, because the difference carries the noise of both rates and you also want 80% power,
     not a coin flip. Pairing cuts that to 300 to 800 queries depending on how often the variants disagree: the fewer
     discordant queries, the cheaper the comparison. Near the ceiling (95% → 99%) the same 4-point change is cheaper
-    because there is less binomial noise. With MediaDoctor's 137 labelled queries the honest statement is "we can see
-    changes of about 9 points (paired) to 12 points (unpaired) or more"; a 5-point claim needs roughly 500 shared queries.
+    because there is less binomial noise. With MediaDoctor's 147 labelled queries, at a pass rate of 0.80, the honest statement
+    would be "we can see changes of about 9 points (paired) to 11 points (unpaired) or more"; a 5-point claim needs
+    roughly 500 shared queries. (At the lab's actual pass rate of 0.98 and 4% discordant queries, lab section 9 shows
+    it is worse: no improvement is detectable at all.)
 
 ## Exercise 2: How a judge with TNR 0.8 moves the pass rate
 
@@ -120,7 +122,7 @@ true rates.
 
 ## Exercise 3: Slicing an A/A test
 
-`mediadoctor-lab06 slices` shows two topics where v2 looks much better or much worse. Estimate how often that
+`mediadoctor-lab06 slices` shows topics where v2 looks better (av1-playback) or worse (drm-resolution). Estimate how often that
 happens by chance: simulate 1,000 experiments comparing a prompt with *itself* on 8 slices of 17 queries (each
 query with its own difficulty), test each slice with exact McNemar, and count the experiments with at least one
 slice at p < 0.05, before and after Holm. Then run the same A/A test without slicing.
@@ -133,7 +135,7 @@ slice at p < 0.05, before and after Holm. Then run the same A/A test without sli
     from evalkit.stats import holm, mcnemar_exact
 
     rng = random.Random(1)
-    SLICES, PER_SLICE, EXPERIMENTS = 8, 17, 1000  # about 137 queries in 8 topic slices
+    SLICES, PER_SLICE, EXPERIMENTS = 8, 17, 1000  # 8 topic slices, about the lab's slice size
     raw_hits = holm_hits = 0
     for _ in range(EXPERIMENTS):
         p_values = {}
@@ -174,11 +176,11 @@ slice at p < 0.05, before and after Holm. Then run the same A/A test without sli
     brings that below 5% (the exact McNemar test is conservative with few discordant pairs, which is why both the
     adjusted and the overall rates come out under 5%). In practice: decide slices before looking, adjust for the
     number you test, and treat a surprising slice as a question for a larger eval. Also note how small the slices
-    are: a slice of 13 queries can only detect enormous effects (exercise 1).
+    are: a slice of 14 queries can only detect enormous effects (exercise 1).
 
 ## Exercise 4: Run-to-run variance and pass^k
 
-Using the five runs of each prompt on the 37 dev queries: (1) report each prompt's run-to-run range, flaky
+Using the five runs of each prompt on the 30 dev queries: (1) report each prompt's run-to-run range, flaky
 queries, and pass^1, pass^3, pass^5; (2) compare the prompts on each query's mean over five runs, with a bootstrap
 interval that resamples *queries*. Which prompt would you ship to support engineers who retry a question when the
 answer looks off?
@@ -194,7 +196,7 @@ answer looks off?
         s = trial_summary(rep)
         hats = [sum(pass_hat_k(5, sum(v), k) for v in rep.values()) / len(rep) for k in (1, 3, 5)]
         print(
-            f"{prompt}: runs {min(s.run_rates):.3f} to {max(s.run_rates):.3f}, flaky {s.flaky}/37, "
+            f"{prompt}: runs {min(s.run_rates):.3f} to {max(s.run_rates):.3f}, flaky {s.flaky}/{s.n_cases}, "
             f"pass^1 {hats[0]:.3f}  pass^3 {hats[1]:.3f}  pass^5 {hats[2]:.3f}"
         )
 
@@ -214,78 +216,79 @@ answer looks off?
     Output:
 
     ```text
-    v1: runs 0.405 to 0.459, flaky 15/37, pass^1 0.438  pass^3 0.324  pass^5 0.270
-    v2: runs 0.378 to 0.486, flaky 19/37, pass^1 0.454  pass^3 0.289  pass^5 0.189
-    v2 - v1, 5-run means per query: +0.016 [-0.135, +0.178]
+    v1: runs 0.867 to 1.000, flaky 5/30, pass^1 0.967  pass^3 0.900  pass^5 0.833
+    v2: runs 0.867 to 1.000, flaky 6/30, pass^1 0.953  pass^3 0.870  pass^5 0.800
+    v2 - v1, 5-run means per query: -0.013 [-0.033, +0.000]
     ```
 
-    v2 has the better single-run pass rate (0.454 vs 0.438) but the worse consistency: pass^5 is 0.189 against 0.270,
-    and 19 of 37 queries are flaky. Its premise check helps some queries every time and adds a format slip to others
-    some of the time. Averaging five runs per query does not rescue the comparison: +0.02 with an interval of
-    [−0.14, +0.18], because the interval is driven by the 37 queries, not the runs. Repeats measure consistency; only
-    more queries narrow the comparison. (Resampling the 185 runs as if independent would give a falsely narrow
-    interval.) For engineers who retry, a flaky answer is worse than a consistent one; neither prompt is ready, and
-    v2's format slip is the first thing to fix.
+    The prompts are close on every measure: v1's single-run pass rate is 0.967 against 0.953, pass^5 0.833 against
+    0.800, and 5 against 6 flaky queries, a difference of one flaky query. Both lose more to consistency than to
+    single-run failures: a 0.97 rate per run becomes about 0.8 for five good answers in a row. Averaging five runs per
+    query gives −0.01 [−0.03, +0.00]; the interval touches zero and rests on a handful of flaky queries, so it is not
+    evidence that v1 is better. Repeats measure consistency; only more queries (and more failing ones) narrow the
+    comparison. (Resampling the 150 runs as if independent would give a falsely narrow interval.) For engineers who
+    retry, the flaky queries are the ones to read: here m4q017 (fabricated evidence in some runs) and the queries
+    that fail only in run 4. On this data neither prompt is detectably better, so the choice rests on other grounds.
 
 ## Exercise 5: Test two vanity metrics against the labels
 
-The lab replays a generic 1-to-10 helpfulness judge and computes word-overlap F1 against reference answers. Find
-which kinds of answers each one rewards and punishes.
+The lab replays a generic 1-to-10 helpfulness judge and computes word-overlap F1 against reference answers. Check
+whether either one separates passing from failing answers, and how much you can conclude with this many failures.
 
 ??? success "Solution"
     ```python
     # exercise-solution: vanity metrics against the labels
+    from collections import Counter
     from statistics import mean
 
     from mediadoctor import lab06
 
     for prompt in lab06.PROMPTS:
-        h = lab06.helpfulness(prompt)
-        print(f"{prompt}: mean helpfulness {mean(h.values()):.2f}")
+        h, labels = lab06.helpfulness(prompt), lab06.labels()[(prompt, 1)]
+        ok = lab06.outcomes(prompt, 1)
+        passing = [c for c in h if not labels[c]]
+        failing = {c: h[c] for c in h if labels[c]}
+        auc = lab06.separation({c: float(x) for c, x in h.items()}, ok)
+        print(
+            f"{prompt}: mean helpfulness {mean(h.values()):.2f}; passing n={len(passing)} "
+            f"mean {mean(h[c] for c in passing):.2f}; failing scores {failing}; AUC {auc:.2f}"
+        )
+        assert len(failing) == 3
 
-    h, labels = lab06.helpfulness("v1"), lab06.labels()[("v1", 1)]
-    items = lab06.items("v1", 1)
-    groups = {
-        "asks for details (PASS)": [
-            c for c in h if items[c].answer.startswith("Likely cause: Not enough")
-        ],
-        "accepted false premise": [c for c in h if "accepted-false-premise" in labels[c]],
-        "ignored tool output": [c for c in h if "ignored-tool-output" in labels[c]],
-        "no failure (incl. asks)": [c for c in h if not labels[c]],
-    }
-    for name, ids in groups.items():
-        print(f"  {name:<25} n={len(ids):>2}  helpfulness {mean(h[c] for c in ids):.2f}")
+    h = lab06.helpfulness("v1")
+    print("v1 score counts:", dict(sorted(Counter(h.values()).items())))
 
+    labels = lab06.labels()[("v1", 1)]
     sim = lab06.similarity("v1")
-    fails = [c for c in sim if labels[c]]
+    fails = sorted(c for c in sim if labels[c])
     passes = [c for c in sim if not labels[c]]
-    for mode in ("ignored-tool-output", "accepted-false-premise"):
-        c = max((c for c in fails if mode in labels[c]), key=sim.get)
-        print(f"most similar {mode} answer {c}: F1 {sim[c]:.2f}")
-    print(f"failing answers with F1 >= 0.9: {sum(sim[c] >= 0.9 for c in fails)} of {len(fails)}")
-    print(f"passing answers with F1 < 0.5: {sum(sim[c] < 0.5 for c in passes)} of {len(passes)}")
+    print("v1 failing answers' F1:", {c: round(sim[c], 2) for c in fails})
+    above = sum(sim[c] > max(sim[f] for f in fails) for c in passes)
+    below = sum(sim[c] < min(sim[f] for f in fails) for c in passes)
+    print(f"passing answers with F1 above every failing one: {above} of {len(passes)}")
+    print(f"passing answers with F1 below every failing one: {below} of {len(passes)}")
     ```
 
     Output:
 
     ```text
-    v1: mean helpfulness 7.71
-    v2: mean helpfulness 7.66
-      asks for details (PASS)   n=18  helpfulness 4.89
-      accepted false premise    n=24  helpfulness 8.04
-      ignored tool output       n=22  helpfulness 8.45
-      no failure (incl. asks)   n=52  helpfulness 7.23
-    most similar ignored-tool-output answer m4q012: F1 0.77
-    most similar accepted-false-premise answer m4q021: F1 0.79
-    failing answers with F1 >= 0.9: 27 of 85
-    passing answers with F1 < 0.5: 18 of 52
+    v1: mean helpfulness 7.14; passing n=144 mean 7.12; failing scores {'m4q002': 8, 'm4q060': 8, 'm4q067': 8}; AUC 0.22
+    v2: mean helpfulness 7.16; passing n=144 mean 7.18; failing scores {'m4q003': 6, 'm4q044': 6, 'm4q199': 7}; AUC 0.81
+    v1 score counts: {4: 4, 5: 5, 6: 22, 7: 52, 8: 63, 9: 1}
+    v1 failing answers' F1: {'m4q002': 0.44, 'm4q060': 0.39, 'm4q067': 0.46}
+    passing answers with F1 above every failing one: 27 of 144
+    passing answers with F1 below every failing one: 82 of 144
     ```
 
-    Helpfulness does not move between prompts while two failure modes moved by more than 10 points, and it ranks
-    answers backwards: answers that correctly ask for the missing file or device score lowest (4.89), and answers
-    that contradict the tool output score highest (8.45). A generic judge rewards confident, specific-sounding text.
+    Helpfulness is flat between prompts (7.14 and 7.16) and barely varies between answers: 115 of v1's 147 score 7
+    or 8. On v1 all three failing answers score 8, above the passing mean, so the AUC is 0.22, worse than a coin; on
+    v2 the failing answers score 6, 6, and 7, and the AUC is 0.81. The same judge cannot be both, and it is neither:
+    with three failing answers, one answer scoring a point higher or lower swings the AUC by tens of points.
+    Word overlap is no more informative: v1's failing answers sit in the middle of the F1 range (0.39 to 0.46), with
+    82 passing answers below all of them and 27 above.
 
-    Word overlap fails the other way: an answer that says the opposite of ffprobe (m4q012, start times) shares most
-    of its words with the reference and scores 0.77, while correct answers that ask or that reject a premise use
-    different words. 27 of 85 failing answers score at least 0.9; 18 of 52 passing ones score below 0.5. Neither
-    metric belongs on the dashboard; at most, sort by them to find traces to read.
+    The conclusion is about the test, not the metrics: three labelled failures cannot validate or reject any score.
+    To test a metric, first collect enough failing traces (dozens, from module 4's hypotheses or from traces a cheap
+    check flags), then compute the separation with an interval. On data with more failures, generic helpfulness
+    judges tend to reward confident, specific-sounding text whether or not it is true, and word overlap rewards
+    answers that copy the reference's wording; neither belongs on the dashboard unless it separates your labels.

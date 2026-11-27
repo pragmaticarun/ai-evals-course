@@ -97,8 +97,11 @@ def corrected_pass_rate(p_observed: float, tpr: float, tnr: float) -> float:
 
     observed = true * TPR + (1 - true) * (1 - TNR)   =>   true = (observed + TNR - 1) / (TPR + TNR - 1)
 
-    Clipped to [0, 1]. Undefined when TPR + TNR <= 1 (the judge is no better than chance).
+    Clipped to [0, 1]. Undefined when TPR + TNR <= 1 (the judge is no better than chance). nan when
+    TPR or TNR is nan (no positives or no negatives to estimate it from).
     """
+    if math.isnan(tpr) or math.isnan(tnr):
+        return float("nan")
     denom = tpr + tnr - 1
     if denom <= 0:
         raise ValueError(f"TPR + TNR must exceed 1 (got {tpr:.2f} + {tnr:.2f})")
@@ -141,6 +144,8 @@ def bootstrap_corrected(
     the judge's TPR and TNR. `unlabelled` is the judge's verdicts on the traffic you want to measure.
     Both are resampled with replacement in every draw, so the interval includes uncertainty about the
     judge as well as about the traffic. Draws where TPR + TNR <= 1 are skipped and counted.
+    When no draw is usable (for example the labelled set has no failures, so TNR is 0/0), the
+    interval is undefined: low and high are nan and draws is 0.
     """
 
     def tpr_tnr(pairs: list[tuple[bool, bool]]) -> tuple[float, float]:
@@ -163,6 +168,9 @@ def bootstrap_corrected(
             continue
         samples.append(corrected_pass_rate(sum(unl) / len(unl), t1, t0))
     samples.sort()
+    if not samples:
+        nan = float("nan")
+        return Estimate(p_obs, point, nan, nan, len(unlabelled), len(labelled), 0)
     alpha = (1 - level) / 2
     lo = samples[int(alpha * (len(samples) - 1))]
     hi = samples[int((1 - alpha) * (len(samples) - 1))]

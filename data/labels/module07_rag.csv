@@ -1,97 +1,97 @@
 system,query_id,retrieval_hit,correct,faithful,relevant,note,annotator
-baseline,r01,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r02,yes,no,no,yes,"correct core, plus a specific claim the passages do not contain",reference (synthetic-authored)
-baseline,r03,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r04,no,no,no,yes,answers from general knowledge (wrong) and cites an unrelated passage,reference (synthetic-authored)
-baseline,r05,no,no,no,yes,answers from general knowledge (wrong) and cites an unrelated passage,reference (synthetic-authored)
-baseline,r06,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r07,no,no,yes,no,says the passages do not cover it,reference (synthetic-authored)
-baseline,r08,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r09,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r10,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r11,no,yes,no,yes,"right answer, but not from the passages (none of them answer it)",reference (synthetic-authored)
-baseline,r12,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r13,no,no,yes,no,says the passages do not cover it,reference (synthetic-authored)
-baseline,r14,yes,no,yes,no,answers from an unrelated passage in the context,reference (synthetic-authored)
-baseline,r15,yes,no,no,yes,"correct core, plus a specific claim the passages do not contain",reference (synthetic-authored)
-baseline,r16,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r17,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r18,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r19,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r20,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r21,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r22,no,no,no,yes,answers from general knowledge (wrong) and cites an unrelated passage,reference (synthetic-authored)
-baseline,r23,no,no,yes,no,says the passages do not cover it,reference (synthetic-authored)
-baseline,r24,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r25,yes,no,no,yes,"correct core, plus a specific claim the passages do not contain",reference (synthetic-authored)
-baseline,r26,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r27,yes,no,no,yes,"correct core, plus a specific claim the passages do not contain",reference (synthetic-authored)
-baseline,r28,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r29,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r30,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r31,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r32,no,no,yes,no,says the passages do not cover it,reference (synthetic-authored)
-baseline,r33,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r34,no,no,no,yes,answers from general knowledge (wrong) and cites an unrelated passage,reference (synthetic-authored)
-baseline,r35,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r36,yes,no,yes,no,answers from an unrelated passage in the context,reference (synthetic-authored)
-baseline,r37,no,yes,no,yes,"right answer, but not from the passages (none of them answer it)",reference (synthetic-authored)
-baseline,r38,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r39,yes,no,no,yes,"correct core, plus a specific claim the passages do not contain",reference (synthetic-authored)
-baseline,r40,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r41,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r42,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-baseline,r43,yes,yes,yes,yes,"correct and grounded, but cites an id that is not in the context",reference (synthetic-authored)
-baseline,r44,yes,no,yes,no,answers from an unrelated passage in the context,reference (synthetic-authored)
-baseline,r45,no,yes,no,yes,"right answer, but not from the passages (none of them answer it)",reference (synthetic-authored)
-baseline,r46,no,no,yes,no,says the passages do not cover it,reference (synthetic-authored)
-baseline,r47,yes,yes,yes,yes,"correct and grounded, but cites an id that is not in the context",reference (synthetic-authored)
-baseline,r48,yes,no,no,yes,"correct core, plus a specific claim the passages do not contain",reference (synthetic-authored)
-improved,r01,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r02,yes,no,no,yes,"correct core, plus a specific claim the passages do not contain",reference (synthetic-authored)
-improved,r03,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r04,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r05,yes,no,no,yes,"correct core, plus a specific claim the passages do not contain",reference (synthetic-authored)
-improved,r06,no,no,no,yes,answers from general knowledge (wrong) and cites an unrelated passage,reference (synthetic-authored)
-improved,r07,no,no,yes,no,says the passages do not cover it,reference (synthetic-authored)
-improved,r08,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r09,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r10,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r11,no,yes,no,yes,"right answer, but not from the passages (none of them answer it)",reference (synthetic-authored)
-improved,r12,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r13,no,no,yes,no,says the passages do not cover it,reference (synthetic-authored)
-improved,r14,yes,no,yes,no,answers from an unrelated passage in the context,reference (synthetic-authored)
-improved,r15,yes,no,no,yes,"correct core, plus a specific claim the passages do not contain",reference (synthetic-authored)
-improved,r16,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r17,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r18,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r19,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r20,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r21,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r22,no,no,no,yes,answers from general knowledge (wrong) and cites an unrelated passage,reference (synthetic-authored)
-improved,r23,no,no,yes,no,says the passages do not cover it,reference (synthetic-authored)
-improved,r24,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r25,yes,no,no,yes,"correct core, plus a specific claim the passages do not contain",reference (synthetic-authored)
-improved,r26,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r27,yes,no,no,yes,"correct core, plus a specific claim the passages do not contain",reference (synthetic-authored)
-improved,r28,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r29,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r30,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r31,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r32,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r33,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r34,yes,no,no,yes,"correct core, plus a specific claim the passages do not contain",reference (synthetic-authored)
-improved,r35,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r36,yes,no,yes,no,answers from an unrelated passage in the context,reference (synthetic-authored)
-improved,r37,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r38,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r39,yes,no,no,yes,"correct core, plus a specific claim the passages do not contain",reference (synthetic-authored)
-improved,r40,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r41,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r42,yes,yes,yes,yes,answers from the retrieved passage,reference (synthetic-authored)
-improved,r43,yes,yes,yes,yes,"correct and grounded, but cites an id that is not in the context",reference (synthetic-authored)
-improved,r44,yes,no,yes,no,answers from an unrelated passage in the context,reference (synthetic-authored)
-improved,r45,no,yes,no,yes,"right answer, but not from the passages (none of them answer it)",reference (synthetic-authored)
-improved,r46,no,no,yes,no,says the passages do not cover it,reference (synthetic-authored)
-improved,r47,yes,yes,yes,yes,"correct and grounded, but cites an id that is not in the context",reference (synthetic-authored)
-improved,r48,yes,no,no,yes,"correct core, plus a specific claim the passages do not contain",reference (synthetic-authored)
+baseline,r01,yes,yes,yes,yes,Correctly attributes failure to the shared hardware decoder pool being exhausted; honestly notes no device-specific limit in passages.,"reference (subagent-authored, Claude Opus)"
+baseline,r02,yes,yes,yes,yes,"Right diagnosis (decoder pool exhausted by per-thumbnail decoders) and fixes, all from codec-instance-limits passages.","reference (subagent-authored, Claude Opus)"
+baseline,r03,yes,yes,yes,yes,"Accurately explains isTransient vs isRecoverable vs release, as in mediacodec-errors@0.","reference (subagent-authored, Claude Opus)"
+baseline,r04,no,no,yes,yes,Abstains because passage is cut off; does not tell the user what diagnosticInfo contains (a human-readable diagnostic string identifying the codec error for logs).,"reference (subagent-authored, Claude Opus)"
+baseline,r05,no,no,yes,yes,Misses the key API (CodecCapabilities.profileLevels for HEVCProfileMain10/level 5.1); size/rate checks are supported but do not answer the profile/level question.,"reference (subagent-authored, Claude Opus)"
+baseline,r06,yes,yes,yes,yes,"Gives the right in-code checks (areSizeAndRateSupported, getSupportedPerformancePoints) from codec-capabilities@40; 3840x2160 example is a harmless illustration.","reference (subagent-authored, Claude Opus)"
+baseline,r07,no,no,yes,yes,"Faithful abstention, but the question has an answer (CodecCapabilities.getMaxSupportedInstances(), API 23); retrieval missed it.","reference (subagent-authored, Claude Opus)"
+baseline,r08,yes,yes,yes,yes,"Correct cause of async stall (holding output buffers) and fix, supported by mediacodec-async@40.","reference (subagent-authored, Claude Opus)"
+baseline,r09,yes,yes,yes,yes,"Correct: setCallback before configure, from mediacodec-async@0.","reference (subagent-authored, Claude Opus)"
+baseline,r10,yes,yes,yes,yes,Correct diagnosis (surface destroyed while codec renders) with the stop/reconfigure direction; notes the truncated fix honestly.,"reference (subagent-authored, Claude Opus)"
+baseline,r11,no,no,yes,yes,"Abstains; the real answer is low-latency decoding (FEATURE_LowLatency / KEY_LOW_LATENCY, API 30). No relevant passage retrieved.","reference (subagent-authored, Claude Opus)"
+baseline,r12,yes,yes,yes,yes,"Correctly recommends tunneled playback (FEATURE_TunneledPlayback), supported by tunneled-playback@0.","reference (subagent-authored, Claude Opus)"
+baseline,r13,no,no,yes,yes,Abstains; the answer is MediaCodecInfo.isHardwareAccelerated() (API 29). Retrieved passages did not include it.,"reference (subagent-authored, Claude Opus)"
+baseline,r14,yes,yes,yes,yes,"Correct: black recordings are expected for secure output, not a decoder failure; from secure-decoders passages.","reference (subagent-authored, Claude Opus)"
+baseline,r15,yes,yes,yes,yes,"Correct diagnosis (fell behind the live window) from behind-live-window@0; does not give the recovery steps, which were not retrieved.","reference (subagent-authored, Claude Opus)"
+baseline,r16,yes,yes,yes,yes,Correct recovery steps (seekToDefaultPosition then prepare) from behind-live-window@40.,"reference (subagent-authored, Claude Opus)"
+baseline,r17,yes,yes,yes,yes,"Correct: lower targetOffsetMs via MediaItem.LiveConfiguration, with the rebuffering tradeoff; from live-latency@0.","reference (subagent-authored, Claude Opus)"
+baseline,r18,yes,yes,yes,yes,"Correct: Media3 live speed adjustment to reach the target offset, from live-latency@40.","reference (subagent-authored, Claude Opus)"
+baseline,r19,yes,yes,yes,yes,"Correct likely cause (moov atom at end); fix not given since passage was cut off, which it states.","reference (subagent-authored, Claude Opus)"
+baseline,r20,yes,yes,yes,yes,"Correct check with ffprobe -v trace for moov before mdat, from mp4-faststart@40.","reference (subagent-authored, Claude Opus)"
+baseline,r21,yes,yes,yes,yes,"Correct recommendation (CMAF fMP4 serves both HLS and DASH), supported by fragmented-mp4 passages.","reference (subagent-authored, Claude Opus)"
+baseline,r22,no,no,yes,yes,"Does not diagnose the cause (slow bandwidth estimate, selector constraints, undecodable higher renditions); only restates how DefaultTrackSelector picks.","reference (subagent-authored, Claude Opus)"
+baseline,r23,no,no,yes,yes,Abstains; the answer is Widevine L3 devices getting SD only. Retrieval missed widevine-levels.,"reference (subagent-authored, Claude Opus)"
+baseline,r24,yes,yes,yes,yes,"Correct API (MediaDrm getPropertyString securityLevel), from widevine-levels@40.","reference (subagent-authored, Claude Opus)"
+baseline,r25,yes,yes,yes,yes,Correctly explains missing provisioning certificate and that Media3 provisions automatically; from widevine-provisioning@0.,"reference (subagent-authored, Claude Opus)"
+baseline,r26,yes,yes,yes,yes,Correct: unlocked bootloader drops Widevine to L3 so HD keys are refused; gives the securityLevel check; from widevine-levels@40.,"reference (subagent-authored, Claude Opus)"
+baseline,r27,yes,yes,yes,yes,"Correct audio-focus diagnosis and AudioFocusRequest handling, from audio-focus@0 and @80.","reference (subagent-authored, Claude Opus)"
+baseline,r28,yes,yes,yes,yes,Correct: duck (lower volume) on CAN_DUCK; supported by audio-focus@80 and @40.,"reference (subagent-authored, Claude Opus)"
+baseline,r29,yes,yes,yes,yes,"Correct: ACTION_AUDIO_BECOMING_NOISY or setHandleAudioBecomingNoisy(true), from audio-routing@0.","reference (subagent-authored, Claude Opus)"
+baseline,r30,yes,yes,yes,yes,Correct: Bluetooth output latency; schedule video from audio sink timestamps; from audio-routing@40.,"reference (subagent-authored, Claude Opus)"
+baseline,r31,yes,yes,yes,yes,Correct: constant offset from start means file timestamps; check start_time with ffprobe; from av-sync@40.,"reference (subagent-authored, Claude Opus)"
+baseline,r32,no,no,yes,yes,Misses the actual cause (variable frame rate phone recordings with a constant-rate pipeline); av-sync@80 was not retrieved.,"reference (subagent-authored, Claude Opus)"
+baseline,r33,yes,yes,yes,yes,"Correct: setAudioAttributes with handleAudioFocus=true and the resulting behaviour, from audio-focus@40.","reference (subagent-authored, Claude Opus)"
+baseline,r34,no,yes,no,yes,"Fix is right, but the claim that Android shares the speaker through audio focus comes from audio-focus@0, which was not retrieved.","reference (subagent-authored, Claude Opus)"
+baseline,r35,yes,yes,yes,yes,Correct diagnosis: HDR signal reaching an SDR display path without tone mapping; from hdr-tone-mapping passages.,"reference (subagent-authored, Claude Opus)"
+baseline,r36,yes,yes,yes,yes,"Correct: Display.getHdrCapabilities() (API 24), empty list means SDR; from hdr-display-api@0.","reference (subagent-authored, Claude Opus)"
+baseline,r37,no,no,yes,yes,"Abstains; the answer is no, Display.isHdr() is API 26 (stated in hdr-display-api@40, not retrieved).","reference (subagent-authored, Claude Opus)"
+baseline,r38,yes,yes,yes,yes,Correct: TextureView composites via GPU and loses HDR; use SurfaceView for HDR; supported by surface-lifecycle@40 and hdr-tone-mapping@40.,"reference (subagent-authored, Claude Opus)"
+baseline,r39,yes,yes,yes,yes,"Names BT.2020 and the KEY_COLOR_STANDARD/KEY_COLOR_TRANSFER keys; lists PQ or HLG without pinning HDR10 to PQ (ST2084), but essentially right.","reference (subagent-authored, Claude Opus)"
+baseline,r40,yes,yes,yes,yes,"Correct: hardware AV1 depends on the SoC, not Android version; from av1-decoding@0 and @40.","reference (subagent-authored, Claude Opus)"
+baseline,r41,yes,yes,yes,yes,Correct diagnosis: AV1 support may be software-only and too slow for 4K; from av1-decoding@40.,"reference (subagent-authored, Claude Opus)"
+baseline,r42,yes,yes,yes,yes,Correct: Android 10 (API 29) added the software AV1 decoder; from av1-decoding@0.,"reference (subagent-authored, Claude Opus)"
+baseline,r43,yes,yes,yes,yes,"Correct diagnosis of banding from 8-bit and heavy compression; remedies not retrieved, as it says.","reference (subagent-authored, Claude Opus)"
+baseline,r44,yes,yes,yes,yes,"Correct banding remedies (10-bit, more bitrate, dithering/gradfun), from color-banding@40.","reference (subagent-authored, Claude Opus)"
+baseline,r45,no,no,yes,yes,Abstains; the answer is blocking artifacts from too low a bitrate. Retrieval missed blocking-artifacts.,"reference (subagent-authored, Claude Opus)"
+baseline,r46,no,no,yes,yes,"No passages retrieved; faithful abstention, but question is answerable (lower resolution, keep deblocking, more efficient codec).","reference (subagent-authored, Claude Opus)"
+baseline,r47,yes,yes,yes,yes,"Gives the key fact: HDR capture depends on the camera, DynamicRangeProfiles on API 33+ (a Camera2 API); from hdr-capture@0.","reference (subagent-authored, Claude Opus)"
+baseline,r48,yes,yes,yes,yes,Correct: fall back to VP9/HEVC/H.264 when AV1 is software-only; fully supported by av1-decoding passages.,"reference (subagent-authored, Claude Opus)"
+improved,r01,yes,yes,yes,yes,"Correct decoder-pool diagnosis and fixes, all from codec-instance-limits#1 and #2; notes no device-specific limit.","reference (subagent-authored, Claude Opus)"
+improved,r02,yes,yes,yes,yes,"Correct diagnosis and fixes, including getMaxSupportedInstances(), all supported by codec-instance-limits passages.","reference (subagent-authored, Claude Opus)"
+improved,r03,yes,yes,yes,yes,Correctly explains isTransient vs isRecoverable vs release; all from mediacodec-errors#1.,"reference (subagent-authored, Claude Opus)"
+improved,r04,yes,yes,yes,yes,diagnosticInfo names the failing component (e.g. c2.qti.avc.decoder); supported by mediacodec-errors#3.,"reference (subagent-authored, Claude Opus)"
+improved,r05,yes,yes,yes,yes,Points to CodecCapabilities.profileLevels for HEVC Main10 L5.1; supported by codec-capabilities#2.,"reference (subagent-authored, Claude Opus)"
+improved,r06,no,no,yes,yes,Declines; never gives the real check (VideoCapabilities.areSizeAndRateSupported / PerformancePoint). AV1 aside is grounded but does not answer.,"reference (subagent-authored, Claude Opus)"
+improved,r07,no,no,yes,yes,"Declines; the answer is CodecCapabilities.getMaxSupportedInstances() (API 23), which it does not give. Claims are grounded.","reference (subagent-authored, Claude Opus)"
+improved,r08,yes,yes,yes,yes,"Holding output buffers stalls the decoder; release them, queue input from onInputBufferAvailable. Supported by mediacodec-async#2.","reference (subagent-authored, Claude Opus)"
+improved,r09,yes,yes,yes,yes,setCallback before configure; matches mediacodec-async#1.,"reference (subagent-authored, Claude Opus)"
+improved,r10,yes,yes,yes,yes,Surface destroyed while the codec renders; stop/reconfigure or setOutputSurface first. Supported by surface-lifecycle#1.,"reference (subagent-authored, Claude Opus)"
+improved,r11,no,no,yes,yes,"Declines; misses low-latency decoding (FEATURE_LowLatency / KEY_LOW_LATENCY, API 30). Refusal is faithful since passages are off-topic.","reference (subagent-authored, Claude Opus)"
+improved,r12,yes,yes,yes,yes,"Yes, tunneled playback (FEATURE_TunneledPlayback) syncs in hardware; supported by tunneled-playback#1.","reference (subagent-authored, Claude Opus)"
+improved,r13,no,no,yes,yes,Declines; the API is MediaCodecInfo.isHardwareAccelerated() (API 29). Statements it makes are grounded.,"reference (subagent-authored, Claude Opus)"
+improved,r14,yes,yes,yes,yes,"Correct: secure-path frames are hidden from screen recording, not a decoder fault; supported by secure-decoders#2.","reference (subagent-authored, Claude Opus)"
+improved,r15,yes,yes,yes,yes,Identifies BehindLiveWindow after background and gives seekToDefaultPosition()+prepare(); supported by behind-live-window#1/#2.,"reference (subagent-authored, Claude Opus)"
+improved,r16,yes,yes,yes,yes,"Recovery via onPlayerError, seekToDefaultPosition(), prepare(); supported by behind-live-window#2.","reference (subagent-authored, Claude Opus)"
+improved,r17,yes,yes,yes,yes,Lower targetOffsetMs in LiveConfiguration and speed-based catch-up; supported by live-latency#1/#2.,"reference (subagent-authored, Claude Opus)"
+improved,r18,yes,yes,yes,yes,Explains Media3 live speed adjustment toward the target offset; supported by live-latency#2.,"reference (subagent-authored, Claude Opus)"
+improved,r19,yes,yes,yes,yes,moov at end; check with ffprobe and remux with +faststart; supported by mp4-faststart#1-3.,"reference (subagent-authored, Claude Opus)"
+improved,r20,yes,yes,yes,yes,ffprobe -v trace and check moov before mdat; supported by mp4-faststart#2.,"reference (subagent-authored, Claude Opus)"
+improved,r21,yes,yes,yes,yes,Yes; fMP4/CMAF serves both HLS and DASH and enables fast start and rendition switching; supported by fragmented-mp4#1/#2.,"reference (subagent-authored, Claude Opus)"
+improved,r22,no,no,yes,yes,"Declines; misses ABR/track selector constraints (e.g. max video size, viewport, bandwidth estimate, device capability). Passages off-topic so refusal is faithful.","reference (subagent-authored, Claude Opus)"
+improved,r23,no,no,yes,yes,"Hedges with secure-decoder note but misses the main cause, Widevine L3 devices getting SD only; not a useful answer though grounded.","reference (subagent-authored, Claude Opus)"
+improved,r24,yes,yes,yes,yes,"MediaDrm(WIDEVINE_UUID).getPropertyString(""securityLevel""); supported by widevine-levels#2.","reference (subagent-authored, Claude Opus)"
+improved,r25,yes,yes,yes,yes,Explains missing provisioning certificate and that Media3 provisions automatically; supported by widevine-provisioning#1.,"reference (subagent-authored, Claude Opus)"
+improved,r26,yes,yes,yes,yes,Unlocked bootloader drops device to L3 so HD keys are refused; grounded in widevine-levels#1/#2 with a fair caveat about rooting.,"reference (subagent-authored, Claude Opus)"
+improved,r27,yes,yes,yes,yes,Missing audio focus handling; Media3 handleAudioFocus or manual AudioFocusRequest; supported by audio-focus#1-3.,"reference (subagent-authored, Claude Opus)"
+improved,r28,yes,yes,yes,yes,Duck (lower volume); Media3 does it automatically; supported by audio-focus#2/#3.,"reference (subagent-authored, Claude Opus)"
+improved,r29,yes,yes,yes,yes,ACTION_AUDIO_BECOMING_NOISY or setHandleAudioBecomingNoisy(true); supported by audio-routing#1.,"reference (subagent-authored, Claude Opus)"
+improved,r30,yes,yes,yes,yes,Bluetooth output latency; schedule video from audio sink timestamps; supported by audio-routing#2.,"reference (subagent-authored, Claude Opus)"
+improved,r31,yes,yes,yes,yes,Constant offset from start means start_time mismatch; check with ffprobe -show_streams and remux; supported by av-sync#2.,"reference (subagent-authored, Claude Opus)"
+improved,r32,yes,yes,yes,yes,VFR recordings and byte-counting renderers cause drift; use AudioTrack.getTimestamp(); supported by av-sync#1/#3.,"reference (subagent-authored, Claude Opus)"
+improved,r33,yes,yes,yes,yes,setAudioAttributes with handleAudioFocus=true and its behaviour; supported by audio-focus#2.,"reference (subagent-authored, Claude Opus)"
+improved,r34,yes,yes,yes,yes,Player not requesting audio focus; enable Media3 focus handling; supported by audio-focus#1/#2.,"reference (subagent-authored, Claude Opus)"
+improved,r35,yes,yes,yes,yes,"SDR display path without conversion, TextureView flattening, tone-map or SDR rendition; supported by hdr-tone-mapping#1-3.","reference (subagent-authored, Claude Opus)"
+improved,r36,yes,yes,yes,yes,Display.getHdrCapabilities() (API 24); supported by hdr-display-api#1.,"reference (subagent-authored, Claude Opus)"
+improved,r37,yes,yes,yes,yes,"No, isHdr is API 26; getHdrCapabilities is API 24; supported by hdr-display-api#1/#2.","reference (subagent-authored, Claude Opus)"
+improved,r38,yes,yes,yes,yes,"TextureView GPU composition flattens HDR, use SurfaceView; supported by hdr-tone-mapping#2 and surface-lifecycle#2.","reference (subagent-authored, Claude Opus)"
+improved,r39,yes,yes,yes,yes,BT.2020 standard and PQ transfer in KEY_COLOR_STANDARD/KEY_COLOR_TRANSFER; supported by hdr-tone-mapping#1.,"reference (subagent-authored, Claude Opus)"
+improved,r40,yes,yes,yes,yes,"Correctly says hardware AV1 depends on SoC, not Android version; software decoder since Android 10; supported by av1-decoding#1/#2.","reference (subagent-authored, Claude Opus)"
+improved,r41,yes,yes,yes,yes,Likely the CPU software AV1 decoder too slow for 4K; supported by av1-decoding#1/#2.,"reference (subagent-authored, Claude Opus)"
+improved,r42,yes,yes,yes,yes,Android 10 (API 29) added software AV1 decoder; supported by av1-decoding#1.,"reference (subagent-authored, Claude Opus)"
+improved,r43,yes,yes,yes,yes,"Identifies banding and gives 10-bit, bitrate, dithering/gradfun fixes; supported by color-banding#1/#2.","reference (subagent-authored, Claude Opus)"
+improved,r44,yes,yes,yes,yes,"Banding fixes: 10-bit, higher bitrate, dithering/debanding; supported by color-banding#1/#2.","reference (subagent-authored, Claude Opus)"
+improved,r45,no,no,yes,yes,Declines; the issue is low-bitrate blocking artifacts (ABR picking a low-bitrate rendition). Passages off-topic so refusal is faithful.,"reference (subagent-authored, Claude Opus)"
+improved,r46,no,no,yes,yes,"No passages; declines rather than guessing. Faithful but gives no answer (raise bitrate/lower resolution, deblocking, more efficient codec).","reference (subagent-authored, Claude Opus)"
+improved,r47,yes,yes,yes,yes,Yes on API 33+ via DynamicRangeProfiles plus 10-bit HEVC encoder profile; supported by hdr-capture#1/#2.,"reference (subagent-authored, Claude Opus)"
+improved,r48,yes,yes,yes,yes,"Yes, check isHardwareAccelerated and fall back to VP9/HEVC/H.264; supported by av1-decoding#3/#1.","reference (subagent-authored, Claude Opus)"

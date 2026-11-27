@@ -1045,6 +1045,11 @@ def render_monitor() -> str:
     return "\n".join(lines)
 
 
+def _rate(k: int, n: int) -> str:
+    """k/n to two decimals, or "n/a (0/0)" when there is nothing to estimate it from."""
+    return f"{k / n:.2f}" if n else "n/a (0/0)"
+
+
 def render_judge() -> str:
     tp, fn, fp, tn = judge_on_new_traffic()
     val = judge_validation()
@@ -1054,7 +1059,8 @@ def render_judge() -> str:
     lines = [
         f"Online judge: {ONLINE_JUDGE} on a {int(JUDGE_RATE * 100)}% random sample "
         f"({len(judged_sample())} of {len(traffic())} requests; it applies where a tool succeeded).",
-        f"Correction uses module 5's test split: TPR {vtp / vpos:.2f}, TNR {vtn / vneg:.2f} (n={len(val)}).",
+        f"Correction uses module 5's test split: TPR {_rate(vtp, vpos)}, TNR {_rate(vtn, vneg)} "
+        f"(n={len(val)}).",
         "",
         "period            n   observed  corrected [95% CI]       truth (simulation only)",
     ]

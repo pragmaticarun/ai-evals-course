@@ -420,10 +420,15 @@ def main(argv: list[str] | None = None) -> int:
         disc = discordant_share()
         print(f"v1 pass rate {p1:.2f} on {n} queries; v1/v2 discordant share {disc:.2f}")
         print(f"queries for a +/-5-point interval on one rate: {n_for_halfwidth(p1, 0.05)}")
+        p2 = p1 + 0.05 if p1 + 0.05 <= 1 else p1 - 0.05  # a 5-point change that fits in [0, 1]
         print(
-            f"to detect {p1:.2f} -> {p1 + 0.05:.2f} (80% power, alpha 0.05): "
-            f"{n_two_proportions(p1, p1 + 0.05)} per prompt on separate queries, "
-            f"{n_paired(disc, 0.05)} shared queries if paired"
+            f"to detect {p1:.2f} -> {p2:.2f} (80% power, alpha 0.05): "
+            f"{n_two_proportions(p1, p2)} per prompt on separate queries, "
+            + (
+                f"{n_paired(disc, 0.05)} shared queries if paired"
+                if disc > 0.05
+                else f"and pairing cannot detect it: the prompts disagree on only {disc:.0%} of queries"
+            )
         )
         print(
             f"smallest detectable change with {n} queries: {mdd_two_proportions(n, p1):.3f} unpaired, "

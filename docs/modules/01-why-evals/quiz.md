@@ -20,17 +20,20 @@ Eight questions. Answer each in your head (or on paper), then expand to check.
     False. It is a set-membership test. Code checks are free, instant, and exactly right; save judges for fuzzy
     criteria.
 
-**4. In the worked example, v2 fixed the two answers it targeted. Why was it still the wrong change?**
+**4. In the worked example, v1 and v2 both pass 19 of 20 and the per-case diff is empty. Does that mean v2 changed nothing?**
 
 ??? question "Answer"
-    It broke three answers that previously passed (it dropped the `Sources:` line), and overall it went from 16/20
-    to 15/20. Only a fixed case set with a per-case diff makes that visible.
+    No. v2 shortened all 20 answers to about half their length; the checks just give the same verdicts. An empty
+    diff means nothing changed on what your checks measure (format, citations, length). Whether the shorter answers
+    are still useful needs reading outputs, or a validated judge. And had v2 dropped `Sources:` lines, only the
+    per-case diff would have named the broken cases if a fix elsewhere kept the total flat.
 
-**5. q05 passes all three code checks. What does that tell you about code checks?**
+**5. q05 passes all three code checks, and it is correct. Why does passing the checks not tell you it is correct?**
 
 ??? question "Answer"
-    They verify shape, not truth. Factual consistency needs reading outputs, and later a judge validated
-    against human labels.
+    Code checks verify shape, not truth: an answer making the opposite AV1 claim in the same format, citing the same
+    note, would pass all three just as well. Factual consistency needs reading outputs against the knowledge base,
+    and later a judge validated against human labels.
 
 **6. In replay mode, what happens if you change the model ID in `config/models.toml`?**
 

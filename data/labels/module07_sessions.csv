@@ -1,33 +1,33 @@
 session_id,resolved,gave_up_early,re_ask,needless_question,simulator_issue,note,annotator
-c01-v1,no,no,no,no,,assumed instead of asking; wrong cause,reference (synthetic-authored)
-c02-v1,yes,no,no,no,,diagnosed from the opening,reference (synthetic-authored)
-c03-v1,yes,no,no,no,,"asked once, then diagnosed",reference (synthetic-authored)
-c04-v1,yes,no,no,no,,diagnosed from the opening,reference (synthetic-authored)
-c05-v1,no,no,no,no,,assumed instead of asking; wrong cause,reference (synthetic-authored)
-c06-v1,no,yes,no,no,,gave up at once; one question would have unlocked it,reference (synthetic-authored)
-c07-v1,no,no,no,no,,assumed instead of asking; wrong cause,reference (synthetic-authored)
-c08-v1,yes,no,no,no,,diagnosed from the opening,reference (synthetic-authored)
-c09-v1,yes,no,no,no,,"asked once, then diagnosed",reference (synthetic-authored)
-c10-v1,no,yes,no,no,,gave up at once; one question would have unlocked it,reference (synthetic-authored)
-c11-v1,no,yes,no,no,,gave up at once; one question would have unlocked it,reference (synthetic-authored)
-c12-v1,yes,no,no,no,,diagnosed from the opening,reference (synthetic-authored)
-c13-v1,no,yes,no,no,,gave up at once; one question would have unlocked it,reference (synthetic-authored)
-c14-v1,yes,no,no,no,,diagnosed from the opening,reference (synthetic-authored)
-c15-v1,yes,no,no,no,,diagnosed without asking (a lucky guess),reference (synthetic-authored)
-c16-v1,yes,no,no,no,,diagnosed without asking (a lucky guess),reference (synthetic-authored)
-c01-v2,yes,no,no,no,,"asked for each missing fact, then diagnosed",reference (synthetic-authored)
-c02-v2,yes,no,no,no,,diagnosed from the opening,reference (synthetic-authored)
-c03-v2,yes,no,no,no,,"asked for each missing fact, then diagnosed",reference (synthetic-authored)
-c04-v2,yes,no,yes,yes,,asked for a fact already in the opening,reference (synthetic-authored)
-c05-v2,yes,no,yes,no,,asked again for a fact the user had just given,reference (synthetic-authored)
-c06-v2,no,yes,no,no,,"asked, got the fact, then gave up",reference (synthetic-authored)
-c07-v2,yes,no,no,no,volunteered a fact that was not asked for,"the simulated user leaked the second fact, so the agent never had to ask",reference (synthetic-authored)
-c08-v2,yes,no,no,no,,diagnosed from the opening,reference (synthetic-authored)
-c09-v2,yes,no,no,no,,"asked for each missing fact, then diagnosed",reference (synthetic-authored)
-c10-v2,yes,no,no,no,,"asked for each missing fact, then diagnosed",reference (synthetic-authored)
-c11-v2,no,yes,no,no,,gave up at once; one question would have unlocked it,reference (synthetic-authored)
-c12-v2,yes,no,yes,yes,,asked for a fact already in the opening,reference (synthetic-authored)
-c13-v2,no,no,no,no,contradicted its own facts,the simulated user gave a wrong fact; the agent's wrong answer follows from it,reference (synthetic-authored)
-c14-v2,yes,no,no,no,,diagnosed from the opening,reference (synthetic-authored)
-c15-v2,yes,no,no,no,,"asked for each missing fact, then diagnosed",reference (synthetic-authored)
-c16-v2,no,yes,no,no,,gave up at once; one question would have unlocked it,reference (synthetic-authored)
+c01-v1,yes,no,no,no,,Answered without asking; correctly guessed software-only AV1 decoder can't keep up and gave a usable fallback-rendition fix.,"reference (subagent-authored, Claude Opus)"
+c01-v2,yes,no,no,no,,"Asked one needed question covering clip and decoders, then correctly diagnosed the 1080p30 software decoder limit and gave a capability-based rendition fix.","reference (subagent-authored, Claude Opus)"
+c02-v1,yes,no,no,no,,All details given; correct software-decoder diagnosis and lower-rendition/HEVC fallback without asking.,"reference (subagent-authored, Claude Opus)"
+c02-v2,yes,no,no,no,,"All details given; correct diagnosis with pixel-rate reasoning and rendition/codec fallback, no question.","reference (subagent-authored, Claude Opus)"
+c03-v1,yes,no,no,no,,Correctly guessed moov after mdat without asking and gave the +faststart remux fix.,"reference (subagent-authored, Claude Opus)"
+c03-v2,yes,no,no,no,,"Asked for box order (needed), then confirmed moov after mdat and gave the faststart remux with verification.","reference (subagent-authored, Claude Opus)"
+c04-v1,yes,no,no,no,,Layout given; correct moov-at-end diagnosis and faststart fix.,"reference (subagent-authored, Claude Opus)"
+c04-v2,yes,no,no,no,,Layout given; correct moov-at-end diagnosis and faststart fix.,"reference (subagent-authored, Claude Opus)"
+c05-v1,no,yes,no,no,,"Answered without asking for the stream start times; lists several possible causes (start times, edit lists, audio latency) and only a diagnostic step, so no specific diagnosis.","reference (subagent-authored, Claude Opus)"
+c05-v2,yes,no,no,no,,Asked for ffprobe start times; identified the 300 ms video start offset the player must honour and gave a remux/edit-list fix.,"reference (subagent-authored, Claude Opus)"
+c06-v1,no,yes,no,no,,"Answered without asking; hedged between missing tone mapping and missing HDR support and only suggested checking getHdrCapabilities, no fix given.","reference (subagent-authored, Claude Opus)"
+c06-v2,yes,no,no,no,,Asked for HDR format and display caps; diagnosed HDR10 on a non-HDR display without SDR tone mapping and gave tone-map/SDR rendition next step.,"reference (subagent-authored, Claude Opus)"
+c07-v1,yes,no,no,no,,Correctly guessed unreleased codec instances exhausting resources and gave a release-in-finally fix.,"reference (subagent-authored, Claude Opus)"
+c07-v2,yes,no,no,no,,Asked for the error and API; inferred decoders are not released from the insufficient-resources log and gave release/reuse and instance-cap fix.,"reference (subagent-authored, Claude Opus)"
+c08-v1,yes,no,no,no,,All details given; correct unreleased-MediaCodec diagnosis and release fix.,"reference (subagent-authored, Claude Opus)"
+c08-v2,yes,no,no,no,,All details given; correct unreleased-MediaCodec diagnosis and stop/release fix.,"reference (subagent-authored, Claude Opus)"
+c09-v1,yes,no,no,no,,"Without asking, correctly identified falling behind the live window on resume and gave a re-prepare/seek-to-live-edge fix; slightly hedged with stale connection.","reference (subagent-authored, Claude Opus)"
+c09-v2,yes,no,no,no,,Asked for player and error; diagnosed BehindLiveWindowException from falling behind the live window and gave the onPlayerError seekToDefaultPosition/prepare fix.,"reference (subagent-authored, Claude Opus)"
+c10-v1,yes,no,no,no,,Correctly identified missing audio focus handling and gave AudioFocusRequest / ExoPlayer handleAudioFocus fix.,"reference (subagent-authored, Claude Opus)"
+c10-v2,yes,no,no,no,,Same as v1: correct audio focus diagnosis and fix without asking.,"reference (subagent-authored, Claude Opus)"
+c11-v1,yes,no,no,no,,Correctly identified Widevine L3 limited to SD by license policy and gave a security-level check against policy; mentions HDCP as an alternative.,"reference (subagent-authored, Claude Opus)"
+c11-v2,yes,no,no,no,,Asked for security level; with L3 confirmed explained SD cap by design and to check the license policy minimum level.,"reference (subagent-authored, Claude Opus)"
+c12-v1,yes,no,no,no,,L3 given; correct L1-required-for-HD diagnosis and SD fallback next step.,"reference (subagent-authored, Claude Opus)"
+c12-v2,yes,no,no,no,,L3 given; correct L1-required-for-HD diagnosis and SD fallback next step.,"reference (subagent-authored, Claude Opus)"
+c13-v1,no,yes,no,no,,"Answered without asking; generic guess across HEVC Main10, Dolby Vision and AV1 10-bit with only a diagnostic step, no specific diagnosis or fallback.","reference (subagent-authored, Claude Opus)"
+c13-v2,yes,no,no,no,,"Asked format and error; with HEVC Main10 identified missing Main10 profile support, gave profileLevels check and noted 8-bit would work. Never asked for the decoder profile list, so unconfirmed but correct and usable.","reference (subagent-authored, Claude Opus)"
+c14-v1,yes,no,no,no,,Display info given; correct missing tone mapping to SDR diagnosis and tone-map/SDR rendition next step.,"reference (subagent-authored, Claude Opus)"
+c14-v2,yes,no,no,no,,Display info given; correct missing tone mapping to SDR diagnosis and tone-map/SDR rendition next step.,"reference (subagent-authored, Claude Opus)"
+c15-v1,yes,no,no,no,,Correctly identified 8-bit low-bitrate banding without asking and gave 10-bit/bitrate/dither fix.,"reference (subagent-authored, Claude Opus)"
+c15-v2,yes,no,no,no,,Same as v1: correct banding diagnosis and 10-bit/bitrate/dither fix.,"reference (subagent-authored, Claude Opus)"
+c16-v1,yes,no,no,no,,Correctly blamed insufficient bitrate for high motion and advised raising it; also mentions packet loss as an alternative.,"reference (subagent-authored, Claude Opus)"
+c16-v2,yes,no,no,no,,Asked for encode settings; diagnosed 1.5 Mbps CBR as far too low for 1080p60 and advised raising bitrate or capped VBR after checking the source encode.,"reference (subagent-authored, Claude Opus)"

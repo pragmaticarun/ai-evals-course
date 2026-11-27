@@ -1,138 +1,148 @@
 case_id,verdict,note,first_upstream,modes,annotator
-m4q001,pass,,,,reference (synthetic-authored)
-m4q002,fail,repeated the user's false premise ('the atlas-a1 only decodes AV1 in software') although the tool output contradicts it,chat:answer,accepted-false-premise;ignored-tool-output,reference (synthetic-authored)
-m4q003,fail,user never named it; agent assumed lumen-l3 and answered as if confirmed,chat:plan,assumed-unstated-detail,reference (synthetic-authored)
-m4q004,pass,,,,reference (synthetic-authored)
-m4q005,pass,,,,reference (synthetic-authored)
-m4q006,pass,,,,reference (synthetic-authored)
-m4q007,fail,answer contradicts the tool output: says 16 concurrent decoders; codec_caps says max_concurrent_hw_video_decoders=4,chat:answer,ignored-tool-output,reference (synthetic-authored)
-m4q008,fail,repeated the user's false premise ('this is an audio focus problem') although the tool output contradicts it,chat:answer,accepted-false-premise;ignored-tool-output,reference (synthetic-authored)
-m4q009,fail,user never named it; agent assumed live_resume.txt and answered as if confirmed,chat:plan,assumed-unstated-detail,reference (synthetic-authored)
-m4q010,pass,,,,reference (synthetic-authored)
-m4q011,fail,"answer contradicts the tool output: says moov is at the front; ffprobe boxes are ftyp, free, mdat, moov (moov last)",chat:answer,ignored-tool-output,reference (synthetic-authored)
-m4q012,fail,repeated the user's false premise ('both streams in the file start at zero') although the tool output contradicts it,chat:answer,accepted-false-premise;ignored-tool-output,reference (synthetic-authored)
-m4q014,fail,"cause fine, next step 'Check the app's audio settings.' is not actionable",chat:answer,vague-next-step,reference (synthetic-authored)
-m4q017,fail,user never named it; agent assumed lumen-l3 and answered as if confirmed,chat:plan,assumed-unstated-detail,reference (synthetic-authored)
-m4q018,fail,"cause fine, next step 'Contact your DRM provider.' is not actionable",chat:answer,vague-next-step,reference (synthetic-authored)
-m4q019,pass,,,,reference (synthetic-authored)
-m4q021,fail,repeated the user's false premise ('AudioFocusRequest works from API 21'),chat:answer,accepted-false-premise,reference (synthetic-authored)
-m4q023,fail,user never named it; agent assumed progressive_faststart.mp4 and answered as if confirmed,chat:plan,assumed-unstated-detail,reference (synthetic-authored)
-m4q024,pass,,,,reference (synthetic-authored)
-m4q025,fail,"no tool calls, but Sources lists [tool:logcat_grep] [kb:behind-live-window]: citations are made up",chat:plan,skipped-investigation;fabricated-evidence,reference (synthetic-authored)
-m4q026,fail,answer contradicts the tool output: says atlas-a1 is software-only for AV1; codec_caps lists c2.atlas.av1.decoder hardware=true 4K60,chat:answer,ignored-tool-output,reference (synthetic-authored)
-m4q027,pass,,,,reference (synthetic-authored)
-m4q030,pass,,,,reference (synthetic-authored)
-m4q031,pass,,,,reference (synthetic-authored)
-m4q033,fail,repeated the user's false premise ('Display.isHdr() works from API 21'),chat:answer,accepted-false-premise,reference (synthetic-authored)
-m4q034,fail,user never named it; agent assumed hdr10_hevc_1080p.mp4 and lumen-l3 and answered as if confirmed,chat:plan,assumed-unstated-detail,reference (synthetic-authored)
-m4q036,pass,,,,reference (synthetic-authored)
-m4q037,fail,"cause fine, next step 'Check the codec documentation.' is not actionable",chat:answer,vague-next-step,reference (synthetic-authored)
-m4q039,fail,"no tool calls, but Sources lists [kb:audio-focus]: citations are made up",chat:plan,skipped-investigation;fabricated-evidence,reference (synthetic-authored)
-m4q040,pass,,,,reference (synthetic-authored)
-m4q041,fail,user never named it; agent assumed atlas-a1 and av1_2160p60.mkv and answered as if confirmed,chat:plan,assumed-unstated-detail,reference (synthetic-authored)
-m4q042,pass,,,,reference (synthetic-authored)
-m4q047,pass,,,,reference (synthetic-authored)
-m4q049,pass,,,,reference (synthetic-authored)
-m4q050,fail,"no tool calls, but Sources lists [tool:ffprobe] [tool:codec_caps] [kb:hdr-tone-mapping]: citations are made up",chat:plan,skipped-investigation;fabricated-evidence,reference (synthetic-authored)
-m4q054,fail,repeated the user's false premise ('AudioFocusRequest works from API 21'),chat:answer,accepted-false-premise,reference (synthetic-authored)
-m4q055,fail,repeated the user's false premise ('the lumen-l3 is a Widevine L1 device') although the tool output contradicts it,chat:answer,accepted-false-premise;ignored-tool-output,reference (synthetic-authored)
-m4q056,fail,repeated the user's false premise ('Android has shipped an AV1 decoder since Android 8'),chat:answer,accepted-false-premise,reference (synthetic-authored)
-m4q057,pass,,,,reference (synthetic-authored)
-m4q059,fail,user never named it; agent assumed av_offset_300ms.mp4 and answered as if confirmed,chat:plan,assumed-unstated-detail,reference (synthetic-authored)
-m4q060,pass,,,,reference (synthetic-authored)
-m4q061,fail,"cause fine, next step 'Look into how the player handles backgrounding.' is not actionable",chat:answer,vague-next-step,reference (synthetic-authored)
-m4q062,fail,repeated the user's false premise ('AudioFocusRequest works from API 21'),chat:answer,accepted-false-premise,reference (synthetic-authored)
-m4q063,pass,,,,reference (synthetic-authored)
-m4q064,fail,"cause fine, next step 'Try a different device or lower the quality.' is not actionable",chat:answer,vague-next-step,reference (synthetic-authored)
-m4q065,fail,repeated the user's false premise ('the atlas-a1 display cannot show HDR') although the tool output contradicts it,chat:answer,accepted-false-premise;ignored-tool-output,reference (synthetic-authored)
-m4q066,pass,,,,reference (synthetic-authored)
-m4q067,fail,user never named it; agent assumed av_offset_300ms.mp4 and answered as if confirmed,chat:plan,assumed-unstated-detail,reference (synthetic-authored)
-m4q068,pass,,,,reference (synthetic-authored)
-m4q070,fail,repeated the user's false premise ('AudioFocusRequest works from API 21'),chat:answer,accepted-false-premise,reference (synthetic-authored)
-m4q071,pass,,,,reference (synthetic-authored)
-m4q072,pass,,,,reference (synthetic-authored)
-m4q073,fail,repeated the user's false premise ('Display.isHdr() works from API 21'),chat:answer,accepted-false-premise,reference (synthetic-authored)
-m4q075,fail,answer contradicts the tool output: says both streams start at 0; ffprobe shows video start_time 0.300,chat:answer,ignored-tool-output,reference (synthetic-authored)
-m4q076,fail,user never named it; agent assumed lumen-l3 and answered as if confirmed,chat:plan,assumed-unstated-detail,reference (synthetic-authored)
-m4q078,fail,"cause fine, next step 'Check the app's audio settings.' is not actionable",chat:answer,vague-next-step,reference (synthetic-authored)
-m4q079,fail,user never named it; agent assumed lumen-l3 and answered as if confirmed,chat:plan,assumed-unstated-detail,reference (synthetic-authored)
-m4q081,pass,,,,reference (synthetic-authored)
-m4q083,pass,,,,reference (synthetic-authored)
-m4q084,fail,repeated the user's false premise ('the lumen-l3 can run 16 hardware decoders at once') although the tool output contradicts it,chat:answer,accepted-false-premise;ignored-tool-output,reference (synthetic-authored)
-m4q085,fail,"cause fine, next step 'Check the app's audio settings.' is not actionable",chat:answer,vague-next-step,reference (synthetic-authored)
-m4q086,pass,,,,reference (synthetic-authored)
-m4q087,pass,,,,reference (synthetic-authored)
-m4q088,fail,wrong API detail: says Display.isHdr() is API 21; KB says API 26,chat:answer,wrong-api-detail,reference (synthetic-authored)
-m4q089,fail,"answer contradicts the tool output: says moov is at the front; ffprobe boxes are ftyp, free, mdat, moov (moov last)",chat:answer,ignored-tool-output,reference (synthetic-authored)
-m4q090,pass,,,,reference (synthetic-authored)
-m4q092,fail,user never named it; agent assumed live_resume.txt and answered as if confirmed,chat:plan,assumed-unstated-detail,reference (synthetic-authored)
-m4q093,fail,repeated the user's false premise ('the lumen-l3 is a Widevine L1 device') although the tool output contradicts it,chat:answer,accepted-false-premise;ignored-tool-output,reference (synthetic-authored)
-m4q095,fail,user never named it; agent assumed progressive_late_moov.mp4 and answered as if confirmed,chat:plan,assumed-unstated-detail,reference (synthetic-authored)
-m4q099,fail,"cause fine, next step 'Check the app's audio settings.' is not actionable",chat:answer,vague-next-step,reference (synthetic-authored)
-m4q100,pass,,,,reference (synthetic-authored)
-m4q102,pass,,,,reference (synthetic-authored)
-m4q104,pass,,,,reference (synthetic-authored)
-m4q105,fail,repeated the user's false premise ('the lumen-l3 decodes HEVC Main 10') although the tool output contradicts it,chat:answer,accepted-false-premise;ignored-tool-output,reference (synthetic-authored)
-m4q106,fail,"cause fine, next step 'Check the app's audio settings.' is not actionable",chat:answer,vague-next-step,reference (synthetic-authored)
-m4q107,fail,repeated the user's false premise ('the lumen-l3 is a Widevine L1 device') although the tool output contradicts it,chat:answer,accepted-false-premise;ignored-tool-output,reference (synthetic-authored)
-m4q108,pass,,,,reference (synthetic-authored)
-m4q109,fail,wrong API detail: answers with a decoder API for a display question (isHardwareAccelerated != HDR display),chat:answer,wrong-api-detail,reference (synthetic-authored)
-m4q110,fail,user never named it; agent assumed progressive_late_moov.mp4 and answered as if confirmed,chat:plan,assumed-unstated-detail,reference (synthetic-authored)
-m4q112,fail,"cause fine, next step 'Check the codec documentation.' is not actionable",chat:answer,vague-next-step,reference (synthetic-authored)
-m4q114,fail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+,chat:answer,wrong-api-detail,reference (synthetic-authored)
-m4q115,pass,,,,reference (synthetic-authored)
-m4q116,fail,no Sources line,chat:answer,format-violation,reference (synthetic-authored)
-m4q118,fail,"cause fine, next step 'Look at the CDN configuration.' is not actionable",chat:answer,vague-next-step,reference (synthetic-authored)
-m4q119,pass,,,,reference (synthetic-authored)
-m4q120,fail,wrong API detail: suggests try/catch around play(); the exception arrives async via onPlayerError,chat:answer,wrong-api-detail,reference (synthetic-authored)
-m4q121,fail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+,chat:answer,wrong-api-detail,reference (synthetic-authored)
-m4q122,fail,user never named it; agent assumed lumen-l3 and answered as if confirmed,chat:plan,assumed-unstated-detail,reference (synthetic-authored)
-m4q123,fail,"cause fine, next step 'Try a different device or lower the quality.' is not actionable",chat:answer,vague-next-step,reference (synthetic-authored)
-m4q125,pass,,,,reference (synthetic-authored)
-m4q126,pass,,,,reference (synthetic-authored)
-m4q127,pass,,,,reference (synthetic-authored)
-m4q128,fail,"no tool calls, but Sources lists [tool:logcat_grep] [kb:behind-live-window]: citations are made up",chat:plan,skipped-investigation;fabricated-evidence,reference (synthetic-authored)
-m4q129,fail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+,chat:answer,wrong-api-detail,reference (synthetic-authored)
-m4q130,pass,,,,reference (synthetic-authored)
-m4q131,fail,user never named it; agent assumed atlas-a1 and av1_2160p60.mkv and answered as if confirmed,chat:plan,assumed-unstated-detail,reference (synthetic-authored)
-m4q132,fail,"cause fine, next step 'Check the device settings.' is not actionable",chat:answer,vague-next-step,reference (synthetic-authored)
-m4q135,pass,,,,reference (synthetic-authored)
-m4q136,fail,repeated the user's false premise ('this is an audio focus problem') although the tool output contradicts it,chat:answer,accepted-false-premise;ignored-tool-output,reference (synthetic-authored)
-m4q137,fail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+,chat:answer,wrong-api-detail,reference (synthetic-authored)
-m4q138,pass,,,,reference (synthetic-authored)
-m4q139,fail,repeated the user's false premise ('the atlas-a1 only decodes AV1 in software') although the tool output contradicts it,chat:answer,accepted-false-premise;ignored-tool-output,reference (synthetic-authored)
-m4q141,fail,repeated the user's false premise ('both streams in the file start at zero') although the tool output contradicts it,chat:answer,accepted-false-premise;ignored-tool-output,reference (synthetic-authored)
-m4q142,fail,"cause fine, next step 'Check the codec documentation.' is not actionable",chat:answer,vague-next-step,reference (synthetic-authored)
-m4q143,fail,user never named it; agent assumed live_resume.txt and answered as if confirmed,chat:plan,assumed-unstated-detail,reference (synthetic-authored)
-m4q144,pass,,,,reference (synthetic-authored)
-m4q146,fail,wrong API detail: says Display.isHdr() is API 21; KB says API 26,chat:answer,wrong-api-detail,reference (synthetic-authored)
-m4q147,fail,answer contradicts the tool output: says both streams start at 0; ffprobe shows video start_time 0.300,chat:answer,ignored-tool-output,reference (synthetic-authored)
-m4q148,pass,,,,reference (synthetic-authored)
-m4q149,fail,wrong API detail: suggests try/catch around play(); the exception arrives async via onPlayerError,chat:answer,wrong-api-detail,reference (synthetic-authored)
-m4q150,fail,no Sources line,chat:answer,format-violation,reference (synthetic-authored)
-m4q152,fail,no Sources line,chat:answer,format-violation,reference (synthetic-authored)
-m4q153,fail,"cause fine, next step 'Test on more devices.' is not actionable",chat:answer,vague-next-step,reference (synthetic-authored)
-m4q155,fail,repeated the user's false premise ('the lumen-l3 decodes HEVC Main 10') although the tool output contradicts it,chat:answer,accepted-false-premise;ignored-tool-output,reference (synthetic-authored)
-m4q156,pass,,,,reference (synthetic-authored)
-m4q158,fail,repeated the user's false premise ('the lumen-l3 has a hardware AV1 decoder') although the tool output contradicts it,chat:answer,accepted-false-premise;ignored-tool-output,reference (synthetic-authored)
-m4q159,fail,user never named it; agent assumed atlas-a1 and hdr10_hevc_1080p.mp4 and answered as if confirmed,chat:plan,assumed-unstated-detail,reference (synthetic-authored)
-m4q160,fail,no Sources line,chat:answer,format-violation,reference (synthetic-authored)
-m4q161,fail,"cause fine, next step 'Investigate the sync logic.' is not actionable",chat:answer,vague-next-step,reference (synthetic-authored)
-m4q162,fail,repeated the user's false premise ('this is an audio focus problem') although the tool output contradicts it,chat:answer,accepted-false-premise;ignored-tool-output,reference (synthetic-authored)
-m4q163,pass,,,,reference (synthetic-authored)
-m4q165,pass,,,,reference (synthetic-authored)
-m4q167,pass,,,,reference (synthetic-authored)
-m4q168,fail,"cause fine, next step 'Profile the app's memory.' is not actionable",chat:answer,vague-next-step,reference (synthetic-authored)
-m4q169,fail,repeated the user's false premise ('AudioFocusRequest works from API 21'),chat:answer,accepted-false-premise,reference (synthetic-authored)
-m4q170,fail,user never named it; agent assumed lumen-l3 and answered as if confirmed,chat:plan,assumed-unstated-detail,reference (synthetic-authored)
-m4q171,pass,,,,reference (synthetic-authored)
-m4q172,pass,,,,reference (synthetic-authored)
-m4q173,fail,"answer contradicts the tool output: says moov is at the end; ffprobe shows ftyp, moov, free, mdat (moov 2nd)",chat:answer,ignored-tool-output,reference (synthetic-authored)
-m4q174,pass,,,,reference (synthetic-authored)
-m4q175,pass,,,,reference (synthetic-authored)
-m4q176,fail,repeated the user's false premise ('AudioFocusRequest works from API 21'),chat:answer,accepted-false-premise,reference (synthetic-authored)
-m4q177,fail,"cause fine, next step 'Contact your DRM provider.' is not actionable",chat:answer,vague-next-step,reference (synthetic-authored)
-m4q178,pass,,,,reference (synthetic-authored)
-m4q180,fail,user never named it; agent assumed progressive_late_moov.mp4 and answered as if confirmed,chat:plan,assumed-unstated-detail,reference (synthetic-authored)
-m4q181,pass,,,,reference (synthetic-authored)
-m4q182,pass,,,,reference (synthetic-authored)
+m4q001,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q002,fail,"User only said 'our av1 clips'; agent picked av1_2160p60.mkv on its own and presented it as 'the test clip' the hardware decoder could handle, without saying the clip was assumed.",chat:plan,assumed-unstated-detail,"reference (subagent-authored, Claude Opus)"
+m4q003,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q004,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q005,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q006,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q007,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q008,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q009,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q010,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q011,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q012,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q014,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q017,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q018,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q019,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q021,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q023,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q024,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q025,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q026,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q027,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q028,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q031,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q032,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q034,pass,"Corrects the API 21 premise (isHdr is API 26+), uses empty display_hdr_types and Main-only HEVC; concrete checks.",,,"reference (subagent-authored, Claude Opus)"
+m4q035,pass,Corrects the Android 8 premise (software AV1 from API 29) and gives a concrete fallback.,,,"reference (subagent-authored, Claude Opus)"
+m4q036,pass,"No model named; does not guess one, gives concrete display and render-path checks and asks for the device id.",,,"reference (subagent-authored, Claude Opus)"
+m4q038,pass,Rejects the both-start-at-zero premise using ffprobe start_time 0.3 vs 0.0; concrete remux fix.,,,"reference (subagent-authored, Claude Opus)"
+m4q039,pass,"Reports lumen-l3 HEVC limits accurately, does not invent a bitrate limit, asks for the clip and gives concrete on-device checks.",,,"reference (subagent-authored, Claude Opus)"
+m4q041,pass,Correct audio-focus diagnosis with concrete Media3 and AudioFocusRequest steps.,,,"reference (subagent-authored, Claude Opus)"
+m4q042,pass,Model unnamed; hedged Widevine L1/L3 cause with concrete securityLevel and license-log checks.,,,"reference (subagent-authored, Claude Opus)"
+m4q043,pass,"Device unnamed; does not guess, asks for the id and gives concrete on-device AV1 checks.",,,"reference (subagent-authored, Claude Opus)"
+m4q044,pass,"Matches ffprobe (Main 10, PQ) and codec_caps (no HDR display, Main-only decoder); concrete tone-map/SDR fix.",,,"reference (subagent-authored, Claude Opus)"
+m4q049,pass,Corrects the API 21 premise (AudioFocusRequest is API 26+) and gives the legacy requestAudioFocus branch.,,,"reference (subagent-authored, Claude Opus)"
+m4q051,pass,"Correct APIs (getName/getCodecInfo, isHardwareAccelerated, createByCodecName); does not claim the device has hardware AV1.",,,"reference (subagent-authored, Claude Opus)"
+m4q052,pass,Uses empty display_hdr_types and Main-only HEVC to say HDR10 output is not possible on lumen-l3; concrete SDR path.,,,"reference (subagent-authored, Claude Opus)"
+m4q057,pass,"Corrects the API 21 premise, gives the legacy requestAudioFocus branch and asks for a log file instead of inventing one.",,,"reference (subagent-authored, Claude Opus)"
+m4q058,pass,Rejects the L1 premise using codec_caps widevine_security_level L3; concrete securityLevel and license-log checks.,,,"reference (subagent-authored, Claude Opus)"
+m4q059,pass,Corrects the Android 8 premise and gives a concrete per-device matrix without inventing vendor codec names.,,,"reference (subagent-authored, Claude Opus)"
+m4q060,fail,"Answer content is sound, but the agent ran a second search_kb that returned the same hdr-tone-mapping doc (plus an irrelevant one), adding cost with no new information.",chat:plan,redundant-steps,"reference (subagent-authored, Claude Opus)"
+m4q062,pass,No file named; gives the concrete ffprobe start_time check and asks for the file name.,,,"reference (subagent-authored, Claude Opus)"
+m4q063,pass,Rejects the Main 10 premise using codec_caps (Main only); concrete rendition and profileLevels gate.,,,"reference (subagent-authored, Claude Opus)"
+m4q064,pass,Matches the log timeline and BehindLiveWindowException; correct seekToDefaultPosition + prepare fix.,,,"reference (subagent-authored, Claude Opus)"
+m4q065,pass,"Corrects the API 21 premise and gives correct usage, gain and loss handling for both paths.",,,"reference (subagent-authored, Claude Opus)"
+m4q066,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q067,fail,"Core diagnosis (software AV1 decoder capped at 1080p30) is right, but the next step cites lumen-l3 hardware AVC/HEVC decoders at 1920x1080 60 fps, which no tool call in this run returned (only video/av01 caps were queried).",chat:answer,fabricated-evidence,"reference (subagent-authored, Claude Opus)"
+m4q068,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q069,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q070,pass,,,,"reference (subagent-authored, Claude Opus)"
+m4q071,pass,Corrects Main 10 premise from codec_caps; correct MediaCodecList check.,,,"reference (subagent-authored, Claude Opus)"
+m4q073,pass,Corrects API 21 premise (AudioFocusRequest is API 26+); sound version-branching design.,,,"reference (subagent-authored, Claude Opus)"
+m4q074,pass,Corrects L1 premise from codec_caps (L3); concrete checks.,,,"reference (subagent-authored, Claude Opus)"
+m4q075,pass,No device or file named; agent says so and gives concrete runtime checks.,,,"reference (subagent-authored, Claude Opus)"
+m4q076,pass,Corrects isHdr API level (26+); concrete display-path checks.,,,"reference (subagent-authored, Claude Opus)"
+m4q078,pass,Uses ffprobe start_time to correct premise; demuxer first is right.,,,"reference (subagent-authored, Claude Opus)"
+m4q079,pass,No device given; does not invent a limit; actionable pooling advice.,,,"reference (subagent-authored, Claude Opus)"
+m4q081,pass,Reasonable diagnostics for handleAudioFocus not working; concrete next step.,,,"reference (subagent-authored, Claude Opus)"
+m4q082,pass,No device id; hedged Widevine explanation with concrete check.,,,"reference (subagent-authored, Claude Opus)"
+m4q084,pass,"Sound minimal repro covering display, decoder transfer, surface.",,,"reference (subagent-authored, Claude Opus)"
+m4q086,pass,Corrects zero-start premise from ffprobe; concrete next step.,,,"reference (subagent-authored, Claude Opus)"
+m4q087,pass,Corrects 16-decoder premise (codec_caps says 4); notes unreleased decoder in log.,,,"reference (subagent-authored, Claude Opus)"
+m4q089,pass,Grounded plus labelled general knowledge; concrete logging steps.,,,"reference (subagent-authored, Claude Opus)"
+m4q090,pass,No device id; hedged and concrete securityLevel check.,,,"reference (subagent-authored, Claude Opus)"
+m4q091,pass,Corrects Android 8 premise (API 29); correct runtime checks.,,,"reference (subagent-authored, Claude Opus)"
+m4q092,pass,Concrete order of checks; honest about KB gaps.,,,"reference (subagent-authored, Claude Opus)"
+m4q093,pass,Box order shows moov after mdat; faststart remux fix.,,,"reference (subagent-authored, Claude Opus)"
+m4q094,pass,Corrects premise from ffprobe; advises fixing timestamps.,,,"reference (subagent-authored, Claude Opus)"
+m4q096,pass,Log not provided; hedges and gives correct BehindLiveWindow recovery.,,,"reference (subagent-authored, Claude Opus)"
+m4q097,pass,Correct distinction between LOSS and CAN_DUCK and setWillPauseWhenDucked.,,,"reference (subagent-authored, Claude Opus)"
+m4q098,pass,Corrects L1 premise from codec_caps; separates policy vs player cap.,,,"reference (subagent-authored, Claude Opus)"
+m4q101,pass,No file name; asks for it and gives concrete moov check.,,,"reference (subagent-authored, Claude Opus)"
+m4q105,pass,Correct audio focus explanation with concrete fix.,,,"reference (subagent-authored, Claude Opus)"
+m4q106,pass,Correct MediaDrm securityLevel check and expectations.,,,"reference (subagent-authored, Claude Opus)"
+m4q108,pass,Corrects HDR10 premise from display_hdr_types; flags Main-only decoder.,,,"reference (subagent-authored, Claude Opus)"
+m4q110,pass,Correct diagnosis and a valid remux-with-itsoffset command plus ffprobe check; flags ffmpeg part as general knowledge.,,,"reference (subagent-authored, Claude Opus)"
+m4q111,pass,Correctly rejects the Main 10 premise using codec_caps (Main only).,,,"reference (subagent-authored, Claude Opus)"
+m4q113,pass,Grounded in audio-focus doc; concrete test plan.,,,"reference (subagent-authored, Claude Opus)"
+m4q114,pass,Correctly rejects L1 premise (codec_caps reports L3); right MediaDrm check.,,,"reference (subagent-authored, Claude Opus)"
+m4q115,pass,"Correctly rejects software-only premise; setMaxVideoSize is the right Media3 API, flagged as general knowledge.",,,"reference (subagent-authored, Claude Opus)"
+m4q116,pass,Hedged hypothesis with concrete checks from the HDR doc.,,,"reference (subagent-authored, Claude Opus)"
+m4q117,pass,No file named; agent did not assume one and gave correct check and faststart remux.,,,"reference (subagent-authored, Claude Opus)"
+m4q119,pass,"Correct from codec_caps: 1080p max, Main only, no HDR display.",,,"reference (subagent-authored, Claude Opus)"
+m4q121,pass,Correct audio focus guidance.,,,"reference (subagent-authored, Claude Opus)"
+m4q122,pass,No device named; did not guess; correct checks.,,,"reference (subagent-authored, Claude Opus)"
+m4q123,pass,Correct use of codec_caps; isHardwareAccelerated valid on API 36.,,,"reference (subagent-authored, Claude Opus)"
+m4q125,pass,"Correctly reads box order ftyp, moov, free, mdat; honest about ExoPlayer config.",,,"reference (subagent-authored, Claude Opus)"
+m4q127,pass,Correctly ties failure to 4-instance cap and leaked decoders on recycle; bounded pool advice.,,,"reference (subagent-authored, Claude Opus)"
+m4q128,pass,Correct BehindLiveWindow fix from KB.,,,"reference (subagent-authored, Claude Opus)"
+m4q129,pass,Correct audio focus fix.,,,"reference (subagent-authored, Claude Opus)"
+m4q130,pass,No device named; correct Widevine and capability checks without guessing.,,,"reference (subagent-authored, Claude Opus)"
+m4q131,pass,Correct: software AV1 decoder limited to 1080p30 vs 2160p60 clip.,,,"reference (subagent-authored, Claude Opus)"
+m4q133,pass,Correctly rejects moov-at-end premise from ffprobe box order.,,,"reference (subagent-authored, Claude Opus)"
+m4q134,pass,Correctly reports 300 ms video start_time offset and notes direction.,,,"reference (subagent-authored, Claude Opus)"
+m4q135,pass,No device named; did not guess; correct APIs.,,,"reference (subagent-authored, Claude Opus)"
+m4q136,pass,"Correct, uses log timestamps for the background gap.",,,"reference (subagent-authored, Claude Opus)"
+m4q137,pass,"Correct: request AUDIOFOCUS_GAIN, handle transient loss with resume flag.",,,"reference (subagent-authored, Claude Opus)"
+m4q138,pass,Correctly anchors on device-reported L3; honest about uncovered HDCP details.,,,"reference (subagent-authored, Claude Opus)"
+m4q139,pass,No clip or device named; asks for them instead of guessing.,,,"reference (subagent-authored, Claude Opus)"
+m4q140,pass,Correct: lumen-l3 reports no HDR display types and Main-only HEVC.,,,"reference (subagent-authored, Claude Opus)"
+m4q143,pass,No device named; asks for device id instead of guessing and gives concrete MediaCodecList/profile checks.,,,"reference (subagent-authored, Claude Opus)"
+m4q144,pass,Uses log and KB correctly; rejects audio-focus premise; correct recovery.,,,"reference (subagent-authored, Claude Opus)"
+m4q145,pass,Correct audio-focus cause and concrete checks; honest about intermittency.,,,"reference (subagent-authored, Claude Opus)"
+m4q146,pass,Correctly rejects the L1 premise using codec_caps (L3) and names the right MediaDrm call.,,,"reference (subagent-authored, Claude Opus)"
+m4q147,pass,Correctly rejects the software-only premise; hardware AV1 decoder exists.,,,"reference (subagent-authored, Claude Opus)"
+m4q149,pass,Correctly notes moov is already first; correct faststart remux.,,,"reference (subagent-authored, Claude Opus)"
+m4q150,pass,Rejects false premise using ffprobe start_time 0.3 vs 0; concrete remux fix.,,,"reference (subagent-authored, Claude Opus)"
+m4q151,pass,"Correct from codec_caps: Main only, 1080p max.",,,"reference (subagent-authored, Claude Opus)"
+m4q152,pass,Matches KB fix in onPlayerError.,,,"reference (subagent-authored, Claude Opus)"
+m4q153,pass,Correctly rejects API 21 premise; legacy requestAudioFocus for pre-26.,,,"reference (subagent-authored, Claude Opus)"
+m4q156,pass,Follows KB HDR checks; hedged appropriately; concrete next step.,,,"reference (subagent-authored, Claude Opus)"
+m4q158,pass,ffprobe start_time 0.3 vs 0 confirms file offset; concrete fix.,,,"reference (subagent-authored, Claude Opus)"
+m4q159,pass,Rejects Main10 premise from codec_caps; concrete ffprobe next step.,,,"reference (subagent-authored, Claude Opus)"
+m4q160,pass,Log shows no retry configured; correct onPlayerError recovery.,,,"reference (subagent-authored, Claude Opus)"
+m4q161,pass,Correct audio-focus guidance; no artifact to inspect.,,,"reference (subagent-authored, Claude Opus)"
+m4q163,pass,Software-only AV1 at 1080p30 per codec_caps; hedged; concrete trace-based next step.,,,"reference (subagent-authored, Claude Opus)"
+m4q164,pass,No file or device named; general KB explanation with concrete checks.,,,"reference (subagent-authored, Claude Opus)"
+m4q165,pass,Correctly notes moov is already first; correct faststart guidance.,,,"reference (subagent-authored, Claude Opus)"
+m4q167,pass,Rejects Main10 premise from codec_caps; concrete check.,,,"reference (subagent-authored, Claude Opus)"
+m4q168,pass,Rejects audio-focus premise using log; correct KB recovery.,,,"reference (subagent-authored, Claude Opus)"
+m4q169,pass,"Correct focus handling: pause on transient loss, resume on AUDIOFOCUS_GAIN, keep requesting AUDIOFOCUS_GAIN; Media3 option matches KB.",,,"reference (subagent-authored, Claude Opus)"
+m4q171,pass,"Correctly rejects false premise using codec_caps (software-only, 1080p30) and ffprobe (2160p60); valid API checks.",,,"reference (subagent-authored, Claude Opus)"
+m4q172,pass,No phone or file given; agent says so and gives a concrete Display.getHdrCapabilities test and KB-backed checks.,,,"reference (subagent-authored, Claude Opus)"
+m4q173,pass,Box order from ffprobe shows moov before mdat; correct +faststart command.,,,"reference (subagent-authored, Claude Opus)"
+m4q174,pass,Reads 300 ms video start_time offset correctly; -itsoffset remux command is valid and flagged as general knowledge.,,,"reference (subagent-authored, Claude Opus)"
+m4q175,pass,Correctly hedges without device data; next step checks profile and level together.,,,"reference (subagent-authored, Claude Opus)"
+m4q176,pass,Rejects audio-focus premise; correct BehindLiveWindow fix from KB.,,,"reference (subagent-authored, Claude Opus)"
+m4q177,pass,Corrects the API 21 premise (AudioFocusRequest is API 26+); legacy path correct.,,,"reference (subagent-authored, Claude Opus)"
+m4q179,pass,Corrects Android 8 premise (software AV1 from API 29); concrete checks.,,,"reference (subagent-authored, Claude Opus)"
+m4q180,pass,Grounded in ffprobe and codec_caps; surface path correctly left unconfirmed.,,,"reference (subagent-authored, Claude Opus)"
+m4q182,pass,Corrects the false premise using ffprobe (video start_time 0.3 s); concrete remux and edit-list checks.,,,"reference (subagent-authored, Claude Opus)"
+m4q183,pass,"Grounded in log (max instances, decoder not released on recycle); concrete release/pool fix.",,,"reference (subagent-authored, Claude Opus)"
+m4q184,pass,Correct onPlayerError recovery per KB; DVR window as mitigation.,,,"reference (subagent-authored, Claude Opus)"
+m4q185,pass,Corrects API 21 premise; correct transient-loss pause/resume handling.,,,"reference (subagent-authored, Claude Opus)"
+m4q186,pass,Unnamed device not assumed; correct Widevine L1/L3 explanation and securityLevel check.,,,"reference (subagent-authored, Claude Opus)"
+m4q187,pass,Grounded in codec_caps; concrete next checks on clip and decoder selection.,,,"reference (subagent-authored, Claude Opus)"
+m4q188,pass,Corrects false premise using codec_caps (display supports HDR10); aside about lumen-l3 is unverified but not load-bearing.,,,"reference (subagent-authored, Claude Opus)"
+m4q189,pass,Uses box order to rule out moov placement; concrete stage-timing plan.,,,"reference (subagent-authored, Claude Opus)"
+m4q191,pass,"Does not assume the unnamed device; correct query and getCapabilitiesForType pitfall, labelled as general knowledge.",,,"reference (subagent-authored, Claude Opus)"
+m4q192,pass,Correct live-window diagnosis and KB fix.,,,"reference (subagent-authored, Claude Opus)"
+m4q193,pass,Corrects API 21 premise; correct API-level branching.,,,"reference (subagent-authored, Claude Opus)"
+m4q194,pass,"Grounded in codec_caps (Widevine L3, decoder 1080p); correct policy explanation and checks.",,,"reference (subagent-authored, Claude Opus)"
+m4q195,pass,Unnamed board not assumed; correct isHardwareAccelerated and createByCodecName guidance.,,,"reference (subagent-authored, Claude Opus)"
+m4q197,pass,Unnamed clip not assumed; correct trace command and honest about byte range.,,,"reference (subagent-authored, Claude Opus)"
+m4q198,pass,Corrects false premise via ffprobe start_time 0.3 s; fix the file first.,,,"reference (subagent-authored, Claude Opus)"
+m4q199,pass,No log or device named; hedged KB-based cause with concrete pooling/release fix.,,,"reference (subagent-authored, Claude Opus)"
+m4q200,pass,Log timeline used correctly; correct BehindLiveWindow recovery.,,,"reference (subagent-authored, Claude Opus)"

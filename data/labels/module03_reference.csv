@@ -1,101 +1,101 @@
 case_id,verdict,note,first_upstream,modes,annotator
-m3t001,fail,wrong file name 'faststart.mp4' -> tool error -> agent gave up and guessed,execute_tool ffprobe,wrong-tool-args,reference (synthetic-authored)
-m3t002,fail,uses the hdcpLevel property for security level; that's HDCP — should be securityLevel,chat:answer,wrong-api-detail,reference (synthetic-authored)
-m3t003,fail,"says moov is at the front; ffprobe boxes are ftyp, free, mdat, moov (moov last)",chat:answer,ignored-tool-output,reference (synthetic-authored)
-m3t004,fail,"says moov is at the end; ffprobe shows ftyp, moov, free, mdat (moov 2nd)",chat:answer,ignored-tool-output,reference (synthetic-authored)
-m3t005,fail,next step has a wrong API claim - says flush() frees the decoder instance — it only clears buffers; release() frees it,chat:answer,wrong-api-detail,reference (synthetic-authored)
-m3t006,pass,,,,reference (synthetic-authored)
-m3t007,pass,,,,reference (synthetic-authored)
-m3t008,fail,3 search_kb calls returning the same docs before answering; answer itself ok,chat:plan,redundant-steps,reference (synthetic-authored)
-m3t009,pass,,,,reference (synthetic-authored)
-m3t010,fail,wrong device name 'atlas_a1' -> tool error -> agent gave up and guessed,execute_tool codec_caps,wrong-tool-args,reference (synthetic-authored)
-m3t011,pass,,,,reference (synthetic-authored)
-m3t012,pass,,,,reference (synthetic-authored)
-m3t013,pass,,,,reference (synthetic-authored)
-m3t014,fail,no tool calls although the question names atlas-a1 / av1_2160p60.mkv; generic answer,chat:plan,skipped-investigation,reference (synthetic-authored)
-m3t015,pass,,,,reference (synthetic-authored)
-m3t016,pass,"codec_caps failed once on 'lumen_l3', retried with lumen-l3 and recovered; answer fine",,,reference (synthetic-authored)
-m3t017,pass,,,,reference (synthetic-authored)
-m3t018,fail,"says lumen-l3 supports Main 10 + HDR10; codec_caps: profiles [Main], hdr_types []",chat:answer,ignored-tool-output,reference (synthetic-authored)
-m3t019,fail,retrieval missed behind-live-window: query 'player crashes when reopened' pulled audio-focus; diagnosis is off-topic,retrieval,retrieval-miss,reference (synthetic-authored)
-m3t020,fail,"search_kb('decoder init fails on 10-bit video') returned hdr-tone-mapping, av-sync instead of mediacodec-errors; answer built on the wrong note",retrieval,retrieval-miss,reference (synthetic-authored)
-m3t021,pass,,,,reference (synthetic-authored)
-m3t022,pass,,,,reference (synthetic-authored)
-m3t023,fail,answer contradicts the tool output: reads NO_MEMORY as Java heap OOM — log says 'max instances reached' (codec instances),chat:answer,ignored-tool-output,reference (synthetic-authored)
-m3t024,pass,"ffprobe failed once on 'late_moov.mp4', retried with progressive_late_moov.mp4 and recovered; answer fine",,,reference (synthetic-authored)
-m3t025,fail,wrong API detail: says isHardwareAccelerated() is API 21; it is API 29,chat:answer,wrong-api-detail,reference (synthetic-authored)
-m3t026,fail,says lumen-l3 is L1; codec_caps shows widevine_security_level L3,chat:answer,ignored-tool-output,reference (synthetic-authored)
-m3t027,pass,,,,reference (synthetic-authored)
-m3t028,pass,,,,reference (synthetic-authored)
-m3t029,fail,wrong doc (av-sync) for query 'sound continues when phone rings' -> wrong diagnosis; audio-focus has the answer,retrieval,retrieval-miss,reference (synthetic-authored)
-m3t030,fail,wrong doc (av1-decoding) for query 'screen HDR support' -> wrong diagnosis; hdr-tone-mapping has the answer,retrieval,retrieval-miss,reference (synthetic-authored)
-m3t031,pass,,,,reference (synthetic-authored)
-m3t032,pass,,,,reference (synthetic-authored)
-m3t033,fail,"bad arg 'late_moov.mp4' to ffprobe, tool errored, then the answer claims ffprobe evidence anyway. made up",execute_tool ffprobe,wrong-tool-args;fabricated-evidence,reference (synthetic-authored)
-m3t034,pass,,,,reference (synthetic-authored)
-m3t035,pass,,,,reference (synthetic-authored)
-m3t036,pass,"ffprobe failed once on 'av_offset.mp4', retried with av_offset_300ms.mp4 and recovered; answer fine",,,reference (synthetic-authored)
-m3t037,fail,says 16 concurrent decoders; codec_caps says max_concurrent_hw_video_decoders=4,chat:answer,ignored-tool-output,reference (synthetic-authored)
-m3t038,fail,retrieval missed audio-focus: query 'sound continues when phone rings' pulled av-sync; diagnosis is off-topic,retrieval,retrieval-miss,reference (synthetic-authored)
-m3t039,pass,,,,reference (synthetic-authored)
-m3t040,pass,,,,reference (synthetic-authored)
-m3t041,fail,wrong API detail: says AudioFocusRequest is API 21; KB says API 26+,chat:answer,wrong-api-detail,reference (synthetic-authored)
-m3t042,fail,wrong API detail: says Display.isHdr() is API 21; KB says API 26,chat:answer,wrong-api-detail,reference (synthetic-authored)
-m3t043,fail,"looped on search (3x, identical results). wasteful, answer right",chat:plan,redundant-steps,reference (synthetic-authored)
-m3t044,fail,format broken: 'Sources:' missing,chat:answer,format-violation,reference (synthetic-authored)
-m3t045,fail,"bad arg 'av_offset.mp4' to ffprobe, tool errored, then the answer claims ffprobe evidence anyway. made up",execute_tool ffprobe,wrong-tool-args;fabricated-evidence,reference (synthetic-authored)
-m3t046,fail,"looped on search (3x, identical results). wasteful, answer right",chat:plan,redundant-steps,reference (synthetic-authored)
-m3t047,fail,3 search_kb calls returning the same docs before answering; answer itself ok,chat:plan,redundant-steps,reference (synthetic-authored)
-m3t048,fail,next step too vague: 'Check the codec documentation.',chat:answer,vague-next-step,reference (synthetic-authored)
-m3t049,pass,,,,reference (synthetic-authored)
-m3t050,fail,typo'd device 'Lumen L3' (should be lumen-l3); tool failed; answer pretends it worked,execute_tool codec_caps,wrong-tool-args;fabricated-evidence,reference (synthetic-authored)
-m3t051,fail,no tool calls although the question names lumen-l3 / thumbs_codec_exhaustion.txt; generic answer,chat:plan,skipped-investigation,reference (synthetic-authored)
-m3t052,fail,"retrieval missed mediacodec-errors: query 'decoder init fails on 10-bit video' pulled hdr-tone-mapping, av-sync; diagnosis is off-topic",retrieval,retrieval-miss,reference (synthetic-authored)
-m3t053,pass,,,,reference (synthetic-authored)
-m3t054,fail,says atlas-a1 is software-only for AV1; codec_caps lists c2.atlas.av1.decoder hardware=true 4K60,chat:answer,ignored-tool-output,reference (synthetic-authored)
-m3t055,pass,,,,reference (synthetic-authored)
-m3t056,fail,answers with a decoder API for a display question (isHardwareAccelerated != HDR display),chat:answer,wrong-api-detail,reference (synthetic-authored)
-m3t057,fail,"answer contradicts the tool output: says the decoder supports 3840x2160 — tool result says max 1920x1080 @30, software",chat:answer,ignored-tool-output,reference (synthetic-authored)
-m3t058,fail,typo'd file 'hdr10_hevc.mp4' (should be hdr10_hevc_1080p.mp4); tool failed; answer pretends it worked,execute_tool ffprobe,wrong-tool-args;fabricated-evidence,reference (synthetic-authored)
-m3t059,fail,says both streams start at 0; ffprobe shows video start_time 0.300,chat:answer,ignored-tool-output,reference (synthetic-authored)
-m3t060,fail,wrong API detail: suggests try/catch around play(); the exception arrives async via onPlayerError,chat:answer,wrong-api-detail,reference (synthetic-authored)
-m3t061,pass,,,,reference (synthetic-authored)
-m3t062,pass,,,,reference (synthetic-authored)
-m3t063,pass,,,,reference (synthetic-authored)
-m3t064,pass,,,,reference (synthetic-authored)
-m3t065,fail,logcat_grep called on 'thumbs.txt' (doesn't exist) -> error; answer still cites [tool:logcat_grep] as if it ran,execute_tool logcat_grep,wrong-tool-args;fabricated-evidence,reference (synthetic-authored)
-m3t066,pass,,,,reference (synthetic-authored)
-m3t067,pass,,,,reference (synthetic-authored)
-m3t068,fail,cites [tool:ffprobe] [tool:codec_caps] without calling anything; specifics are invented,chat:plan,skipped-investigation;fabricated-evidence,reference (synthetic-authored)
-m3t069,pass,,,,reference (synthetic-authored)
-m3t070,fail,format broken: 'Sources:' missing,chat:answer,format-violation,reference (synthetic-authored)
-m3t071,fail,no tool calls although the question names progressive_late_moov.mp4; generic answer,chat:plan,skipped-investigation,reference (synthetic-authored)
-m3t072,fail,"claims lumen-l3 has a HW AV1 decoder for 4K60; codec_caps shows only c2.android.av1.decoder (software, 1080p30)",chat:answer,ignored-tool-output,reference (synthetic-authored)
-m3t073,fail,"cause fine, next step 'Look into the rendering code.' is not actionable",chat:answer,vague-next-step,reference (synthetic-authored)
-m3t074,fail,"answered from general knowledge, never looked at lumen-l3",chat:plan,skipped-investigation,reference (synthetic-authored)
-m3t075,pass,,,,reference (synthetic-authored)
-m3t076,pass,,,,reference (synthetic-authored)
-m3t077,fail,no tool calls at all but Sources lists [tool:ffprobe]: fabricated citations,chat:plan,skipped-investigation;fabricated-evidence,reference (synthetic-authored)
-m3t078,pass,,,,reference (synthetic-authored)
-m3t079,pass,"codec_caps failed once on 'atlas_a1', retried with atlas-a1 and recovered; answer fine",,,reference (synthetic-authored)
-m3t080,fail,"looped on search (3x, identical results). wasteful, answer right",chat:plan,redundant-steps,reference (synthetic-authored)
-m3t081,fail,answer contradicts the tool output: claims the device supports the stream — tool output says no Main 10 and no HDR display,chat:answer,ignored-tool-output,reference (synthetic-authored)
-m3t082,pass,,,,reference (synthetic-authored)
-m3t083,pass,,,,reference (synthetic-authored)
-m3t084,pass,,,,reference (synthetic-authored)
-m3t085,pass,,,,reference (synthetic-authored)
-m3t086,pass,,,,reference (synthetic-authored)
-m3t087,fail,wrong doc (av-sync) for query 'why low resolution on this phone' -> wrong diagnosis; widevine-levels has the answer,retrieval,retrieval-miss,reference (synthetic-authored)
-m3t088,fail,"logcat_grep errored on 'live_resume.log' (typo for live_resume.txt); no retry, answer is a hedge",execute_tool logcat_grep,wrong-tool-args,reference (synthetic-authored)
-m3t089,pass,,,,reference (synthetic-authored)
-m3t090,pass,,,,reference (synthetic-authored)
-m3t091,pass,,,,reference (synthetic-authored)
-m3t092,pass,,,,reference (synthetic-authored)
-m3t093,fail,says AV1 software decoder arrived in Android 8 / API 26; KB says Android 10 / API 29,chat:answer,wrong-api-detail,reference (synthetic-authored)
-m3t094,fail,no tool calls at all but Sources lists [tool:ffprobe] [tool:codec_caps] [kb:hdr-tone-mapping]: fabricated citations,chat:plan,skipped-investigation;fabricated-evidence,reference (synthetic-authored)
-m3t095,fail,"answered from general knowledge, never looked at atlas-a1 / hdr10_hevc_1080p.mp4",chat:plan,skipped-investigation,reference (synthetic-authored)
-m3t096,fail,"cause fine, next step 'Look at the CDN configuration.' is not actionable",chat:answer,vague-next-step,reference (synthetic-authored)
-m3t097,pass,,,,reference (synthetic-authored)
-m3t098,pass,,,,reference (synthetic-authored)
-m3t099,pass,,,,reference (synthetic-authored)
-m3t100,pass,,,,reference (synthetic-authored)
+m3t001,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t002,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t003,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t004,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t005,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t006,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t007,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t008,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t009,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t010,fail,"Core answer about atlas-a1 is right, but it states lumen-l3 has only a software AV1 decoder capped at 1080p30; no tool in this run queried lumen-l3, so that detail was never obtained.",chat:answer,fabricated-evidence,"reference (subagent-authored, Claude Opus)"
+m3t011,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t012,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t013,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t014,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t015,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t016,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t017,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t018,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t019,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t020,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t021,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t022,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t023,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t024,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t025,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t026,pass,Widevine L3 vs L1 correctly read from codec_caps; actionable MediaDrm check.,,,"reference (subagent-authored, Claude Opus)"
+m3t027,pass,Correct: 300 ms video start_time offset in the file; actionable fix.,,,"reference (subagent-authored, Claude Opus)"
+m3t028,pass,Correct codec-instance exhaustion diagnosis from logcat; actionable pooling fix.,,,"reference (subagent-authored, Claude Opus)"
+m3t029,pass,"Correct audio focus fix via setAudioAttributes(..., true).",,,"reference (subagent-authored, Claude Opus)"
+m3t030,pass,Correct Display.getHdrCapabilities()/isHdr() guidance.,,,"reference (subagent-authored, Claude Opus)"
+m3t031,pass,Correct audio focus fix with handleAudioFocus.,,,"reference (subagent-authored, Claude Opus)"
+m3t032,pass,File and device HDR-capable per tools; app render path (TextureView) correctly suspected.,,,"reference (subagent-authored, Claude Opus)"
+m3t033,pass,moov after mdat correctly read; faststart remux command.,,,"reference (subagent-authored, Claude Opus)"
+m3t034,pass,Software-only AV1 decoder limited to 1080p30 vs 4K60 file; correct.,,,"reference (subagent-authored, Claude Opus)"
+m3t035,pass,"HEVC decoder lists only Main profile, no Main10; correct.",,,"reference (subagent-authored, Claude Opus)"
+m3t036,pass,Correct start_time offset explanation and remux fix.,,,"reference (subagent-authored, Claude Opus)"
+m3t037,pass,Five allocations vs limit of 4 concurrent HW decoders; correct and actionable.,,,"reference (subagent-authored, Claude Opus)"
+m3t038,pass,Correct audio focus fix for Media3 and non-Media3.,,,"reference (subagent-authored, Claude Opus)"
+m3t039,pass,"Correct: file and device HDR-capable, render path likely; actionable SurfaceView check.",,,"reference (subagent-authored, Claude Opus)"
+m3t040,pass,"Correct: software AV1 from API 29, isHardwareAccelerated check.",,,"reference (subagent-authored, Claude Opus)"
+m3t041,pass,Correct audio focus fix.,,,"reference (subagent-authored, Claude Opus)"
+m3t042,pass,Correct Display HDR detection APIs.,,,"reference (subagent-authored, Claude Opus)"
+m3t043,pass,Correct audio focus fix.,,,"reference (subagent-authored, Claude Opus)"
+m3t044,pass,Correct AV1 version and hardware detection.,,,"reference (subagent-authored, Claude Opus)"
+m3t045,pass,Correct: offset is in the file timestamps.,,,"reference (subagent-authored, Claude Opus)"
+m3t046,pass,Correct Display HDR detection APIs.,,,"reference (subagent-authored, Claude Opus)"
+m3t047,pass,Correct AV1 version and hardware detection.,,,"reference (subagent-authored, Claude Opus)"
+m3t048,pass,HEVC decoder lists only Main profile; correct.,,,"reference (subagent-authored, Claude Opus)"
+m3t049,pass,Hardware AV1 decoder rated 4K60 per codec_caps; correct.,,,"reference (subagent-authored, Claude Opus)"
+m3t050,pass,Correct per-device decoder comparison from codec_caps.,,,"reference (subagent-authored, Claude Opus)"
+m3t051,pass,Correctly reads codec instance exhaustion from the log; actionable pooling/release fix.,,,"reference (subagent-authored, Claude Opus)"
+m3t052,pass,Main-only HEVC decoder matches codec_caps; concrete fix.,,,"reference (subagent-authored, Claude Opus)"
+m3t053,pass,Widevine L3 from codec_caps explains SD cap; concrete check.,,,"reference (subagent-authored, Claude Opus)"
+m3t054,pass,Hardware AV1 decoder covers 4K60 Main; correct.,,,"reference (subagent-authored, Claude Opus)"
+m3t055,pass,Main10 unsupported and no HDR display; grounded and actionable.,,,"reference (subagent-authored, Claude Opus)"
+m3t056,pass,Display.getHdrCapabilities / HDR_TYPE_HDR10 is correct.,,,"reference (subagent-authored, Claude Opus)"
+m3t057,pass,Software-only AV1 decoder limited to 1080p30; correct.,,,"reference (subagent-authored, Claude Opus)"
+m3t058,pass,Main10 unsupported and no HDR display; grounded and actionable.,,,"reference (subagent-authored, Claude Opus)"
+m3t059,pass,Video start_time 0.3 s vs audio 0.0 s explains the offset; actionable.,,,"reference (subagent-authored, Claude Opus)"
+m3t060,pass,BehindLiveWindowException read correctly; correct Media3 recovery.,,,"reference (subagent-authored, Claude Opus)"
+m3t061,pass,Main-only HEVC decoder; concrete fix.,,,"reference (subagent-authored, Claude Opus)"
+m3t062,pass,L3 vs L1 Widevine explains SD fallback; concrete check.,,,"reference (subagent-authored, Claude Opus)"
+m3t063,pass,Display.getHdrCapabilities / isHdr (API 26) correct.,,,"reference (subagent-authored, Claude Opus)"
+m3t064,pass,Start_time offset in file explains audio lead; actionable.,,,"reference (subagent-authored, Claude Opus)"
+m3t065,pass,Instance limit of 4 from codec_caps matches log failure; actionable.,,,"reference (subagent-authored, Claude Opus)"
+m3t066,pass,Limit of 4 decoders matches the fifth allocation failing; actionable.,,,"reference (subagent-authored, Claude Opus)"
+m3t067,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t068,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t069,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t070,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t071,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t072,fail,"Cause is right (software-only AV1 decoder capped at 1080p30), but the next step claims the lumen-l3 supports H.264/HEVC hardware decode up to 1080p60; no avc/hevc codec_caps call was made, so that capability is unsupported by any tool output.",chat:answer,fabricated-evidence,"reference (subagent-authored, Claude Opus)"
+m3t073,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t074,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t075,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t076,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t077,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t078,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t079,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t080,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t081,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t082,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t083,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t084,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t085,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t086,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t087,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t088,fail,"Cause and fix are right (BehindLiveWindowException, seekToDefaultPosition + prepare), but the answer states the app was paused at 09:15:02 and was ~11 minutes in the background; the grep pattern did not return the onPause line (L1), so that timestamp and duration come from no tool output.",chat:answer,fabricated-evidence,"reference (subagent-authored, Claude Opus)"
+m3t089,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t090,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t091,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t092,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t093,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t094,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t095,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t096,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t097,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t098,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t099,pass,,,,"reference (subagent-authored, Claude Opus)"
+m3t100,pass,,,,"reference (subagent-authored, Claude Opus)"

@@ -4,60 +4,52 @@
 <text x="360.0" y="22" text-anchor="middle" font-size="14">Success vs cost per task (dev, 95% CI); the line joins the Pareto frontier</text>
 <line x1="70" x2="690" y1="380.0" y2="380.0" stroke="#eee"/>
 <text x="62" y="384.0" text-anchor="end">0.50</text>
-<line x1="70" x2="690" y1="346.0" y2="346.0" stroke="#eee"/>
-<text x="62" y="350.0" text-anchor="end">0.55</text>
-<line x1="70" x2="690" y1="312.0" y2="312.0" stroke="#eee"/>
-<text x="62" y="316.0" text-anchor="end">0.60</text>
-<line x1="70" x2="690" y1="278.0" y2="278.0" stroke="#eee"/>
-<text x="62" y="282.0" text-anchor="end">0.65</text>
-<line x1="70" x2="690" y1="244.0" y2="244.0" stroke="#eee"/>
-<text x="62" y="248.0" text-anchor="end">0.70</text>
+<line x1="70" x2="690" y1="323.3" y2="323.3" stroke="#eee"/>
+<text x="62" y="327.3" text-anchor="end">0.55</text>
+<line x1="70" x2="690" y1="266.7" y2="266.7" stroke="#eee"/>
+<text x="62" y="270.7" text-anchor="end">0.60</text>
 <line x1="70" x2="690" y1="210.0" y2="210.0" stroke="#eee"/>
-<text x="62" y="214.0" text-anchor="end">0.75</text>
-<line x1="70" x2="690" y1="176.0" y2="176.0" stroke="#eee"/>
-<text x="62" y="180.0" text-anchor="end">0.80</text>
-<line x1="70" x2="690" y1="142.0" y2="142.0" stroke="#eee"/>
-<text x="62" y="146.0" text-anchor="end">0.85</text>
-<line x1="70" x2="690" y1="108.0" y2="108.0" stroke="#eee"/>
-<text x="62" y="112.0" text-anchor="end">0.90</text>
-<line x1="70" x2="690" y1="74.0" y2="74.0" stroke="#eee"/>
-<text x="62" y="78.0" text-anchor="end">0.95</text>
+<text x="62" y="214.0" text-anchor="end">0.65</text>
+<line x1="70" x2="690" y1="153.3" y2="153.3" stroke="#eee"/>
+<text x="62" y="157.3" text-anchor="end">0.70</text>
+<line x1="70" x2="690" y1="96.7" y2="96.7" stroke="#eee"/>
+<text x="62" y="100.7" text-anchor="end">0.75</text>
 <line x1="70" x2="690" y1="40.0" y2="40.0" stroke="#eee"/>
-<text x="62" y="44.0" text-anchor="end">1.00</text>
-<line x1="144.5" x2="144.5" y1="40" y2="380" stroke="#eee"/>
-<text x="144.5" y="396" text-anchor="middle">$0.0002</text>
-<line x1="264.1" x2="264.1" y1="40" y2="380" stroke="#eee"/>
-<text x="264.1" y="396" text-anchor="middle">$0.0005</text>
-<line x1="354.5" x2="354.5" y1="40" y2="380" stroke="#eee"/>
-<text x="354.5" y="396" text-anchor="middle">$0.001</text>
-<line x1="444.9" x2="444.9" y1="40" y2="380" stroke="#eee"/>
-<text x="444.9" y="396" text-anchor="middle">$0.002</text>
-<line x1="564.5" x2="564.5" y1="40" y2="380" stroke="#eee"/>
-<text x="564.5" y="396" text-anchor="middle">$0.005</text>
-<line x1="655.0" x2="655.0" y1="40" y2="380" stroke="#eee"/>
-<text x="655.0" y="396" text-anchor="middle">$0.01</text>
+<text x="62" y="44.0" text-anchor="end">0.80</text>
+<line x1="118.1" x2="118.1" y1="40" y2="380" stroke="#eee"/>
+<text x="118.1" y="396" text-anchor="middle">$0.0002</text>
+<line x1="242.6" x2="242.6" y1="40" y2="380" stroke="#eee"/>
+<text x="242.6" y="396" text-anchor="middle">$0.0005</text>
+<line x1="336.7" x2="336.7" y1="40" y2="380" stroke="#eee"/>
+<text x="336.7" y="396" text-anchor="middle">$0.001</text>
+<line x1="430.9" x2="430.9" y1="40" y2="380" stroke="#eee"/>
+<text x="430.9" y="396" text-anchor="middle">$0.002</text>
+<line x1="555.4" x2="555.4" y1="40" y2="380" stroke="#eee"/>
+<text x="555.4" y="396" text-anchor="middle">$0.005</text>
+<line x1="649.5" x2="649.5" y1="40" y2="380" stroke="#eee"/>
+<text x="649.5" y="396" text-anchor="middle">$0.01</text>
 <text x="380.0" y="422" text-anchor="middle">cost per task, USD (log scale)</text>
 <text x="18" y="210.0" text-anchor="middle" transform="rotate(-90 18 210.0)">task success rate</text>
-<polyline points="131.3,285.6 258.1,247.8 515.1,140.7 530.2,109.3" fill="none" stroke="#2b6cb0" stroke-width="2"/>
-<line x1="585.3" x2="585.3" y1="211.0" y2="330.1" stroke="#888"/>
-<circle cx="585.3" cy="266.7" r="5" fill="#888"><title>v1: success 0.667 [0.573, 0.748], cost/task $0.00586, cost/success $0.00880</title></circle>
-<text x="593.3" y="260.7" text-anchor="start" fill="#888">v1</text>
-<line x1="592.4" x2="592.4" y1="155.5" y2="264.0" stroke="#888"/>
-<circle cx="592.4" cy="203.7" r="5" fill="#888"><title>v2: success 0.759 [0.671, 0.830], cost/task $0.00619, cost/success $0.00815</title></circle>
-<text x="600.4" y="197.7" text-anchor="start" fill="#888">v2</text>
-<line x1="628.7" x2="628.7" y1="113.5" y2="208.7" stroke="#888"/>
-<circle cx="628.7" cy="153.3" r="5" fill="#888"><title>v3: success 0.833 [0.752, 0.892], cost/task $0.00818, cost/success $0.00981</title></circle>
-<text x="636.7" y="147.3" text-anchor="start" fill="#888">v3</text>
-<line x1="515.1" x2="515.1" y1="103.4" y2="194.5" stroke="#2b6cb0"/>
-<circle cx="515.1" cy="140.7" r="5" fill="#2b6cb0"><title>v3-cache: success 0.852 [0.773, 0.907], cost/task $0.00342, cost/success $0.00402</title></circle>
-<text x="507.1" y="134.7" text-anchor="end" fill="#2b6cb0">v3-cache</text>
-<line x1="131.3" x2="131.3" y1="228.2" y2="349.4" stroke="#2b6cb0"/>
-<circle cx="131.3" cy="285.6" r="5" fill="#2b6cb0"><title>haiku: success 0.639 [0.545, 0.723], cost/task $0.00018, cost/success $0.00028</title></circle>
-<text x="139.3" y="279.6" text-anchor="start" fill="#2b6cb0">haiku</text>
-<line x1="258.1" x2="258.1" y1="194.1" y2="310.5" stroke="#2b6cb0"/>
-<circle cx="258.1" cy="247.8" r="5" fill="#2b6cb0"><title>cascade: success 0.694 [0.602, 0.773], cost/task $0.00048, cost/success $0.00069</title></circle>
-<text x="266.1" y="241.8" text-anchor="start" fill="#2b6cb0">cascade</text>
-<line x1="530.2" x2="530.2" y1="79.3" y2="157.8" stroke="#2b6cb0"/>
-<circle cx="530.2" cy="109.3" r="5" fill="#2b6cb0"><title>retry: success 0.898 [0.827, 0.942], cost/task $0.00384, cost/success $0.00428</title></circle>
-<text x="538.2" y="103.3" text-anchor="start" fill="#2b6cb0">retry</text>
+<polyline points="133.8,232.4 369.4,165.7 626.2,137.1" fill="none" stroke="#2b6cb0" stroke-width="2"/>
+<line x1="596.8" x2="596.8" y1="113.9" y2="304.7" stroke="#888"/>
+<circle cx="596.8" cy="203.8" r="5" fill="#888"><title>v1: success 0.655 [0.566, 0.735], cost/task $0.00678, cost/success $0.01035</title></circle>
+<text x="588.8" y="197.8" text-anchor="end" fill="#888">v1</text>
+<line x1="599.5" x2="599.5" y1="122.6" y2="314.5" stroke="#888"/>
+<circle cx="599.5" cy="213.3" r="5" fill="#888"><title>v2: success 0.647 [0.558, 0.727], cost/task $0.00692, cost/success $0.01069</title></circle>
+<text x="607.5" y="207.3" text-anchor="start" fill="#888">v2</text>
+<line x1="626.2" x2="626.2" y1="53.9" y2="235.6" stroke="#2b6cb0"/>
+<circle cx="626.2" cy="137.1" r="5" fill="#2b6cb0"><title>v3: success 0.714 [0.627, 0.788], cost/task $0.00842, cost/success $0.01178</title></circle>
+<text x="634.2" y="131.1" text-anchor="start" fill="#2b6cb0">v3</text>
+<line x1="541.3" x2="541.3" y1="131.4" y2="324.2" stroke="#888"/>
+<circle cx="541.3" cy="222.9" r="5" fill="#888"><title>v3-cache: success 0.639 [0.549, 0.719], cost/task $0.00451, cost/success $0.00706</title></circle>
+<text x="533.3" y="216.9" text-anchor="end" fill="#888">v3-cache</text>
+<line x1="133.8" x2="133.8" y1="140.1" y2="333.9" stroke="#2b6cb0"/>
+<circle cx="133.8" cy="232.4" r="5" fill="#2b6cb0"><title>haiku: success 0.630 [0.541, 0.712], cost/task $0.00022, cost/success $0.00036</title></circle>
+<text x="141.8" y="226.4" text-anchor="start" fill="#2b6cb0">haiku</text>
+<line x1="369.4" x2="369.4" y1="79.4" y2="265.4" stroke="#2b6cb0"/>
+<circle cx="369.4" cy="165.7" r="5" fill="#2b6cb0"><title>cascade: success 0.689 [0.601, 0.765], cost/task $0.00127, cost/success $0.00185</title></circle>
+<text x="377.4" y="159.7" text-anchor="start" fill="#2b6cb0">cascade</text>
+<line x1="552.2" x2="552.2" y1="122.6" y2="314.5" stroke="#888"/>
+<circle cx="552.2" cy="213.3" r="5" fill="#888"><title>retry: success 0.647 [0.558, 0.727], cost/task $0.00489, cost/success $0.00755</title></circle>
+<text x="544.2" y="207.3" text-anchor="end" fill="#888">retry</text>
 </svg>

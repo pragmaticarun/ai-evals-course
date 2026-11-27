@@ -47,11 +47,11 @@ failure hypotheses ──► DIMENSIONS (3-6 values each) + RULES (with reasons)
 |---|---|---|
 | valid tuples / feasible pairs | `lab04 dims`, `pair_coverage` | 1,342 / 242 |
 | pair coverage | `lab04 tuples` | 242/242 with 200 tuples (34 pairwise) |
-| query matches tuple | `lab04 check` | 1 problem in 182 |
-| near-duplicates | `dedup(threshold=0.6, key=same test case)` | 18 of 200 dropped |
-| diversity | `diversity_report` | top opener 13%, 0 LLM tells |
-| coverage per split | `lab04 coverage` | dev 202/242, test 183/242 |
-| leakage | `assign_splits(group_threshold=0.35)` + `leakage_pairs` | 0 (46 without grouping) |
+| query matches tuple | `lab04 check` | 10 flags in 200, 2 real defects |
+| near-duplicates | `dedup(threshold=0.6, key=same test case)` | 0 of 200 dropped (closest pair 0.20) |
+| diversity | `diversity_report` | top opener 10%, 4 LLM tells |
+| coverage per split | `lab04 coverage` | dev 216/242, test 184/242 |
+| leakage | `assign_splits(group_threshold=0.35)` + `leakage_pairs` | 0 (also 0 without grouping on these queries) |
 
 ## Splits
 

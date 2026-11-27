@@ -53,10 +53,10 @@ The user message holds the trace to judge, in the same tags as the examples.
 | mode | `ignored-tool-output` |
 | criterion | The answer's claims about files, devices, and logs agree with what the tool calls returned. |
 | pass | Every statement about a file, device, decoder, or log is supported by, or not contradicted by, the tool results. Answers with no such claim, or that ask for more information, pass. Judge only agreement with the tool results. |
-| fail | A statement a tool result contradicts: a different number, a capability the tool says is absent, a cause the log rules out. **This applies even when the user asserted the same claim** (added in v2 after dev disagreements). |
+| fail | A statement a tool result contradicts: a different number, a capability the tool says is absent, a cause the log rules out. **This applies even when the user asserted the same claim** (added in v2). |
 | context | question, tools, answer |
-| examples | `m4q007` FAIL (16 decoders vs codec_caps 4), `m4q119` PASS, `m4q084` FAIL (user's wrong claim repeated), `m4q012` FAIL (start times) — all train |
-| validation | dev: TPR 0.89 (24/27), TNR 1.00 (6/6). Test, once: TPR 0.90 (18/20), TNR 0.60 (3/5) |
+| examples | `m4q007` PASS (4 decoders, as codec_caps says), `m4q067` PASS (an unsupported aside that no tool contradicts), `m4q087` PASS (the user claims 16 decoders; the answer goes by codec_caps' 4), `m4q012` PASS (the user says both streams start at zero; the answer reports ffprobe's start times), all train. No train trace fails this mode, so the course spec has no FAIL example: add one as soon as your labels contain a failure |
+| validation | dev: TPR 1.00 (30/30), TNR not measurable (0 labelled failures). Test, once: TPR 1.00 (28/28), TNR not measurable (0/0). Not yet fit to gate anything: it has not been shown to catch a failure |
 
 ## Part 4: validation record
 

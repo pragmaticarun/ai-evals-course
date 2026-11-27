@@ -8,8 +8,10 @@ sheet from the annotation sheet and a modes file; you can also fill it in by han
 
 | case_id | trace_id | verdict | note (open code) | first_upstream | modes (axial codes) | annotator | annotated_at |
 |---|---|---|---|---|---|---|---|
-| m3t033 | 4caafcf041c0… | fail | ffprobe called on 'late_moov.mp4', errored, answer still cites [tool:ffprobe] | execute_tool ffprobe | wrong-tool-args;fabricated-evidence | your name | 2026-11-23T10:15:00+05:30 |
+| m3t010 | fbb0c972e8ea… | fail | right about atlas-a1, but says lumen-l3 has only a software AV1 decoder capped at 1080p30; no tool queried lumen-l3 | chat:answer | fabricated-evidence | your name | 2026-11-23T10:15:00+05:30 |
 | m3t006 | … | pass | | | | your name | … |
+
+The fail row is one of the three failing traces in the module 3 reference labels (`mediadoctor-lab03 review m3t010`).
 
 - `verdict` is `pass` or `fail`, never a score.
 - `note` says what you observed, in your own words: the first thing that went wrong, not the fix.

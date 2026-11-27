@@ -1,41 +1,41 @@
 case_id,verdict,note,first_upstream,modes,annotator
-r0004,fail,format broken: 'Sources:' missing,chat:answer,format-violation,annotator A (synthetic-authored)
-r0660,fail,"codec_caps found no vela-v2 profile, yet the answer states its AV1 decoder specs as fact and cites [tool:codec_caps], which failed",chat:answer,unknown-device-guess;fabricated-evidence,annotator A (synthetic-authored)
-r0145,fail,"answered from general knowledge, never looked at atlas-a1 / hdr10_hevc_1080p.mp4",chat:plan,skipped-investigation,annotator A (synthetic-authored)
-r0461,fail,format broken: 'Sources:' missing,chat:answer,format-violation,annotator A (synthetic-authored)
-r0752,fail,"codec_caps found no vela-v2 profile, yet the answer states its AV1 decoder specs as fact and cites [tool:codec_caps], which failed",chat:answer,unknown-device-guess;fabricated-evidence,annotator A (synthetic-authored)
-r0530,pass,,,,annotator A (synthetic-authored)
-r0680,fail,"codec_caps found no vela-v2 profile, yet the answer states its AV1 decoder specs as fact and cites [tool:codec_caps], which failed",chat:answer,unknown-device-guess;fabricated-evidence,annotator A (synthetic-authored)
-r0177,fail,"looped on search (3x, identical results). wasteful, answer right",chat:plan,redundant-steps,annotator A (synthetic-authored)
-r0515,pass,,,,annotator A (synthetic-authored)
-r0747,fail,"codec_caps found no vela-v2 profile, yet the answer states its AV1 decoder specs as fact and cites [tool:codec_caps], which failed",chat:answer,unknown-device-guess;fabricated-evidence,annotator A (synthetic-authored)
-r0732,fail,"codec_caps found no vela-v2 profile, yet the answer states its AV1 decoder specs as fact and cites [tool:codec_caps], which failed",chat:answer,unknown-device-guess;fabricated-evidence,annotator A (synthetic-authored)
-r0381,pass,,,,annotator A (synthetic-authored)
-r0199,fail,3 search_kb calls returning the same docs before answering; answer itself ok,chat:plan,redundant-steps,annotator A (synthetic-authored)
-r0710,fail,"codec_caps found no vela-v2 profile, yet the answer states its AV1 decoder specs as fact and cites [tool:codec_caps], which failed",chat:answer,unknown-device-guess;fabricated-evidence,annotator A (synthetic-authored)
-r0154,pass,,,,annotator A (synthetic-authored)
-r0113,fail,typo'd device 'Lumen L3' (should be lumen-l3); tool failed; answer pretends it worked,execute_tool codec_caps,wrong-tool-args;fabricated-evidence,annotator A (synthetic-authored)
-r0278,fail,logcat_grep called on 'thumbs.txt' (doesn't exist) -> error; answer still cites [tool:logcat_grep] as if it ran,execute_tool logcat_grep,wrong-tool-args;fabricated-evidence,annotator A (synthetic-authored)
-r0482,pass,,,,annotator A (synthetic-authored)
-r0563,fail,"codec_caps found no vela-v2 profile, yet the answer states its AV1 decoder specs as fact and cites [tool:codec_caps], which failed",chat:answer,unknown-device-guess;fabricated-evidence,annotator A (synthetic-authored)
-r0715,fail,"codec_caps found no vela-v2 profile, yet the answer states its AV1 decoder specs as fact and cites [tool:codec_caps], which failed",chat:answer,unknown-device-guess;fabricated-evidence,annotator A (synthetic-authored)
-r0184,pass,,,,annotator A (synthetic-authored)
-r0451,fail,no tool calls at all but Sources lists [tool:ffprobe] [tool:codec_caps] [kb:hdr-tone-mapping]: fabricated citations,chat:plan,skipped-investigation;fabricated-evidence,annotator A (synthetic-authored)
-r0238,fail,cites [tool:ffprobe] [tool:codec_caps] without calling anything; specifics are invented,chat:plan,skipped-investigation;fabricated-evidence,annotator A (synthetic-authored)
-r0593,fail,answer contradicts the tool output: says atlas-a1 is software-only for AV1; codec_caps lists c2.atlas.av1.decoder hardware=true 4K60,chat:answer,ignored-tool-output,annotator A (synthetic-authored)
-r0200,fail,"bad arg 'av_offset.mp4' to ffprobe, tool errored, then the answer claims ffprobe evidence anyway. made up",execute_tool ffprobe,wrong-tool-args;fabricated-evidence,annotator A (synthetic-authored)
-r0053,fail,next step too vague: 'Check the codec documentation.',chat:answer,vague-next-step,annotator A (synthetic-authored)
-r0197,pass,,,,annotator A (synthetic-authored)
-r0560,pass,,,,annotator A (synthetic-authored)
-r0103,fail,"looped on search (3x, identical results). wasteful, answer right",chat:plan,redundant-steps,annotator A (synthetic-authored)
-r0170,pass,,,,annotator A (synthetic-authored)
-r0045,pass,,,,annotator A (synthetic-authored)
-r0467,fail,"answer contradicts the tool output: says the decoder supports 3840x2160 — tool result says max 1920x1080 @30, software",chat:answer,ignored-tool-output,annotator A (synthetic-authored)
-r0640,pass,,,,annotator A (synthetic-authored)
-r0736,fail,"logcat_grep errored on 'live_resume.log' (typo for live_resume.txt); no retry, answer is a hedge",execute_tool logcat_grep,wrong-tool-args,annotator A (synthetic-authored)
-r0164,fail,"says moov is at the end; ffprobe shows ftyp, moov, free, mdat (moov 2nd)",chat:answer,ignored-tool-output,annotator A (synthetic-authored)
-r0476,fail,says both streams start at 0; ffprobe shows video start_time 0.300,chat:answer,ignored-tool-output,annotator A (synthetic-authored)
-r0492,fail,next step has a wrong API claim - says flush() frees the decoder instance — it only clears buffers; release() frees it,chat:answer,wrong-api-detail,annotator A (synthetic-authored)
-r0608,fail,no vela-v2 profile exists (codec_caps failed); the answer invents a hardware AV1 decoder for it and builds the diagnosis on that,chat:answer,unknown-device-guess,annotator A (synthetic-authored)
-r0430,pass,,,,annotator A (synthetic-authored)
-r0724,fail,"answer contradicts the tool output: claims lumen-l3 has a HW AV1 decoder for 4K60; codec_caps shows only c2.android.av1.decoder (software, 1080p30)",chat:answer,ignored-tool-output,annotator A (synthetic-authored)
+r0031,pass,Correct for atlas-a1 (HW AV1 Main 4K60); lumen-l3 aside not checked in this run but not load-bearing.,,,a
+r0078,pass,SW-only AV1 decoder capped at 1080p30 vs 4K60 file; correct.,,,a
+r0105,pass,Display.getHdrCapabilities / HDR_TYPE_HDR10; correct.,,,a
+r0158,pass,"Decoder lists only Main, no Main10; correct.",,,a
+r0184,pass,No Main10 decoder; correct.,,,a
+r0197,pass,moov before mdat; correctly says startup cause not yet evidenced and gives concrete checks.,,,a
+r0199,pass,"Matches KB: SW AV1 since API 29, HW depends on SoC, runtime detection.",,,a
+r0201,fail,"Cause is right, but the next step claims the device profile supports H.264/HEVC hardware decode up to 1080p60; only video/av01 caps were queried, so that detail was never obtained.",chat:answer,fabricated-evidence,a
+r0204,pass,BehindLiveWindowException on resume; correct fix.,,,a
+r0211,pass,No Main10 decoder; correct.,,,a
+r0305,pass,moov at end; faststart remux.,,,a
+r0314,pass,No Main10 decoder; correct.,,,a
+r0366,pass,Video start_time 0.3s vs audio 0; correct.,,,a
+r0370,pass,Decoder instance limit 4 exhausted by un-released decoders; correct.,,,a
+r0410,pass,Display.getHdrCapabilities/isHdr; correct.,,,a
+r0427,pass,Matches KB; correct.,,,a
+r0492,pass,Matches KB; correct.,,,a
+r0498,pass,Correctly reports missing vela-v2 profile; concrete next step.,,,a
+r0505,pass,"Device supports HDR10; points to app render path (SurfaceView, KEY_COLOR_TRANSFER) with appropriate hedging.",,,a
+r0515,pass,Widevine L3 vs L1 from codec_caps; correct.,,,a
+r0526,pass,"setAudioAttributes(..., true) for audio focus; correct.",,,a
+r0531,pass,BehindLiveWindowException after ~11 min in background; standard recovery.,,,a
+r0539,pass,Admits no vela-v2 data; hypothesis flagged as unconfirmed; concrete check.,,,a
+r0565,pass,Admits no vela-v2 data; hedged hypothesis; concrete check.,,,a
+r0566,pass,Admits no vela-v2 data; concrete check.,,,a
+r0582,pass,No Main10 decoder and no HDR display on lumen-l3; correct with SDR fallback.,,,a
+r0595,pass,Admits no vela-v2 data; hedged hypothesis; concrete check.,,,a
+r0598,pass,Admits no vela-v2 data; file facts correct; concrete check.,,,a
+r0600,pass,Admits no vela-v2 data; concrete check.,,,a
+r0634,pass,SW AV1 1080p30 vs 4K60; correct. Aside that lumen has HW H.264/HEVC was not queried here but is not load-bearing.,,,a
+r0641,pass,Admits no vela-v2 data; concrete check.,,,a
+r0656,pass,Admits no vela-v2 data; concrete check.,,,a
+r0667,pass,Admits no vela-v2 data; areSizeAndRateSupported check.,,,a
+r0678,pass,SW AV1 1080p30 vs 4K60; correct.,,,a
+r0693,pass,Admits no vela-v2 data; concrete check.,,,a
+r0705,pass,Admits no vela-v2 data; areSizeAndRateSupported check.,,,a
+r0729,pass,Admits no vela-v2 data; areSizeAndRateSupported check.,,,a
+r0736,pass,Admits no vela-v2 data; conservative recommendation with concrete check.,,,a
+r0745,pass,"Audio focus via setAudioAttributes(..., true) or AudioFocusRequest; correct.",,,a
+r0746,pass,Both lookups failed and answer says so; conservative concrete next step.,,,a

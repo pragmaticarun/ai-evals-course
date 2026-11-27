@@ -397,22 +397,72 @@ def run_attempt(
 # Likely cause must state, and, where module 4's false premises corrupt the next step instead, the
 # wrong API claim the Next step must not make. A reference check standing in for module 5's
 # validated judges, so the lab can grade thousands of answers offline; tests check it against the
-# known right and wrong answers for every scenario.
+# known right and wrong answers for every scenario. Patterns match case-insensitively and accept the
+# fact in any wording the agents use (a box order with or without quotes, "0.3 s" or "0.300000",
+# "Widevine L3" or "widevine_security_level": "L3"), but for a device or file the fact must be about
+# that device or file: a hedged general answer for an unnamed device or file ("phones without a
+# hardware AV1 decoder can stutter") does not state it. (An earlier version matched exact phrases
+# from the old hand-scripted answers and failed most correct regenerated ones; that was a bug.)
+_MAIN_ONLY = (  # the lumen-l3's HEVC decoder lists the Main profile and not Main 10
+    r'profiles?"?:?\s*\[\s*"?main"?\s*\]|\b(only|just)\b[^.]{0,40}\bmain"?\s+profile'
+    r'|\bmain"?\s+(profile,? )?only|(limited|restricted) to (the )?"?main"? profile'
+    r"|\b(no|not|without) main ?10|main ?10 (is|was) not (listed|reported|supported)"
+)
+_NOT_A_RANGE = r"(?!\s*(-|\u2013|to|through)\s*\d)"  # "from API 21" but not "on API 21 to 25"
 REFERENCE: dict[str, tuple[str, str | None]] = {
-    "av1-lumen": (r"only has the software decoder", None),
-    "av1-atlas": (r"hardware AV1 decoder for Main", None),
-    "hdr-lumen": (r"supports Main, not Main 10", None),
-    "hdr-atlas": (r"Main10HDR10", None),
-    "latemoov": (r"ftyp, free, mdat, moov", None),
-    "faststart": (r"ftyp, moov, free, mdat", None),
-    "avoffset": (r"video stream starts at 0\.300", None),
-    "thumbs": (r"max instances reached", None),
-    "live": (r"BehindLiveWindowException", None),
-    "audiofocus": (r"audio focus", r"from API 21"),
-    "widevine": (r"security level L3", None),
-    "main10": (r"supports the Main profile, not Main 10", None),
-    "av1-api": (r"API 29", r"API 26\) added"),
-    "hdr-display-api": (r"Display object", r"available from API 21"),
+    "av1-lumen": (
+        r'1920\s*x\s*1080|max_width"?:?\s*1920|hardware"?:\s*false|\bno hardware av1 decoder',
+        None,
+    ),
+    "av1-atlas": (
+        r"c2\.atlas\.av1\.decoder|atlas-a1 (has|lists|reports)[^.]{0,20}hardware av1 decoder",
+        None,
+    ),
+    "hdr-lumen": (  # a Main-only decoder or a display with no HDR types (the cause states both)
+        _MAIN_ONLY + r'|display_hdr_types[`"]?\W{0,4}(is |are |list is |as )?(an )?(empty|\[\])'
+        r"|\bno (display )?hdr (display )?types|cannot (show|output) hdr|can't show hdr",
+        None,
+    ),
+    "hdr-atlas": (
+        r'main10hdr10|display_hdr_types[`"]?\W{0,6}(are |is |as )?\[?\W*hdr10|hdr10,? hlg'
+        r"|display[^.]{0,40}(reports|supports|lists)[^.]{0,20}hdr10",
+        None,
+    ),
+    "latemoov": (r"\bmdat[`\"']?,\s*[`\"']?moov\b", None),  # the box order: mdat, then moov
+    "faststart": (r"\bftyp[`\"']?,\s*[`\"']?moov\b", None),  # the box order: moov right after ftyp
+    "avoffset": (  # video starts at 0.3 s (not another offset, not audio)
+        r"\bvideo\b[^.]{0,80}?\b0\.30*(?!\d)|\bvideo\b[^.]{0,60}\b300 ?ms\b[^.]{0,10}\b(late|after|behind)",
+        None,
+    ),
+    "thumbs": (
+        r"max instances|max_concurrent_hw_video_decoders\W{0,6}4\b"
+        r"|\b(at most|only|up to|maximum of|max of|limit of|allows?)\s+4\b[^.]{0,40}decoders?"
+        r"|\b4 concurrent",
+        None,
+    ),
+    "live": (r"behind[\W_]?live[\W_]?window|behind[^.]{0,30}live window", None),
+    "audiofocus": (
+        r"focus",
+        r"(from|since) api (level )?21\b"
+        + _NOT_A_RANGE
+        + r"|audiofocusrequest[^.]{0,40}\bapi 21\+",
+    ),
+    "widevine": (  # the device reports L3 (from codec_caps, or the MediaDrm reading in the question)
+        r"widevine_security_level\W{0,6}l3\b|lumen-l3[^.]{0,80}\bl3\b"
+        r"|\b(device|phone)( itself)? (is )?(reports?|reporting|running|returns?)\b[^.]{0,20}\bl3\b"
+        r'|\b(returning|reading) "?l3\b|\bl3 reading|\bmediadrm (is )?(reports?|reporting|returns?)\b[^.]{0,20}\bl3\b',
+        None,
+    ),
+    "main10": (_MAIN_ONLY, None),
+    "av1-api": (
+        r"api 29|android 10",
+        r"(android 8|api 26)\)?[^.]{0,20}\b(added|introduced|ships?|shipped)\b"
+        r"|ishardwareaccelerated\(\)[^.]{0,40}(from|since) api 21\b",
+    ),
+    "hdr-display-api": (  # the display decides; a decoder API is the wrong answer
+        r"\bdisplay\b|\bpanel\b",
+        r"(from|since) api (level )?21\b" + _NOT_A_RANGE + r"|ishardwareaccelerated",
+    ),
 }
 CHECKS = ("format", "citations", "investigated", "correct")
 
@@ -423,12 +473,12 @@ def answer_line(answer: str, label: str) -> str:
 
 
 def check_correct(answer: str, case: dict[str, Any]) -> bool:
-    """The right diagnosis: the Likely cause states the scenario's key fact and the Next step does not
-    repeat a known-wrong API claim."""
+    """The right diagnosis: the Likely cause states the scenario's key fact (in any wording, ignoring
+    case) and the Next step does not repeat a known-wrong API claim."""
     cause_re, wrong_next = REFERENCE[lab04.scenario_for(case)]
-    if not re.search(cause_re, answer_line(answer, "Likely cause")):
+    if not re.search(cause_re, answer_line(answer, "Likely cause"), re.I):
         return False
-    return not (wrong_next and re.search(wrong_next, answer_line(answer, "Next step")))
+    return not (wrong_next and re.search(wrong_next, answer_line(answer, "Next step"), re.I))
 
 
 def cases() -> list[dict[str, Any]]:

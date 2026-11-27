@@ -152,7 +152,7 @@ does that rule block a change that changes nothing? Simulate it:
 
     ```text
     gate_tuning_loop: clean
-    worst_cases_anywhere: ran the agent on 29 held-out cases, e.g. m4q008
+    worst_cases_anywhere: ran the agent on 28 held-out cases, e.g. m4q008
     ```
 
     The spy sees every agent run inside the block, whatever path it took, so it also catches code that bypasses the
@@ -164,15 +164,15 @@ does that rule block a change that changes nothing? Simulate it:
 
 Save v1 and v2 runs with both tiers, diff them, and use the result to write the comment you would leave on the PR:
 
-1. What do the newly failing format answers have in common?
-2. Why did the one citations case flip?
+1. Which metrics changed, in which direction, and why does the report warn rather than block?
+2. What do the newly failing citations answers have in common, and do the human labels agree with the check?
 3. Write a three-sentence PR comment: the decision, the evidence, and the suggested fix.
 
 ??? success "Solution"
     ```python
     # exercise-solution: read an experiment comparison and write the PR comment
+    import re
     import tempfile
-    from collections import Counter
     from pathlib import Path
 
     from evalkit.gate import flips
@@ -185,22 +185,32 @@ Save v1 and v2 runs with both tiers, diff them, and use the result to write the 
     print((out / "diff.md").read_text().splitlines()[0])
 
     v1, v2 = lab08.run_suite("v1", ("code",)), lab08.run_suite("v2", ("code",))
-    lost, gained = flips(v1.outcomes["code"]["format"], v2.outcomes["code"]["format"])
-    openers = Counter(v2.answers[c].split(":", 1)[0] for c in lost)
-    print(
-        f"format: {len(lost)} newly failing, {len(gained)} newly passing; first words: {dict(openers)}"
-    )
+    n = len(v2.answers)
+    for metric in ("format", "citations", "investigated"):
+        lost, gained = flips(v1.outcomes["code"][metric], v2.outcomes["code"][metric])
+        print(f"{metric}: {len(lost)} newly failing, {len(gained)} newly passing")
+
+    # The citations flips: which KB documents did each answer cite, and which did search_kb return?
+    traces, labels = lab06.run_traces("v2", 1), lab06.labels()[("v2", 1)]
     cites, _ = flips(v1.outcomes["code"]["citations"], v2.outcomes["code"]["citations"])
     for cid in cites:
-        sources = next(ln for ln in v2.answers[cid].splitlines() if ln.startswith("Sources:"))
-        tools = [t[0] for t in lab06.items("v2", 1)[cid].tools]
-        print(f"citations: {cid} newly failing -> {sources}, tools called: {tools or 'none'}")
+        cited = sorted(set(re.findall(r"\[kb:([\w-]+)\]", v2.answers[cid])))
+        got = sorted(
+            {
+                d
+                for s in traces[cid]
+                for d in s["attributes"].get("mediadoctor.retrieval.doc_ids", []) or []
+            }
+        )
+        print(f"citations: {cid} cites kb {cited}, search_kb returned {got or 'nothing'}; "
+              f"human label: {sorted(labels[cid]) or 'pass'}")  # fmt: skip
 
     comment = f"""\
-    **v2 is blocked by the format check, not by its content.** {len(lost)} of 108 answers now open with
-    "Premise check:" instead of "Likely cause:", which breaks every client that parses the reply. The
-    judge tier (dev, n=37) shows no significant change in either direction. Suggested fix: ask for the
-    premise check inside "Likely cause", re-record the gate set, and re-run the gate."""
+    **v2 passes the gate with a warning on citations.** {len(cites)} of {n} answers now cite a knowledge-base
+    document that search_kb never returned (none the other way), too few to be significant but too many
+    to rule out a 5-point drop; format is unchanged and investigated improves (3 lost, 9 gained, not
+    significant). Suggested fix: tell v2 to cite a [kb:...] document only if search_kb returned it,
+    re-record the gate set, and re-run the gate before shipping."""
     print(comment)
     ```
 
@@ -210,19 +220,29 @@ Save v1 and v2 runs with both tiers, diff them, and use the result to write the 
     wrote <tmp>/v1.json
     wrote <tmp>/v2.json
     wrote <tmp>/diff.md
-    ## v1 → v2: ❌ blocked
-    format: 16 newly failing, 0 newly passing; first words: {'Premise check': 16}
-    citations: m4q088 newly failing -> Sources: [kb:hdr-tone-mapping], tools called: none
-    **v2 is blocked by the format check, not by its content.** 16 of 108 answers now open with
-    "Premise check:" instead of "Likely cause:", which breaks every client that parses the reply. The
-    judge tier (dev, n=37) shows no significant change in either direction. Suggested fix: ask for the
-    premise check inside "Likely cause", re-record the gate set, and re-run the gate.
+    ## v1 → v2: ⚠️ passed with warnings
+    format: 0 newly failing, 0 newly passing
+    citations: 3 newly failing, 0 newly passing
+    investigated: 3 newly failing, 9 newly passing
+    citations: m4q003 cites kb ['av1-decoding', 'widevine-levels'], search_kb returned ['av1-decoding', 'hdr-tone-mapping']; human label: ['fabricated-evidence', 'retrieval-miss']
+    citations: m4q044 cites kb ['hdr-tone-mapping'], search_kb returned nothing; human label: ['fabricated-evidence']
+    citations: m4q131 cites kb ['av1-decoding'], search_kb returned nothing; human label: pass
+    **v2 passes the gate with a warning on citations.** 3 of 119 answers now cite a knowledge-base
+    document that search_kb never returned (none the other way), too few to be significant but too many
+    to rule out a 5-point drop; format is unchanged and investigated improves (3 lost, 9 gained, not
+    significant). Suggested fix: tell v2 to cite a [kb:...] document only if search_kb returned it,
+    re-record the gate set, and re-run the gate before shipping.
     ```
 
-    The report answers "what broke" in one table and "why" in the flips. The citations flip is v2 answering
-    `m4q088` from memory, without calling `search_kb`, while still citing a KB document; it is one case and does
-    not block, but it is worth a line in the comment because it is the kind of failure the false-premise fix should
-    not encourage.
+    The report answers "what changed" in one table and "why" in the flips. All three citations flips are the same
+    failure: v2 cites a KB document it never retrieved (`m4q044` and `m4q131` never called `search_kb`; `m4q003`
+    searched but cites `widevine-levels`, which the search did not return). v2's new sentence asks the model to check
+    claims "against the tool output or the knowledge base", and these answers appeal to the KB without looking it
+    up, which is the kind of side effect a false-premise fix should not have. The human labels agree on two of the
+    three; on `m4q131` the annotator passed an answer that attributes a suggestion to "the knowledge base" without
+    a search, so the code check is stricter than the label there, and worth a second look. Three flips against none
+    is not significant (p = 0.75 after Holm), which is why the gate warns instead of blocking: on data with more
+    such failures, the same report would block and list them.
 
 ## Exercise 4: When must you re-record?
 
@@ -315,8 +335,8 @@ prompt v1, (b) a new agent model ID, (c) a sentence added to a tool's descriptio
     root = Path(tempfile.mkdtemp())
     (root / labels).parent.mkdir(parents=True)
     text = (repo_root() / labels).read_text()
-    assert "v2,1,m4q088,fail" in text
-    (root / labels).write_text(text.replace("v2,1,m4q088,fail", "v2,1,m4q088,pass", 1))
+    assert "v2,1,m4q044,fail" in text
+    (root / labels).write_text(text.replace("v2,1,m4q044,fail", "v2,1,m4q044,pass", 1))
     manifest = load_manifest(lab08.manifest_path())
     print("relabel:", [p for p in check_manifest(manifest, root) if labels in p])
     ```
@@ -325,20 +345,20 @@ prompt v1, (b) a new agent model ID, (c) a sentence added to a tool's descriptio
 
     ```text
     change                 preflight  agent  judge
-    prompt_typo                  108    108    n/a
-    model_bump                   108    108    n/a
-    tool_description             108    108    n/a
-    kb_edit                        0     57    n/a
-    judge_wording                  0      0    107
-    relabel: ['data/labels/module06_runs.csv: changed since version 1.0.1']
+    prompt_typo                  119    119    n/a
+    model_bump                   119    119    n/a
+    tool_description             119    119    n/a
+    kb_edit                        0     98    n/a
+    judge_wording                  0      0     90
+    relabel: ['data/labels/module06_runs.csv: changed since version 2.0.0']
     ```
 
-    - Prompt, model, and tool definitions are part of every request: all 108 cases miss at the first turn, and
+    - Prompt, model, and tool definitions are part of every request: all 119 cases miss at the first turn, and
       `preflight` catches it in milliseconds. Re-record the gate set (and then the judges on the new answers).
     - A KB edit changes no first request, so preflight passes; it changes the `search_kb` result, and with it the
-      second request of the 57 cases that search. Only a full replay finds those misses, which is why the suite
+      second request of the 98 cases that search. Only a full replay finds those misses, which is why the suite
       catches misses during the run as well.
-    - A judge wording change misses all 107 judge calls but no agent call: re-record the judge tier, then
+    - A judge wording change misses all 90 judge calls but no agent call: re-record the judge tier, then
       re-validate the judge against labels (module 5) before trusting it.
     - A relabel changes no request, so nothing misses. It changes a file in the golden manifest, so CI fails until
       the version is bumped (a minor bump: same cases, new labels), and every number that used the old label should
@@ -348,13 +368,14 @@ prompt v1, (b) a new agent model ID, (c) a sentence added to a tool's descriptio
 
 1. From the recorded usage, what does one dev case cost to re-record live (agent and judges), and how long do its
    calls take?
-2. How often do v1 and v2 get different verdicts from each judge? What drop can 37 cases detect with 80% power?
+2. How often do v1 and v2 get different verdicts from each judge? What drop can the dev cases detect with 80% power?
+   If the judges never disagree, what can you plan with instead?
 3. How many cases would detect a 10-point drop, and does re-recording that many fit a $1.00 nightly budget?
 
 ??? success "Solution"
     ```python
     # exercise-solution: budget the judge tier
-    from evalkit.gate import Usage
+    from evalkit.gate import Usage, flips
     from evalkit.stats import mdd_paired, n_paired
     from mediadoctor import lab08
 
@@ -379,8 +400,16 @@ prompt v1, (b) a new agent model ID, (c) a sentence added to a tool's descriptio
         a, h = v1.outcomes["judges"][name], v2.outcomes["judges"][name]
         both = [c for c in a if a[c] is not None and h.get(c) is not None]
         disc[name] = sum(a[c] != h[c] for c in both) / len(both)
-    d = max(disc.values())
     print("discordant share per judge:", {k: round(v, 3) for k, v in disc.items()})
+    d = max(disc.values())
+    if d == 0:
+        # No disagreement at all: the judge tier gives no pilot estimate. Plan with the code tier's
+        # v1/v2 disagreement on the gate set instead (the same two prompts, more cases).
+        lost, gained = flips(
+            v1.outcomes["code"]["all-code-checks"], v2.outcomes["code"]["all-code-checks"]
+        )
+        d = (len(lost) + len(gained)) / len(v1.outcomes["code"]["all-code-checks"])
+        print(f"no judge disagrees; planning with the code tier's discordant share, {d:.3f}")
     mdd = mdd_paired(n_dev, d)
     print(
         f"n={n_dev} detects a paired drop of {mdd:.2f}"
@@ -402,15 +431,20 @@ prompt v1, (b) a new agent model ID, (c) a sentence added to a tool's descriptio
     Output:
 
     ```text
-    one dev case, live: 5.1 calls, $0.0058, 6 s of calls
-    discordant share per judge: {'false-premise': 0.162, 'tool-grounding': 0.182, 'next-step': 0.081}
-    n=37 cannot reliably detect any drop smaller than the 0.18 disagreement rate
-    to detect a 10-point drop: n=141 cases
-    re-recording n=141 live: $0.82, 4 min at 4 parallel (within a $1.00 nightly budget)
+    one dev case, live: 5.0 calls, $0.0079, 13 s of calls
+    discordant share per judge: {'false-premise': 0.0, 'tool-grounding': 0.0, 'next-step': 0.0}
+    no judge disagrees; planning with the code tier's discordant share, 0.118
+    n=30 cannot reliably detect any drop smaller than the 0.12 disagreement rate
+    to detect a 10-point drop: n=90 cases
+    re-recording n=90 live: $0.71, 5 min at 4 parallel (within a $1.00 nightly budget)
     ```
 
-    At 37 cases the judge tier cannot see a drop smaller than the rate at which the two prompts disagree, so its
-    warns are expected and its passes mean little. About 141 cases would detect a 10-point paired drop, and
-    re-recording them every night costs about $0.82 at these token counts: affordable, but it uses most of a $1.00
-    budget, so a weekly run with alerts on warn may be the better trade. These sizes assume the judge is right; a
-    judge with low TNR (false-premise, 0.44 on dev) shrinks every difference and needs more cases still.
+    On the 30 dev cases every judge passes every answer of both prompts, so there are no discordant pairs and the
+    judge tier itself gives no estimate to size from (a discordant share of 0 makes `n_paired` refuse). That is not
+    evidence that the prompts behave the same: the human labels fail one v2 dev answer (`m4q044`, a KB citation
+    without a search) that the tool-grounding judge passed. Plan instead with the best pilot you have, here the code
+    tier's disagreement between the same two prompts on 119 cases (14 discordant, 0.118). At that rate 30 cases
+    cannot see any drop smaller than the disagreement itself, about 90 cases would detect a 10-point paired drop,
+    and re-recording them nightly costs about $0.71: affordable, but most of a $1.00 budget, so a weekly run with
+    alerts on warn may be the better trade. These sizes assume the judge is right; a judge that misses failures
+    (as on `m4q044`) shrinks every difference and needs more cases still.

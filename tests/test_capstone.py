@@ -36,7 +36,7 @@ def test_report_follows_the_template(release_report):
 def test_release_look_is_logged_once_per_report(release_report):
     _, log = release_report
     rows = list(csv.DictReader(log.open(encoding="utf-8")))
-    assert len(rows) == 1 and rows[0]["variant"] == "retry" and rows[0]["n"] == "29"
+    assert len(rows) == 1 and rows[0]["variant"] == "v3" and rows[0]["n"] == "28"
 
 
 def test_dev_report_does_not_read_the_holdout(tmp_path, monkeypatch):
@@ -45,7 +45,7 @@ def test_dev_report_does_not_read_the_holdout(tmp_path, monkeypatch):
 
     monkeypatch.setattr(C, "holdout_look", boom)
     text = C.report_markdown("drm-resolution", release=False, today="2026-11-23")
-    assert "not spent (dev only)" in text and "Ship `retry` once the held-out look agrees" in text
+    assert "not spent (dev only)" in text and "**Keep `v1`.**" in text
     with pytest.raises(HoldoutAccessError):
         lab11.task_results("retry", "holdout")
 
@@ -53,19 +53,37 @@ def test_dev_report_does_not_read_the_holdout(tmp_path, monkeypatch):
 def test_stage_numbers_come_from_the_modules():
     rows = {s.module: s for s in C.stages()}
     assert sorted(rows) == list(range(1, 12))
-    assert "16/20" in rows[1].headline
-    assert "ignored-tool-output (11)" in rows[3].headline
-    assert "TPR 0.90 TNR 0.60" in rows[5].headline
-    assert not rows[9].ok  # the monitoring alarm is flagged for the report
-    s = C.m11()["summaries"]["retry"]
-    assert (s.successes, s.n) == (97, 108)
+    assert "19/20" in rows[1].headline
+    assert "fabricated-evidence (3)" in rows[3].headline
+    assert "TPR 1.00 TNR n/a (0/0)" in rows[5].headline  # no failing test traces: TNR is undefined
+    # the monitoring alarm is flagged for the report
+    assert "manifest problems 0" in rows[8].headline  # lab08 manifest --check is clean
+    assert not rows[9].ok and "tool_error CUSUM alarm +8.6 h" in rows[9].headline
+    assert "no change kept, v1 stays" in rows[11].headline
+    s = C.m11()["summaries"]["v1"]
+    assert (s.successes, s.n) == (78, 119)
+
+
+def test_no_kept_change_keeps_the_baseline_and_labels_the_comparison(release_report):
+    text, _ = release_report
+    # nothing kept: the report compares v1 with the best rejected configuration on dev
+    assert C.candidate() == "v1" and C.comparator() == "v3"
+    assert text.startswith("# MediaDoctor eval report: keep `v1` (no change passed its test)")
+    assert "Best rejected configuration | `v3`" in text and "| v1 | v3 (rejected) |" in text
+    assert "**Keep `v1`.**" in text and "Ship `" not in text
+    assert "tool_error CUSUM alarm (+8.6 h after the rollout" in text
+    assert "| 1.00 (28/28) | n/a (0/0) |" in text
 
 
 def test_slices_cover_every_dev_case_and_pick_the_weakest():
     rows = C.slice_rows()
-    assert sum(r["n"] for r in rows) == 108
-    assert C.weakest_slice() == "audio-focus"
-    assert next(r for r in rows if r["topic"] == "audio-focus")["cand"] == 8
+    assert sum(r["n"] for r in rows) == 119
+    # drm-resolution and live-stream tie at 0.500 under v1; the tie goes to the first topic by name
+    assert C.weakest_slice() == "drm-resolution"
+    weakest = next(r for r in rows if r["topic"] == "drm-resolution")
+    assert (weakest["n"], weakest["ship"], weakest["cand"]) == (14, 7, 7)
+    live = next(r for r in rows if r["topic"] == "live-stream")
+    assert live["ship"] / live["n"] == weakest["ship"] / weakest["n"]
 
 
 def test_unknown_slice_is_rejected():
@@ -75,7 +93,7 @@ def test_unknown_slice_is_rejected():
 
 def test_check_report_flags_a_bare_summary():
     text = PUBLISHED.read_text(encoding="utf-8")
-    broken = text.replace("## 6. Evaluators", "## 6. Judges").replace("[0.827, 0.942]", "")
+    broken = text.replace("## 6. Evaluators", "## 6. Judges").replace("[0.566, 0.735]", "")
     problems = C.check_report(broken)
     assert "missing section: Evaluators" in problems
     assert C.check_report("# empty\n")[:1] == ["missing section: Decision requested"]
@@ -85,7 +103,7 @@ def test_cli_run_and_slices(capsys):
     assert C.main(["run"]) == 0
     assert "11 stages replayed; 1 flagged" in capsys.readouterr().out
     assert C.main(["slices"]) == 0
-    assert "weakest slice under retry: audio-focus" in capsys.readouterr().out
+    assert "weakest slice under v1: drm-resolution" in capsys.readouterr().out
 
 
 def test_cli_check_exit_code(tmp_path, capsys):

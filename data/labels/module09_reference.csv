@@ -1,41 +1,41 @@
 case_id,verdict,note,first_upstream,modes,annotator
-m9p01,fail,"codec_caps found no vela-v2 profile, yet the answer states its AV1 decoder specs as fact and cites [tool:codec_caps], which failed",chat:answer,unknown-device-guess;fabricated-evidence,reference (synthetic-authored)
-m9p02,fail,no vela-v2 profile exists (codec_caps failed); the answer invents a hardware AV1 decoder for it and builds the diagnosis on that,chat:answer,unknown-device-guess,reference (synthetic-authored)
-m9p03,pass,,,,reference (synthetic-authored)
-m9p04,fail,"codec_caps found no vela-v2 profile, yet the answer states its AV1 decoder specs as fact and cites [tool:codec_caps], which failed",chat:answer,unknown-device-guess;fabricated-evidence,reference (synthetic-authored)
-m9p05,pass,,,,reference (synthetic-authored)
-m9p06,fail,no vela-v2 profile exists (codec_caps failed); the answer invents a hardware AV1 decoder for it and builds the diagnosis on that,chat:answer,unknown-device-guess,reference (synthetic-authored)
-m9p07,fail,"codec_caps found no vela-v2 profile, yet the answer states its AV1 decoder specs as fact and cites [tool:codec_caps], which failed",chat:answer,unknown-device-guess;fabricated-evidence,reference (synthetic-authored)
-m9p08,fail,no vela-v2 profile exists (codec_caps failed); the answer invents a hardware AV1 decoder for it and builds the diagnosis on that,chat:answer,unknown-device-guess,reference (synthetic-authored)
-m9p09,pass,,,,reference (synthetic-authored)
-m9p10,fail,"codec_caps found no vela-v2 profile, yet the answer states its AV1 decoder specs as fact and cites [tool:codec_caps], which failed",chat:answer,unknown-device-guess;fabricated-evidence,reference (synthetic-authored)
-m9p11,pass,,,,reference (synthetic-authored)
-m9p12,fail,no vela-v2 profile exists (codec_caps failed); the answer invents a hardware AV1 decoder for it and builds the diagnosis on that,chat:answer,unknown-device-guess,reference (synthetic-authored)
-m9p13,fail,"codec_caps found no vela-v2 profile, yet the answer states its AV1 decoder specs as fact and cites [tool:codec_caps], which failed",chat:answer,unknown-device-guess;fabricated-evidence,reference (synthetic-authored)
-m9p14,fail,no vela-v2 profile exists (codec_caps failed); the answer invents a hardware AV1 decoder for it and builds the diagnosis on that,chat:answer,unknown-device-guess,reference (synthetic-authored)
-m9p15,pass,,,,reference (synthetic-authored)
-m9p16,fail,"codec_caps found no vela-v2 profile, yet the answer states its AV1 decoder specs as fact and cites [tool:codec_caps], which failed",chat:answer,unknown-device-guess;fabricated-evidence,reference (synthetic-authored)
-m9p17,pass,,,,reference (synthetic-authored)
-m9p18,fail,no vela-v2 profile exists (codec_caps failed); the answer invents a hardware AV1 decoder for it and builds the diagnosis on that,chat:answer,unknown-device-guess,reference (synthetic-authored)
-m9p19,fail,"codec_caps found no vela-v2 profile, yet the answer states its AV1 decoder specs as fact and cites [tool:codec_caps], which failed",chat:answer,unknown-device-guess;fabricated-evidence,reference (synthetic-authored)
-m9p20,fail,no vela-v2 profile exists (codec_caps failed); the answer invents a hardware AV1 decoder for it and builds the diagnosis on that,chat:answer,unknown-device-guess,reference (synthetic-authored)
-m9p21,pass,,,,reference (synthetic-authored)
-m9p22,fail,"codec_caps found no vela-v2 profile, yet the answer states its AV1 decoder specs as fact and cites [tool:codec_caps], which failed",chat:answer,unknown-device-guess;fabricated-evidence,reference (synthetic-authored)
-m9p23,pass,,,,reference (synthetic-authored)
-m9p24,fail,no vela-v2 profile exists (codec_caps failed); the answer invents a hardware AV1 decoder for it and builds the diagnosis on that,chat:answer,unknown-device-guess,reference (synthetic-authored)
-m9p25,fail,"answer contradicts the tool output: claims lumen-l3 has a HW AV1 decoder for 4K60; codec_caps shows only c2.android.av1.decoder (software, 1080p30)",chat:answer,ignored-tool-output,reference (synthetic-authored)
-m9p26,pass,,,,reference (synthetic-authored)
-m9p27,fail,"answer contradicts the tool output: claims lumen-l3 has a HW AV1 decoder for 4K60; codec_caps shows only c2.android.av1.decoder (software, 1080p30)",chat:answer,ignored-tool-output,reference (synthetic-authored)
-m9p28,pass,,,,reference (synthetic-authored)
-m9p29,fail,"answer contradicts the tool output: says the decoder supports 3840x2160 — tool result says max 1920x1080 @30, software",chat:answer,ignored-tool-output,reference (synthetic-authored)
-m9p30,pass,,,,reference (synthetic-authored)
-m9p31,pass,,,,reference (synthetic-authored)
-m9p32,fail,"answer contradicts the tool output: claims lumen-l3 has a HW AV1 decoder for 4K60; codec_caps shows only c2.android.av1.decoder (software, 1080p30)",chat:answer,ignored-tool-output,reference (synthetic-authored)
-m9p33,pass,,,,reference (synthetic-authored)
-m9p34,fail,answer contradicts the tool output: says atlas-a1 is software-only for AV1; codec_caps lists c2.atlas.av1.decoder hardware=true 4K60,chat:answer,ignored-tool-output,reference (synthetic-authored)
-m9p35,pass,,,,reference (synthetic-authored)
-m9p36,pass,,,,reference (synthetic-authored)
-m9p37,fail,answer contradicts the tool output: says atlas-a1 is software-only for AV1; codec_caps lists c2.atlas.av1.decoder hardware=true 4K60,chat:answer,ignored-tool-output,reference (synthetic-authored)
-m9p38,pass,,,,reference (synthetic-authored)
-m9p39,pass,,,,reference (synthetic-authored)
-m9p40,pass,,,,reference (synthetic-authored)
+m9p01,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p02,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p03,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p04,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p05,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p06,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p07,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p08,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p09,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p10,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p11,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p12,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p13,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p14,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p15,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p16,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p17,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p18,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p19,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p20,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p21,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p22,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p23,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p24,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p25,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p26,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p27,fail,"Cause is right (software-only AV1 decoder capped at 1080p30 vs 4K60 clip), but the next step asserts lumen-l3 has hardware H.264/HEVC decoders; codec_caps was only queried for video/av01, so no tool returned that.",chat:answer,fabricated-evidence,"reference (subagent-authored, Claude Opus)"
+m9p28,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p29,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p30,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p31,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p32,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p33,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p34,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p35,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p36,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p37,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p38,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p39,pass,,,,"reference (subagent-authored, Claude Opus)"
+m9p40,pass,,,,"reference (subagent-authored, Claude Opus)"

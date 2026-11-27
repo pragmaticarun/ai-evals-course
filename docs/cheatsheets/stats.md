@@ -73,7 +73,8 @@ Temperature cannot remove run-to-run variance (and current Claude models accept 
 ## Vanity metric test
 
 Does the metric separate passing from failing traces in your labels? Chance that a random PASS outscores a random
-FAIL: 0.5 = useless. In the lab: helpfulness 1-10 → 0.42; word-overlap F1 → 0.47.
+FAIL: 0.5 = useless. In the lab: helpfulness 1-10 → 0.22 on v1 and 0.81 on v2; word-overlap F1 → 0.28. Each rests on
+three failing answers, so neither metric is validated: you need enough labelled failures to test one.
 
 ## Repeated looks and small slices
 

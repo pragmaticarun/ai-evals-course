@@ -63,10 +63,10 @@ Which checks go in which tier follows from what each one costs and how much you 
 | | Code tier | Judge tier |
 |---|---|---|
 | Runs on | every pull request and every push to `main` | nightly at 03:15 IST, by hand, or a PR labelled `run-judges` |
-| Cases | 108 (train and dev splits of the labelled set) | 37 (dev split) |
-| Evaluators | format, citations, investigated: code, validated in module 5 at TPR 1.00 and TNR 0.75 to 1.00 | false-premise, tool-grounding, next-step: LLM judges, TNR 0.44 to 1.00 on dev |
-| Replay time | about 0.2 s | about 0.3 s |
-| Live re-record | 238 Sonnet calls, about $0.55 | about 107 judge calls plus 84 agent calls, about $0.22 |
+| Cases | 119 (train and dev splits of the labelled set) | 30 (dev split) |
+| Evaluators | format, citations, investigated: code, validated in module 5 at TPR 0.78 to 1.00 (TNR barely measurable: the labelled traces hold one citation failure and none of the other two) | false-premise, tool-grounding, next-step: LLM judges, TPR 1.00 on dev (TNR not measurable: no dev trace fails) |
+| Replay time | about 0.4 s | about 0.7 s |
+| Live re-record | 238 Sonnet calls, about $0.81 | 90 judge calls plus 60 agent calls, about $0.24 |
 
 Deterministic checks belong on every change because they are cheap and their verdicts are exact. Judges are
 replayed here too, so in this repo the judge tier is just as fast; the split still matters because in a real
@@ -81,14 +81,17 @@ change from module 6:
 
 ```text
 metric               v1     v2   no-drop  2-pt tol.  5-pt tol.  paired gate
-format            0.972  0.824      fail       fail       fail  fail
-citations         0.972  0.963      fail       pass       pass  pass
-investigated      0.972  0.972      pass       pass       pass  pass
-all-code-checks   0.944  0.787      fail       fail       fail  fail
+format            1.000  1.000      pass       pass       pass  pass
+citations         1.000  0.975      fail       fail       pass  warn
+investigated      0.782  0.832      pass       pass       pass  pass
+all-code-checks   0.782  0.815      pass       pass       pass  pass
 ```
 
-Here the naive rules agree with the gate on the big drop, and the no-drop rule blocks on citations because one case
-out of 108 flipped. That is the general pattern: a fixed tolerance is right for one combination of sample size and
+v2 changes little on these cases, and the rules disagree on the one metric that got worse. Three of 119 answers
+lost their citations check and none gained it, a 2.5-point drop: the no-drop rule and the 2-point tolerance block
+on it, the 5-point tolerance waves it through, and the paired gate warns, because three flips against none is
+consistent with chance but the interval cannot rule out a drop larger than 5 points. Which fixed rule is "right"
+depends on how many cases flip by chance, and the fixed rules do not know. That is the general pattern: a fixed tolerance is right for one combination of sample size and
 run-to-run noise and wrong for the others. Exercise 1 simulates it at n = 100 with live-style noise: the no-drop rule
 blocks 34% to 48% of changes that change nothing, and a 3-point tolerance blocks 1% to 10% of them depending on the
 noise, while the paired gate stays near 1%.
@@ -103,16 +106,21 @@ statuses:
 - **pass**: otherwise.
 
 The false-alarm rate of "fail" is controlled by alpha, whatever n is. What n controls is power: the chance of
-catching a real drop. With 108 cases and the code tier's flip rate, the gate catches a 10-point drop most of the
-time; with the judge tier's 37 cases, where v1 and v2 get different verdicts on up to 18% of cases, it cannot
-reliably see any drop smaller than that disagreement rate (exercise 5). A warn is the gate saying so. Do not tune `margin` until warnings go away;
+catching a real drop. With 119 cases and the code tier's flip rate (v1 and v2 disagree on 12% of
+cases), the gate catches a drop of about 9 points with 80% power. The judge tier's 30 cases are another matter: the
+judges give v1 and v2 the same verdict on every one, so the tier offers no estimate of its own noise, and planning
+with the code tier's 12% says 30 cases cannot reliably see any drop smaller than that disagreement rate (exercise
+5). A warn is the gate saying so. Do not tune `margin` until warnings go away;
 add cases, or read the flips.
 
-A judge tier also inherits its judge's errors. On the dev split the human labels say v2 fixed most false-premise
-failures (fail rate 9/37 to 1/37, a paired difference of +0.22 [+0.08, +0.38]). The false-premise judge, whose TNR on
-dev is 0.44, sees only +0.05 [−0.08, +0.19] and warns. Comparing the same judge on both sides cancels some of its
-bias, but a judge that misses most failures cannot show that they went away. Code checks gate; judge tiers mostly
-inform, until the judge is good enough to gate.
+A judge tier also inherits its judge's errors. On the dev split the human labels find no false-premise failure in
+either prompt's answers, and one v2 failure of another kind: `m4q044` cites a knowledge-base document without having
+searched (fabricated evidence). The citations code check catches it; the tool-grounding judge passes it, and every
+judge passes every dev answer of both prompts. With no failing dev trace, module 5 could not even measure the
+judges' TNR there, so a clean judge tier says little about whether failures are absent. On data with more failures,
+the same comparison would show a judge with low TNR shrinking the visible difference between two prompts: comparing
+the same judge on both sides cancels some of its bias, but a judge that misses most failures cannot show that they
+went away. Code checks gate; judge tiers mostly inform, until the judge is good enough to gate.
 
 !!! note "Must-pass cases"
     Some cases encode a past incident ("never tell users to disable DRM"). Those are tests, not samples: assert them
@@ -123,10 +131,10 @@ inform, until the judge is good enough to gate.
 
 A gate compares against something fixed. Two files pin it down.
 
-The **golden manifest** (`data/golden/manifest.json`) names the golden set (`mediadoctor-golden 1.0.1`) and lists the
+The **golden manifest** (`data/golden/manifest.json`) names the golden set (`mediadoctor-golden 2.0.0`) and lists the
 SHA-256 of every file the gate's numbers depend on: the dataset, the reference labels from modules 5 and 6, the judge
 specs, the recorded fixtures, a digest of each labelled answer, and the hygiene review. It also stores a digest of
-each split's case ids (108 gate, 37 judge, 29 held out). `evalkit.golden.check_manifest` lists every difference, and
+each split's case ids (119 gate, 30 judge, 28 held out). `evalkit.golden.check_manifest` lists every difference, and
 `evals/test_golden.py` fails the build on any of them. Changing a label, a judge spec, or a fixture is fine; doing it
 silently is not. Bump the version with the change: major for new cases or splits, minor for relabels or re-recorded
 runs, patch for fixes that change no outcome. Old numbers then come with the version they were measured on.
@@ -186,7 +194,9 @@ so the same report serves an experiment on your laptop and a PR in CI.
 The report has four parts:
 
 1. A headline (passed, passed with warnings, or blocked) and what was compared: the base's prompt, fingerprint, and
-   where its baseline came from, the head's, and the golden version.
+   where its baseline came from, the head's, and the golden version. When the base's baseline is on a different
+   *major* golden version (new cases or splits), its results are on another set and cannot gate this one: the gate
+   compares with this checkout's baseline instead, and the source line says why.
 2. Per tier, a table with one row per metric: n, both rates, the paired difference with its interval, the flips in
    each direction, the adjusted p-value, and the status.
 3. The flips to read first: each newly failing case with the first line of the new answer, and the newly passing
@@ -202,16 +212,18 @@ Keep the report in Markdown, keep it short, and put the details (the head run's 
 
 - **Leakage across splits.** A near-duplicate of a held-out case in the gate set lets tuning see the held-out set
   through the back door. Module 4 grouped similar queries (word-trigram Jaccard ≥ 0.35) into the same split, and the
-  check confirms it held: the closest gate and held-out pair scores 0.344.
+  check confirms it held: the closest gate and held-out pair scores 0.204.
 - **Judge examples.** A judge's few-shot examples must come from the train split (`evalkit.judge.leakage_problems`,
   module 5). None leak.
 - **Contamination.** An eval case's text appearing in something tuned against it (an agent prompt, a judge prompt with
   its examples, the knowledge base) inflates the score on that case. The check looks for shared runs of eight words
   in the prose of each judge-tier and held-out question (pasted log lines are removed: the same logcat is shared by
-  design). It finds five: four held-out cases and one dev case share a sentence or a premise with a judge example
-  about the same clip (`av_offset_300ms.mp4`), because module 4's writer reused a user's phrasing. These are recorded
-  in `data/golden/hygiene_review.csv` with a decision (accept for the dev case; watch for the held-out ones, and pick
-  examples from another clip at the next judge revision). The check fails only on findings nobody has reviewed.
+  design). On the current data it finds none. Findings, when there are some, are recorded in
+  `data/golden/hygiene_review.csv` with a decision (accept, or watch and pick other judge examples at the next judge
+  revision), and the check fails only on findings nobody has reviewed. That file still holds five decisions from an
+  earlier version of the judge examples (questions about `av_offset_300ms.mp4` that shared a sentence or a premise
+  with an example about the same clip); none of them matches a current finding, and they are the kind of entry to
+  prune at the next golden version bump.
 - **Stale labels.** Labels whose answer digest no longer matches the replayed answer. None, until something is
   re-recorded.
 
@@ -222,14 +234,15 @@ cut-off and check for verbatim recall.
 ## Step 7: overfitting to the eval set
 
 Every PR that reads the gate's flips and adjusts the prompt is tuning on the gate set. Over months the gate set
-becomes a dev set: the prompt does well on those 108 cases for reasons that may not carry over. Three habits keep
+becomes a dev set: the prompt does well on those 119 cases for reasons that may not carry over. Three habits keep
 an honest number available:
 
-1. **A held-out split CI never reads.** The 29 test-split cases are not in any tier's `splits`. `evalkit.golden.HoldoutGuard`
+1. **A held-out split CI never reads.** The 28 test-split cases are not in any tier's `splits`. `evalkit.golden.HoldoutGuard`
    refuses to hand their ids to anything that is not a release evaluation, and `evals/test_golden.py` asserts it.
 2. **Look rarely, and log every look.** `uv run mediadoctor-lab08 release --log` evaluates the release (or a candidate)
-   on the held-out split and appends a line to `data/golden/holdout_log.csv`. For v1 the code checks pass 0.931 of
-   the 29 cases together; v2 gets 0.862, consistent with the gate. A large gap between gate and held-out numbers is
+   on the held-out split and appends a line to `data/golden/holdout_log.csv`. For v1 the code checks pass 0.786 of
+   the 28 cases together; v2 gets 0.893, consistent with the gate's small, non-significant improvement on
+   all-code-checks (0.782 to 0.815). A large gap between gate and held-out numbers is
    the overfitting alarm.
 3. **Rotate.** After a fixed number of looks (say five) or a quarter, move fresh, never-used cases into the held-out
    split and move the old held-out cases, whose results people have now seen, into the gate set
@@ -245,9 +258,9 @@ CI that is slow or expensive gets switched off. `config/eval_gate.toml` sets the
 
 | Budget | Value | Measured |
 |---|---|---|
-| Replay time of one tier's eval step | 120 s | 0.2 s (code), 0.3 s (judges) |
-| Live re-record of one tier | $2.00 | $0.55 (code: 238 Sonnet calls), $0.22 (judges) |
-| Wall time of that re-record at 4 parallel calls | 30 min | 1.4 min (code), 1.0 min (judges) |
+| Replay time of one tier's eval step | 120 s | 0.4 s (code), 0.7 s (judges) |
+| Live re-record of one tier | $2.00 | $0.81 (code: 238 Sonnet calls), $0.24 (judges) |
+| Wall time of that re-record at 4 parallel calls | 30 min | 4.5 min (code), 1.6 min (judges) |
 
 Costs come from the recorded token counts and the prices in `config/models.toml`; times come from the recorded
 latencies. Module 5's judge records carry no latency, so for those calls a simple token-based estimate fills in
@@ -256,54 +269,63 @@ environment, and never calls the API. The agent's Sonnet calls are most of the l
 that grade answers already recorded, which is why a judge tier is cheap to re-record but not free to run on every
 push in a live pipeline.
 
-## Worked example: a system-prompt PR, blocked
+## Worked example: a system-prompt PR, passed with a warning
 
-Module 6 left a question open: prompt v2 fixed most false-premise failures, but broke the reply format. Here is what
-happens when someone tries to ship it anyway.
+Module 6 compared prompt v2, written against the false-premise failures of modules 3 to 5, with v1 and found almost
+no difference: both pass 0.98 of the 147 labelled traces, with three cases flipping each way. Here is what happens
+when someone ships v2 anyway.
 
 **1. The pull request.** It changes `config/release.toml` from `prompt = "v1"` to `prompt = "v2"`. Replay of the
 v2 runs succeeds (module 6 recorded them), but `evals/test_replay.py` fails at once: the committed baseline still
 describes v1. The author runs `uv run mediadoctor-lab08 baseline --write` and commits `evals/baseline.json`. The
-baseline diff shows 105 changed lines: the outcomes the change flipped.
+baseline diff (318 changed lines) shows the outcomes the change flipped.
 
-**2. The gate.** In CI, the `code-gate` job compares the head with the baseline on the base branch, and both
-`test_no_regression[format]` and `test_no_regression[all-code-checks]` fail. The job summary reads:
+**2. The gate.** In CI, the `code-gate` job compares the head with the baseline on the base branch. Every
+`test_no_regression` test passes, because nothing is significantly worse, but the job summary is not a plain pass:
 
 ```text
-## Eval gate: ❌ blocked
+## Eval gate: ⚠️ passed with warnings
 
 | Metric | n | Base | Head | Head − base (95% CI) | Flips −/+ | p (adj.) | Gate |
 |---|---|---|---|---|---|---|---|
-| format | 108 | 0.972 | 0.824 | -0.148 [-0.222, -0.083] | 16/0 | <0.001 | ❌ fail |
-| citations | 108 | 0.972 | 0.963 | -0.009 [-0.028, +0.000] | 1/0 | 1.000 | ✅ pass |
-| investigated | 108 | 0.972 | 0.972 | +0.000 [+0.000, +0.000] | 0/0 | 1.000 | ✅ pass |
-| all-code-checks | 108 | 0.944 | 0.787 | -0.157 [-0.231, -0.093] | 17/0 | <0.001 | ❌ fail |
+| format | 119 | 1.000 | 1.000 | +0.000 [+0.000, +0.000] | 0/0 | 1.000 | ✅ pass |
+| citations | 119 | 1.000 | 0.975 | -0.025 [-0.059, +0.000] | 3/0 | 0.750 | ⚠️ warn |
+| investigated | 119 | 0.782 | 0.832 | +0.050 [+0.000, +0.109] | 3/9 | 0.584 | ✅ pass |
+| all-code-checks | 119 | 0.782 | 0.815 | +0.034 [-0.034, +0.092] | 5/9 | 0.848 | ✅ pass |
+
+- citations: -0.025 [-0.059, +0.000], p(adj.)=0.750: cannot rule out a drop larger than 0.05
 ```
 
-The flips table lists the 16 newly failing format cases; every one of them opens with "Premise check:" instead of
-"Likely cause:". v2's new instruction made the model add a line the format does not allow, and any client that
-parses the reply would break on 15% of answers. The citations flip (`m4q088`, which cites a KB document without
-having searched) is one case and does not block. Labelled `run-judges`, the PR also gets the judge tier: no judge
-shows a significant change, and two warn because 37 cases cannot rule out a 5-point drop.
+The flips table lists the three newly failing citations cases (`m4q003`, `m4q044`, `m4q131`), and they share one
+pattern: each answer cites a knowledge-base document that `search_kb` never returned in that run. v2's new
+sentence tells the model to check claims "against the tool output or the knowledge base", and in these answers it
+appeals to the KB without looking it up. Format is unchanged, and investigated moves the other way (9 cases gained,
+3 lost), which is not significant either. Labelled `run-judges`, the PR also gets the judge tier: every judge passes
+every one of the 30 dev answers on both sides, so it shows no change at all, although the human labels fail one of
+those dev answers (`m4q044`). The code check sees what the judge tier does not.
 
-**3. The fix, and a replay miss.** The author adds one sentence to v2: say the premise check inside "Likely cause"
-and never add a line before it. The gate now stops before evaluating anything:
+**3. The decision, the fix, and a replay miss.** A warn does not fail the job, so the merge is a reviewer's call.
+Three flips against none could be chance, but each one is a fabricated citation, so the reviewer asks for a fix
+first. The author adds one sentence to v2: cite a `[kb:...]` document only if `search_kb` returned it. The gate now
+stops before evaluating anything:
 
 ```text
 ## Eval gate: ⛔ needs re-recorded fixtures
 
-108 agent runs not recorded (e.g. m4q001, m4q002, m4q003). The change alters the requests, so the replayed suite
+119 agent runs not recorded (e.g. m4q001, m4q002, m4q003). The change alters the requests, so the replayed suite
 cannot evaluate it. ...
 ```
 
-That is the correct answer: no recorded output says what the new prompt does. The next steps are to record the 108
-runs (about $0.55 with the live-evals workflow or locally), read the flips, label the changed answers, bump the
+That is the correct answer: no recorded output says what the new prompt does. The next steps are to record the 119
+runs (about $0.81 with the live-evals workflow or locally), read the flips, label the changed answers, bump the
 golden manifest, rewrite the baseline, and push again. The course stops here because it uses no API key; the lab
 shows the commands.
 
-Two details made this a good outcome. A naive "overall pass rate must not drop" rule would also have blocked step 2,
-but it would have blocked a one-case citation flip too, and it would not have said which cases to read. And the
-held-out split played no part: nobody tuned the fix on it, so it can still judge the fix once it is recorded.
+Two details made this a good outcome. A naive "pass rate must not drop" rule, or a 2-point tolerance, would have
+blocked step 2 on three flips without saying whether three flips mean anything; the paired gate says it cannot tell
+at this n and lists the cases to read. On data with more such failures, the same gate would block and the same
+flips table would show why. And the held-out split played no part: nobody tuned the fix on it, so it can still
+judge the fix once it is recorded.
 
 ## Checklist
 

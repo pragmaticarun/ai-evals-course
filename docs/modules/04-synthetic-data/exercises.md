@@ -81,15 +81,17 @@ with values `foreground`, `background`, and `picture-in-picture`, and one rule y
 
 ## Exercise 2: Choose a near-duplicate threshold, and justify it
 
-The lab uses 0.6. Measure how many queries survive at thresholds from 0.4 to 0.9, then look at the pairs that the
-threshold actually decides: those between 0.5 and 0.6, and between 0.6 and 0.7. Pick a threshold and write two
-sentences defending it to a sceptical colleague. Then explain why `build_dataset` only compares queries with the
+The lab uses 0.6. Measure how many queries survive at thresholds from 0.1 to 0.9, then look at the most similar
+pairs: the ones a threshold would decide. Pick a threshold and write two sentences defending it to a sceptical
+colleague. Then explain why `build_dataset` only compares queries with the
 same `evidence` and `ambiguity` values.
 
 ??? success "Solution"
     ```python
     # exercise-solution
-    from evalkit.synth import dedup
+    from itertools import combinations
+
+    from evalkit.synth import dedup, similarity
     from mediadoctor import lab04
 
     rows = lab04.generate_queries(lab04.make_tuples(lab04.load_default_space()))
@@ -101,39 +103,55 @@ same `evidence` and `ambiguity` values.
         return tuple(by_id[i][k] for k in lab04.DEDUP_WITHIN)
 
 
-    kept = {t: dedup(items, t, key=same_case) for t in (0.4, 0.5, 0.6, 0.7, 0.8, 0.9)}
+    kept = {t: dedup(items, t, key=same_case) for t in (0.1, 0.15, 0.2, 0.3, 0.4, 0.6, 0.9)}
     for t, res in kept.items():
         print(f"threshold {t}: keep {len(res.kept)}")
 
+    # The pairs a threshold could act on: the most similar queries within the same test case.
+    pairs = sorted(
+        (
+            (similarity(qa, qb), a, b)
+            for (a, qa), (b, qb) in combinations(items, 2)
+            if same_case(a) == same_case(b)
+        ),
+        reverse=True,
+    )
+    print("\n--- the three most similar pairs ---")
+    for s, a, b in pairs[:3]:
+        print(f"{s:.2f} {a} {by_id[a]['persona']:<14} {by_id[a]['query'][:70]!r}")
+        print(f"     {b} {by_id[b]['persona']:<14} {by_id[b]['query'][:70]!r}")
 
-    def band(lo, hi):
-        """Pairs dropped at `lo` but kept at `hi`: the decisions the threshold actually makes."""
-        keep_hi = set(kept[hi].kept)
-        return [(a, b, s) for a, b, s in kept[lo].dropped if a in keep_hi]
-
-
-    for lo, hi in ((0.5, 0.6), (0.6, 0.7)):
-        print(f"\n--- similarity in [{lo}, {hi}) ---")
-        for a, b, s in band(lo, hi):
-            print(f"{s:.2f} {a} {by_id[a]['persona']:<14} {by_id[a]['query'][:70]!r}")
-            print(f"     {b} {by_id[b]['persona']:<14} {by_id[b]['query'][:70]!r}")
-
-    assert [len(r.kept) for r in kept.values()] == [159, 173, 182, 188, 190, 197]
+    assert [len(r.kept) for r in kept.values()] == [184, 195, 199, 200, 200, 200, 200]
+    assert round(pairs[0][0], 2) == 0.20
     ```
 
-    Kept: 159, 173, 182, 188, 190, 197 at 0.4 to 0.9. Above 0.8 the dropped pairs differ by one opener ("Hey,",
-    "QA question:") and nothing else: always duplicates. Between 0.6 and 0.7 most pairs still share the whole core
-    sentence and differ by a short frame or a "thx", such as `t157` ("in our app, what makes a progressive mp4 slow
-    to start thx") against `t085` ("What makes a progressive MP4 slow to start?"). Between 0.5 and 0.6 the
-    differences start to carry meaning: a bug-ticket template against a plain question (`t156`/`t116`), or a novice
-    rewrite with typos against a clean one (`t114`/`t074`). Those are exactly the persona and expertise variations
-    the dimensions exist to test.
+    Output (first part):
 
-    A defensible answer: *"0.6 removes every pair that differs only in framing words, and keeps pairs where the
-    persona or expertise visibly changed the text; at 0.5 we would lose 9 queries whose only difference is the
-    thing we want to test."* The bands overlap (`t154`/`t016` at 0.61 differ by a bug-ticket frame, like the 0.55
-    pair that survives), so no threshold is perfect; say so, and pick the side whose errors cost less. Here a
-    surviving near-duplicate costs one extra trace to read, while a wrongly dropped query loses a slice.
+    ```text
+    threshold 0.1: keep 184
+    threshold 0.15: keep 195
+    threshold 0.2: keep 199
+    threshold 0.3: keep 200
+    threshold 0.4: keep 200
+    threshold 0.6: keep 200
+    threshold 0.9: keep 200
+    ```
+
+    On this dataset the threshold decides nothing between 0.3 and 0.9: the most similar pair of queries scores
+    0.20, so 0.6 keeps all 200. The queries were written by Claude subagents, one call per tuple, and they share
+    almost no word 3-grams. The top pairs show what "most similar" means here: `t158`/`t174` paste the same file
+    name and the same "a third of a second" description but ask different things (diagnose against how-to);
+    `t185`/`t193` state the same false premise in different words, once as a novice and once as an intermediate.
+    These are the variations the dimensions exist to test, and a threshold low enough to drop them (0.15 drops 5,
+    0.1 drops 16) would delete test cases, not duplicates.
+
+    A defensible answer: *"Keep 0.6. Nothing here comes near it, so it costs nothing, and the pairs it would catch
+    on a templated or copy-pasted set (the same sentence with a different greeting) are always duplicates; going
+    below 0.3 would start removing queries whose only difference is the persona or expertise we want to test."*
+    The check still earns its place: a writer that reuses templates, or a model that collapses two tuples into one
+    text, produces pairs above 0.8, and the dropped list tells you which dimension value did not make it into the
+    words. No threshold is perfect; pick the side whose errors cost less. Here a surviving near-duplicate costs one
+    extra trace to read, while a wrongly dropped query loses a slice.
 
     Why compare only within the same `evidence` and `ambiguity`: a query that pastes a log and the same query that
     says "I can grab logs if needed" can be 70% similar in words, yet they test different behaviour (reading
@@ -176,17 +194,20 @@ queries that give the agent something to inspect.
         f"naive: {untagged}/50 match no topic, {named[0]} name a file/device/log, {lower} written in lower case"
     )
     print(f"v1: {named[1]}/{len(v1)} name a file, device, or paste a log")
-    assert cn["audio-focus"] == 0 and named[0] == 0 and untagged == 33
+    assert cn["audio-focus"] == 2 and named[0] == 0 and untagged == 22
     ```
 
     The tagger finds the labelled topic in 86% of v1 queries: good enough to compare sets, not to label one query.
     (It misses novice typos such as "playbak", and vague references like "our trailer".) Always check an automatic
     tagger on labelled data before using it on unlabelled data; that is module 5's subject in miniature.
 
-    Per 100 queries, v1 mentions every topic at least 11 times. Of the 50 naive queries, none mentions audio
-    focus, and one each mentions live streams, A/V sync, and DRM. 33 of the 50 naive queries match no topic at all ("Why is my video not
-    playing on Android?"). None names a file, device, or log, and none is written the way a novice writes. The naive
-    set is not *wrong*; it is one slice (polite, expert-ish, generic, no evidence) repeated 50 times. An agent that
+    Per 100 queries, v1 mentions every topic at least 7 times (audio focus 7.5, the lowest, partly because the
+    tagger misses phrasings like "stop the music when another app plays audio"). Of the 50 naive queries, one
+    mentions live streams and two each mention audio focus and DRM, against eight each for AV1 and codec limits.
+    22 of the 50 match no topic at all; they are about things outside MediaDoctor's dimensions, such as HLS segment
+    durations or tunneled playback. None names a file, device, or log, and none is written the way a novice writes:
+    all 50 are capitalised, and 36% open with "how do". The naive set is not *wrong*; it is one slice (polite,
+    expert, API-level, no evidence) repeated 50 times. An agent that
     answers in generalities would pass it, and that is the failure module 3 found most often.
 
 ## Exercise 4: Show the leak
@@ -212,24 +233,47 @@ a later module, when you tune MediaDoctor's prompt on train and dev.
     for name, splits in (("grouped", grouped), ("independent", naive)):
         leaks = leakage_pairs(items, splits, GROUP_THRESHOLD)
         print(f"{name:<12} {dict(Counter(splits.values()))}  leaking pairs: {len(leaks)}")
+    print(f"same assignment either way: {grouped == naive}")
 
-    leaks = leakage_pairs(items, naive, GROUP_THRESHOLD)
-    test_side = {a if naive[a] == "test" else b for a, b, _ in leaks if "test" in (naive[a], naive[b])}
-    print(f"{len(test_side)} test queries have a near-twin in train or dev, e.g.:")
-    a, b, s = max(leaks, key=lambda x: x[2])
-    print(f"  {s:.2f} [{naive[a]}] {by_tid[a]['question'][:70]!r}")
-    print(f"       [{naive[b]}] {by_tid[b]['question'][:70]!r}")
-    assert len(leakage_pairs(items, grouped, GROUP_THRESHOLD)) == 0 and len(leaks) == 46
+    # Nothing reaches 0.35. Lower the bar to see the closest pairs that do cross splits.
+    close = sorted(leakage_pairs(items, naive, 0.15), key=lambda x: -x[2])
+    print(f"{len(close)} cross-split pairs at similarity >= 0.15:")
+    for a, b, s in close:
+        print(f"  {s:.2f} [{naive[a]}] {by_tid[a]['question'][:60]!r}")
+        print(f"       [{naive[b]}] {by_tid[b]['question'][:60]!r}")
+    assert len(leakage_pairs(items, grouped, GROUP_THRESHOLD)) == 0 and grouped == naive
+    assert len(close) == 3
     ```
 
-    Grouped splitting leaves 0 similar pairs across splits; independent splitting leaves 46, and 16 test queries
-    have a near-twin outside test. The closest pair (0.78) is the same question with and without the file name.
+    Output:
+
+    ```text
+    grouped      {'train': 120, 'dev': 42, 'test': 38}  leaking pairs: 0
+    independent  {'train': 120, 'dev': 42, 'test': 38}  leaking pairs: 0
+    same assignment either way: True
+    3 cross-split pairs at similarity >= 0.15:
+      0.20 [test] 'av_offset_300ms.mp4 the audio is ahead of the video by like '
+           [train] 'our av_offset_300ms.mp4 the audio is ahead of the lips by li'
+      0.16 [test] 'i read that faststart only matters for DASH and not progress'
+           [dev] 'our progressive mp4 videos take forever to start. i read tha'
+      0.15 [train] 'I think this is an audio focus problem since the live stream'
+           [dev] 'live channel stops after the app comes back from background.'
+    ```
+
+    On v1 there is no leak to show. No pair of queries reaches the 0.35 grouping threshold, so grouping changes
+    nothing: grouped and independent splitting give the same assignment and 0 leaking pairs, and no test query has
+    a near-twin in train or dev. Lowering the bar to 0.15 finds three related pairs across splits; the closest
+    (0.20) is a test query and a train query about the same clip, `av_offset_300ms.mp4`, described in the same
+    words. That is not a rewording of the same test, but it is the kind of overlap that grows into one: on a set
+    written from templates, or by a model that repeats itself, independent splitting puts dozens of near-copies on
+    both sides of the line.
 
     How it misleads: suppose you add a few-shot example from train that teaches the agent to ask for the clip when
-    the user says "our trailer". The test set contains the twin of that example, so the test score rises by more
+    the user says "our trailer". If the test set contains the twin of that example, the test score rises by more
     than the change deserves, and you conclude that the prompt generalises when it has partly memorised. With
-    synthetic data the risk is higher than with real data, because templates and models reuse phrasing. Grouping
-    by similarity before splitting, and checking with `leakage_pairs`, is cheap insurance. Use a lower threshold for
+    synthetic data the risk is higher than with real data, because templates and models reuse phrasing; v1 happens
+    to be free of it, which you only know because you checked. Grouping by similarity before splitting, and
+    checking with `leakage_pairs`, is cheap insurance. Use a lower threshold for
     grouping (0.35) than for dedup (0.6): dedup removes queries that are the same test; grouping keeps related tests
     together.
 

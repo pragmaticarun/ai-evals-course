@@ -30,6 +30,9 @@ uv run mediadoctor-capstone report --slice TOPIC --release --out FILE   # once: 
 
 ## Numbers to say carefully
 
+The numbers below illustrate the phrasing; they are not results from the course data (the
+[reference report](../capstone/index.md) has those).
+
 | Instead of | Write |
 |---|---|
 | "+23 points" | "+0.231 [+0.157, +0.315], 25 fixed and 0 broken (n = 108)" |
@@ -48,4 +51,4 @@ uv run mediadoctor-capstone report --slice TOPIC --release --out FILE   # once: 
 ## Presenting
 
 Ask, evidence, what changed, what is not fixed, how sure, next steps: six slides, ten minutes. Say intervals in
-words ("at least 16 points better, probably about 23"). Show one real trace.
+words (for example "at least 16 points better, probably about 23"). Show one real trace.
