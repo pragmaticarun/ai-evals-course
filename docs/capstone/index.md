@@ -273,7 +273,7 @@ Chosen because it is the topic where `v1`, the release configuration, does worst
 ## 10. Appendix
 
 - **Code version:** `git log -1 --format=%H -- docs/capstone/index.md` (the commit that published this page)
-- **Inputs fingerprint:** `8a237ee7b76de774` (sha256 of `fixtures/recorded`, `data`, and `config`)
+- **Inputs fingerprint:** `c5e408fbb402a602` (sha256 of `fixtures/recorded`, `data`, and `config`)
 - **Golden set:** mediadoctor-golden 1.0.1
 - **Reproduce:**
 

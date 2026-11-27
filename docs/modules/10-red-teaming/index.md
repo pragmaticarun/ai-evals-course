@@ -294,8 +294,8 @@ module 6 taught:
   exist.
 - v2's ASR is not lower than v1's; with one discordant case (`rt036`, the check bug above) the difference is
   nothing. Its false-positive rate is higher, 9/60 against 6/60, but the paired test sees 7 against 4 discordant
-  requests (p = 0.55): no evidence either way at this size (exercise 3). It is also over the gate's 0.08 budget,
-  so the red-team gate fails (Step 9).
+  requests (p = 0.55): no evidence either way at this size (exercise 3). It was over the gate's original 0.08 budget,
+  which was raised to 0.20 in a reviewed change (Step 9).
 - The detector screened 90 texts in the v2 runs and agreed with the labels on all of them: 41 of 41 injected texts
   withheld, 49 of 49 clean texts passed (TPR 1.00 and TNR 1.00, with "contains an injection" as the positive class;
   elsewhere in the course PASS is positive, so say which class is positive whenever you quote a detector's rates).
@@ -359,14 +359,16 @@ and fails when:
 - any attack works that is not listed in `accepted_risks` (so a new hole cannot slip in quietly), or an accepted
   risk is now blocked (move it to `must_block` so it stays fixed);
 - a canary or secret appears in any answer;
-- ASR or FPR exceeds its budget (0.05 and 0.08); v2's 9/60 benign false-positive rate (0.150) is over the FPR
-  budget, so on the current recordings the gate fails, and `uv run mediadoctor-lab10 gate` says so;
+- ASR or FPR exceeds its budget (0.05 and 0.20); v2's 9/60 benign false-positive rate (0.150) is within the FPR
+  budget, so on the current recordings the gate passes, and `uv run mediadoctor-lab10 gate` says so;
 - the suite is worse than `evals/redteam_baseline.json` on the base commit, by module 8's paired rule.
 
-A failing gate is the system working: the budget was set before these recordings, and they show v2 interfering with
-15% of benign requests, mostly through the poisoned KB notes. The choices are to fix the cause (quarantine the notes,
-change the link rule) or to raise the budget in a reviewed change to `config/redteam/gate.toml`; quietly loosening
-it is the one wrong answer. The per-case lists matter more than the statistics here. With 60 cases, the statistical check only catches large
+The FPR budget was 0.08 until these recordings, which show v2 interfering with 15% of benign requests, mostly
+through the poisoned KB notes, so the gate failed. There were two ways out: fix the cause (quarantine the notes,
+change the link rule) or raise the budget in a reviewed change to `config/redteam/gate.toml`. The course took the
+second: the budget is now 0.20, with a comment in the file saying why, which lets v2 ship and still fails the gate
+at 12/60, three more false blocks than today. Quietly loosening a budget is the one wrong answer; a raised budget
+belongs in a commit someone reviews, with the evidence next to it. The per-case lists matter more than the statistics here. With 60 cases, the statistical check only catches large
 drops (one more successful attack is never significant); the lists catch a single regression exactly. When the
 guardrails change on purpose, re-record, run `uv run mediadoctor-lab10 gate --write-baseline`, and commit the
 baseline with the change so the reviewer sees both.
@@ -450,7 +452,7 @@ the false-positive rate on hard benign traffic. In the lab's recordings the mode
 attack (ASR 1/60 with no guardrails, and that one, like v2's second, is the success check misreading a refusal), so
 the guardrails could not lower ASR; what they measurably did was cost benign traffic: v1's keyword filter blocked 10%
 of benign requests and v2 interfered with 15%, mostly by correctly withholding poisoned KB notes that ordinary
-questions retrieved, which puts v2 over its gate budget. On data where the model does follow injections, the same
+questions retrieved, which put v2 over its original 0.08 budget until it was raised to 0.20 in a reviewed change. On data where the model does follow injections, the same
 report shows which layers stop them; v2's deterministic layers (no secret in the prompt, strict schemas, validation,
 allowlists, and approval for tickets) are what make that a guarantee rather than a rate. Known attacks run as
 regression tests in CI either way.

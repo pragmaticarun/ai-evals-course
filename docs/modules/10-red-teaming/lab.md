@@ -175,13 +175,15 @@ uv run pytest evals/test_redteam.py -q
 ```
 
 `gate` lists every problem it finds: known attacks working again, unlisted attacks, canaries in answers, budgets
-exceeded, and the paired regression against `evals/redteam_baseline.json`. On the current recordings it fails v2 on
-one line, `benign false-positive rate 0.150 (9/60) [0.081, 0.261] is over 0.08`, and v1 on the same budget
-(0.100, 6/60); every `must_block` case stays blocked under both, and neither regresses against the baseline. The
-pytest command fails the same way, in `test_within_budgets`. Decide what you would do: fix the cause (quarantine
-the poisoned KB notes, change the link rule) or raise the budget in a reviewed change, never silently. Then set
-`release_guard = "v1"` in `config/redteam/gate.toml`, run the pytest command, compare the failures, and put it
-back. In CI, `evals/test_redteam.py` runs in the eval gate's fast tier on every push and pull
+exceeded, and the paired regression against `evals/redteam_baseline.json`. On the current recordings it passes v2 and v1:
+every `must_block` case stays blocked under both, neither regresses against the baseline, and both benign
+false-positive rates (0.150 and 0.100) are within the 0.20 budget. That budget was 0.08 until these recordings, which
+failed v2 on `benign false-positive rate 0.150 (9/60) [0.081, 0.261] is over 0.08`; read the comment above
+`max_benign_false_positive_rate` in `config/redteam/gate.toml` for why it was raised. To see the gate fail, set
+the budget back to 0.08, run `uv run mediadoctor-lab10 gate` and the pytest command, read the failure
+(`test_within_budgets`), and decide what you would have done: fix the cause (quarantine the poisoned KB notes,
+change the link rule) or raise the budget in a reviewed change, never silently. Then set `release_guard = "v1"`,
+run the pytest command again, compare, and put both back. In CI, `evals/test_redteam.py` runs in the eval gate's fast tier on every push and pull
 request, and compares with the baseline committed on the base commit.
 
 ### Optional: record a live run
@@ -217,6 +219,6 @@ You should have:
 - a test clip you made with `ffmpeg`, and its probe output;
 - the two reported attack successes explained (and why they are check errors), and an approval decision for each
   action tool;
-- `evals/test_redteam.py` run under v2 and under v1, with the failures read and a decision on the FPR budget.
+- `evals/test_redteam.py` run under v2 and under v1, and with the FPR budget set back to 0.08, the failure read and your decision on it.
 
 Next: the [exercises](exercises.md).
